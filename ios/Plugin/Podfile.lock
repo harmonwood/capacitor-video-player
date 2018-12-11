@@ -1,0 +1,20 @@
+PODS:
+  - Capacitor (1.0.0-beta.11):
+    - CapacitorCordova (= 1.0.0-beta.11)
+  - CapacitorCordova (1.0.0-beta.11)
+
+DEPENDENCIES:
+  - Capacitor (= 1.0.0-beta.11)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Capacitor
+    - CapacitorCordova
+
+SPEC CHECKSUMS:
+  Capacitor: 3390fb6dbe782bdc71b4bd45df624d4d1da76c71
+  CapacitorCordova: eecc394e2f3e29b5ce9fd2fe597e3d7b4786422b
+
+PODFILE CHECKSUM: 004946802f8f9ca25d8e96acb3a8b2d07e3c012b
+
+COCOAPODS: 1.5.3
