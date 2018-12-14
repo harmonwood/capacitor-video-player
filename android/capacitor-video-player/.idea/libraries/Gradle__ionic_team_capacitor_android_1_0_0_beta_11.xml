@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: ionic-team:capacitor-android-1.0.0-beta.11">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/capacitor-android-1.0.0-beta.11.aar/757175450f782155edd9c29a15fd666d/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/capacitor-android-1.0.0-beta.11.aar/757175450f782155edd9c29a15fd666d/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/ionic-team/capacitor-android/1.0.0-beta.11/6cde3a46c7c5a2e07d2bc18d99902c6e9e54cb7f/capacitor-android-1.0.0-beta.11-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

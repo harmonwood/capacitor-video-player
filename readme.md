@@ -16,4 +16,7 @@ Ionic App showing an integration of [capacitor-video-player plugin](https://gith
 ## IOS Plugin 
 A first release is now available.
 
-## Android and Web Plugins not implemented
+## Android  Plugin
+A first release is now available.
+
+## Web Plugin not implemented
