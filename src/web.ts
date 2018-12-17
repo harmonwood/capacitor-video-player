@@ -3,7 +3,7 @@ import { CapacitorVideoPlayerPlugin, capVideoPlayerOptions, capVideoPlayerResult
 
 export class CapacitorVideoPlayerWeb extends WebPlugin implements CapacitorVideoPlayerPlugin {
 
-  private _videoEl: HTMLVideoElement;
+  private _videoEl: any;
   private _videoContainer: HTMLDivElement;
   private _container: HTMLDivElement;
   private _url: string;
@@ -86,8 +86,15 @@ export class CapacitorVideoPlayerWeb extends WebPlugin implements CapacitorVideo
     };
 
     await this._videoContainer.appendChild(this._videoEl);
-    // below doesn't work on Safari
-    if(!this._videoEl.webkitDisplayingFullscreen) this._videoEl.webkitEnterFullscreen();           
+    if (this._videoEl.requestFullscreen) {
+      this._videoEl.requestFullscreen();           
+    } else if (this._videoEl.mozRequestFullScreen) { /* Firefox */
+      this._videoEl.mozRequestFullScreen();
+    } else if (this._videoEl.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+      this._videoEl.webkitRequestFullscreen();
+    } else if (this._videoEl.msRequestFullscreen) { /* IE/Edge */
+      this._videoEl.msRequestFullscreen();
+    }
     return Promise.resolve(true);
   }
 }

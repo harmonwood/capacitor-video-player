@@ -84,9 +84,18 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 this._container.remove();
             };
             yield this._videoContainer.appendChild(this._videoEl);
-            // below doesn't work on Safari
-            if (!this._videoEl.webkitDisplayingFullscreen)
-                this._videoEl.webkitEnterFullscreen();
+            if (this._videoEl.requestFullscreen) {
+                this._videoEl.requestFullscreen();
+            }
+            else if (this._videoEl.mozRequestFullScreen) { /* Firefox */
+                this._videoEl.mozRequestFullScreen();
+            }
+            else if (this._videoEl.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                this._videoEl.webkitRequestFullscreen();
+            }
+            else if (this._videoEl.msRequestFullscreen) { /* IE/Edge */
+                this._videoEl.msRequestFullscreen();
+            }
             return Promise.resolve(true);
         });
     }
