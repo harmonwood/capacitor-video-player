@@ -1,6 +1,6 @@
 {
   "name": "capacitor-video-player",
-  "version": "0.0.3-2",
+  "version": "0.0.3-3",
   "description": "Capacitor Video Player Plugin",
   "main": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
