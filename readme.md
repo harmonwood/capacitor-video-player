@@ -20,3 +20,4 @@ A first release is now available.
 A first release is now available.
 
 ## Web Plugin not implemented
+A first release is now available, opening the video in full screen on chrome but not in Safari (so you must use the fullscreen video control)
