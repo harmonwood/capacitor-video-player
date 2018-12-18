@@ -1,7 +1,7 @@
 
   Pod::Spec.new do |s|
     s.name = 'CapacitorVideoPlayer'
-    s.version = '0.0.4'
+    s.version = '0.0.4-1'
     s.summary = 'Capacitor Video Player Plugin'
     s.license = 'MIT'
     s.homepage = 'https://github.com/jepiqueau/capacitor-video-player'
