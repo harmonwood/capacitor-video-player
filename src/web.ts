@@ -95,6 +95,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin implements CapacitorVideo
     } else if (this._videoEl.msRequestFullscreen) { /* IE/Edge */
       this._videoEl.msRequestFullscreen();
     }
+    this._videoEl.play();
     return Promise.resolve(true);
   }
 }
