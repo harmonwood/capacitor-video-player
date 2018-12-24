@@ -6,11 +6,11 @@ target 'Plugin' do
   use_frameworks!
 
   # Pods for IonicRunner
-  pod 'Capacitor','1.0.0-beta.11'
+  pod 'Capacitor','1.0.0-beta.13'
 end
 
 target 'PluginTests' do
   use_frameworks!
 
-  pod 'Capacitor','1.0.0-beta.11'
+  pod 'Capacitor','1.0.0-beta.13'
 end
