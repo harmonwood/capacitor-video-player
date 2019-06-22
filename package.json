@@ -1,6 +1,6 @@
 {
   "name": "capacitor-video-player",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "Capacitor Video Player Plugin",
   "main": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -13,7 +13,7 @@
   "author": "Jean Pierre Quéau",
   "license": "MIT",
   "dependencies": {
-    "@capacitor/core": "latest"
+    "@capacitor/core": "^1.1.0"
   },
   "devDependencies": {
     "typescript": "^3.2.4",
