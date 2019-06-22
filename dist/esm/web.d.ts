@@ -4,9 +4,12 @@ export declare class CapacitorVideoPlayerWeb extends WebPlugin implements Capaci
     private _videoEl;
     private _videoContainer;
     private _container;
+    private _exitEl;
     private _url;
+    private _initial;
     constructor();
     play(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>;
+    private _doHide;
     private _initializeVideoPlayer;
 }
 declare const CapacitorVideoPlayer: CapacitorVideoPlayerWeb;
