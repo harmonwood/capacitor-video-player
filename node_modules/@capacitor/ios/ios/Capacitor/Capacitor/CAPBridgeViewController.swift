@@ -27,19 +27,24 @@ public class CAPBridgeViewController: UIViewController, CAPBridgeDelegate, WKScr
   @objc public var supportedOrientations: Array<Int> = []
   
   @objc public var startDir = ""
+  @objc public var config: String?
 
   // Construct the Capacitor runtime
   public var bridge: CAPBridge?
   private var handler: CAPAssetHandler?
   
   override public func loadView() {
+    guard let startPath = self.getStartPath() else {
+      return
+    }
+    
     setStatusBarDefaults()
     setScreenOrientationDefaults()
 
     HTTPCookieStorage.shared.cookieAcceptPolicy = HTTPCookie.AcceptPolicy.always
     let webViewConfiguration = WKWebViewConfiguration()
     self.handler = CAPAssetHandler()
-    self.handler!.setAssetPath(self.getStartPath())
+    self.handler!.setAssetPath(startPath)
     webViewConfiguration.setURLSchemeHandler(self.handler, forURLScheme: CAPBridge.CAP_SCHEME)
     
     let o = WKUserContentController()
@@ -61,16 +66,22 @@ public class CAPBridgeViewController: UIViewController, CAPBridgeDelegate, WKScr
     
     setKeyboardRequiresUserInteraction(false)
     
-    bridge = CAPBridge(self, o)
-    if let scrollEnabled = CAPConfig.getValue("ios.scrollEnabled") as? Bool {
+    bridge = CAPBridge(self, o, CAPConfig(self.config))
+    if let scrollEnabled = bridge!.config.getValue("ios.scrollEnabled") as? Bool {
         webView?.scrollView.isScrollEnabled = scrollEnabled
+    }
+
+    if let backgroundColor = (bridge!.config.getValue("ios.backgroundColor") as? String) ?? (bridge!.config.getValue("backgroundColor") as? String) {
+        webView?.backgroundColor = UIColor(fromHex: backgroundColor)
+        webView?.scrollView.backgroundColor = UIColor(fromHex: backgroundColor)
     }
   }
   
-  private func getStartPath() -> String {
+  private func getStartPath() -> String? {
     let fullStartPath = URL(fileURLWithPath: "public").appendingPathComponent(startDir)
     guard var startPath = Bundle.main.path(forResource: fullStartPath.relativePath, ofType: nil) else {
-      fatalLoadError()
+      printLoadError()
+      return nil
     }
 
     let defaults = UserDefaults.standard
@@ -91,13 +102,17 @@ public class CAPBridgeViewController: UIViewController, CAPBridgeDelegate, WKScr
     loadWebView()
   }
 
-  func fatalLoadError() -> Never {
+  func printLoadError() {
     let fullStartPath = URL(fileURLWithPath: "public").appendingPathComponent(startDir)
-
-    print("⚡️  FATAL ERROR: Unable to load \(fullStartPath.relativePath)/index.html")
-    print("⚡️  This file is the root of your web app and must exist before")
-    print("⚡️  Capacitor can run. Ensure you've run capacitor copy at least")
-    print("⚡️  or, if embedding, that this directory exists as a resource directory.")
+    
+    CAPLog.print("⚡️  ERROR: Unable to load \(fullStartPath.relativePath)/index.html")
+    CAPLog.print("⚡️  This file is the root of your web app and must exist before")
+    CAPLog.print("⚡️  Capacitor can run. Ensure you've run capacitor copy at least")
+    CAPLog.print("⚡️  or, if embedding, that this directory exists as a resource directory.")
+  }
+  
+  func fatalLoadError() -> Never {
+    printLoadError()
     exit(1)
   }
 
@@ -107,11 +122,11 @@ public class CAPBridgeViewController: UIViewController, CAPBridgeDelegate, WKScr
       fatalLoadError()
     }
 
-    hostname = CAPConfig.getString("server.url") ?? "\(bridge!.getLocalUrl())"
-    allowNavigationConfig = CAPConfig.getValue("server.allowNavigation") as? Array<String>
+    hostname = bridge!.config.getString("server.url") ?? "\(bridge!.getLocalUrl())"
+    allowNavigationConfig = bridge!.config.getValue("server.allowNavigation") as? Array<String>
 
 
-    print("⚡️  Loading app at \(hostname!)...")
+    CAPLog.print("⚡️  Loading app at \(hostname!)...")
     let request = URLRequest(url: URL(string: hostname!)!)
     _ = webView?.load(request)
   }
@@ -178,7 +193,7 @@ public class CAPBridgeViewController: UIViewController, CAPBridgeDelegate, WKScr
     let navUrl = navigationAction.request.url!
     if let allowNavigation = allowNavigationConfig, let requestHost = navUrl.host {
       for pattern in allowNavigation {
-        if matchHost(host: requestHost, pattern: pattern) {
+        if matchHost(host: requestHost, pattern: pattern.lowercased()) {
           decisionHandler(.allow)
           return
         }
@@ -197,17 +212,17 @@ public class CAPBridgeViewController: UIViewController, CAPBridgeDelegate, WKScr
   }
 
   public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-    print("⚡️  WebView loaded")
+    CAPLog.print("⚡️  WebView loaded")
   }
 
   public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-    print("⚡️  WebView failed to load")
-    print("⚡️  Error: " + error.localizedDescription)
+    CAPLog.print("⚡️  WebView failed to load")
+    CAPLog.print("⚡️  Error: " + error.localizedDescription)
   }
 
   public func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-    print("⚡️  WebView failed provisional navigation")
-    print("⚡️  Error: " + error.localizedDescription)
+    CAPLog.print("⚡️  WebView failed provisional navigation")
+    CAPLog.print("⚡️  Error: " + error.localizedDescription)
   }
 
   public func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
@@ -278,11 +293,11 @@ public class CAPBridgeViewController: UIViewController, CAPBridgeDelegate, WKScr
       filename = String(url[index...])
     }
 
-    print("\n⚡️  ------ STARTUP JS ERROR ------\n")
-    print("⚡️  \(message)")
-    print("⚡️  URL: \(url)")
-    print("⚡️  \(filename):\(line):\(col)")
-    print("\n⚡️  See above for help with debugging blank-screen issues")
+    CAPLog.print("\n⚡️  ------ STARTUP JS ERROR ------\n")
+    CAPLog.print("⚡️  \(message)")
+    CAPLog.print("⚡️  URL: \(url)")
+    CAPLog.print("⚡️  \(filename):\(line):\(col)")
+    CAPLog.print("\n⚡️  See above for help with debugging blank-screen issues")
   }
 
   func matchHost(host: String, pattern: String) -> Bool {

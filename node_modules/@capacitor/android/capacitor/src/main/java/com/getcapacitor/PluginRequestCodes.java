@@ -1,6 +1,7 @@
 package com.getcapacitor;
 
 public class PluginRequestCodes {
+  public static final int DEFAULT_CAPACITOR_REQUEST_PERMISSIONS = 9000;
   public static final int BROWSER_OPEN_CHROME_TAB = 9001;
   public static final int CAMERA_IMAGE_CAPTURE = 9002;
   public static final int CAMERA_IMAGE_PICK = 9003;
@@ -20,4 +21,5 @@ public class PluginRequestCodes {
   public static final int FILESYSTEM_REQUEST_DELETE_FOLDER_PERMISSIONS = 9017;
   public static final int FILESYSTEM_REQUEST_URI_PERMISSIONS = 9018;
   public static final int FILESYSTEM_REQUEST_STAT_PERMISSIONS = 9019;
+  public static final int FILESYSTEM_REQUEST_RENAME_PERMISSIONS = 9020;
 }

@@ -17,7 +17,6 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.PluginRequestCodes;
 import org.json.JSONException;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,7 +25,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -39,7 +37,8 @@ import java.nio.charset.StandardCharsets;
   PluginRequestCodes.FILESYSTEM_REQUEST_DELETE_FILE_PERMISSIONS,
   PluginRequestCodes.FILESYSTEM_REQUEST_DELETE_FOLDER_PERMISSIONS,
   PluginRequestCodes.FILESYSTEM_REQUEST_URI_PERMISSIONS,
-  PluginRequestCodes.FILESYSTEM_REQUEST_STAT_PERMISSIONS
+  PluginRequestCodes.FILESYSTEM_REQUEST_STAT_PERMISSIONS,
+  PluginRequestCodes.FILESYSTEM_REQUEST_RENAME_PERMISSIONS,
 })
 public class Filesystem extends Plugin {
 
@@ -114,29 +113,23 @@ public class Filesystem extends Plugin {
     File androidDirectory = this.getDirectory(directory);
 
     if (androidDirectory == null) {
-      return null;
+      throw new IOException("Directory not found");
     }
 
     return new FileInputStream(new File(androidDirectory, path));
   }
 
-  private String readFileAsString(InputStream is, Charset charset) throws IOException {
-    final StringBuilder text = new StringBuilder();
+  private String readFileAsString(InputStream is, String encoding) throws IOException {
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-    BufferedReader br = new BufferedReader(
-        new InputStreamReader(
-            is,
-            charset
-        )
-    );
-    String line;
+    byte[] buffer = new byte[1024];
+    int length = 0;
 
-    while ((line = br.readLine()) != null) {
-      text.append(line);
-      text.append('\n');
-    }
-    br.close();
-    return text.toString();
+    while ((length = is.read(buffer)) != -1) {
+      outputStream.write(buffer, 0, length);
+    };
+
+    return outputStream.toString(encoding);
   }
 
   private String readFileAsBase64EncodedData(InputStream is) throws IOException {
@@ -174,7 +167,7 @@ public class Filesystem extends Plugin {
           InputStream is = getInputStream(file, directory);
           String dataStr;
           if (charset != null) {
-            dataStr = readFileAsString(is, charset);
+            dataStr = readFileAsString(is, charset.name());
           } else {
             dataStr = readFileAsBase64EncodedData(is);
           }
@@ -444,6 +437,48 @@ public class Filesystem extends Plugin {
     }
   }
 
+  @PluginMethod()
+  public void rename(PluginCall call) {
+    saveCall(call);
+    String from = call.getString("from");
+    String to = call.getString("to");
+    String directory = getDirectoryParameter(call);
+
+    if (from == null || from.isEmpty() || to == null || to.isEmpty()) {
+      call.error("Both to and from must be provided");
+      return;
+    }
+
+    if (to.equals(from)) {
+      call.success();
+      return;
+    }
+
+    File fromObject = getFileObject(from, directory);
+    File toObject = getFileObject(to, directory);
+
+    if (!isPublicDirectory(directory)
+            || isStoragePermissionGranted(PluginRequestCodes.FILESYSTEM_REQUEST_RENAME_PERMISSIONS, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+      assert toObject != null;
+      if (toObject.isDirectory()) {
+        call.error("Cannot overwrite a directory");
+        return;
+      }
+      toObject.delete();
+
+      assert fromObject != null;
+      boolean renamed = fromObject.renameTo(toObject);
+
+      if (!renamed) {
+        call.error("Unable to rename, unknown reason");
+        return;
+      }
+
+      call.success();
+    }
+  }
+
   /**
    * Checks the the given permission and requests them if they are not already granted.
    * @param permissionRequestCode the request code see {@link PluginRequestCodes}
@@ -517,6 +552,8 @@ public class Filesystem extends Plugin {
       this.getUri(savedCall);
     } else if (requestCode == PluginRequestCodes.FILESYSTEM_REQUEST_STAT_PERMISSIONS) {
       this.stat(savedCall);
+    } else if (requestCode == PluginRequestCodes.FILESYSTEM_REQUEST_RENAME_PERMISSIONS) {
+      this.rename(savedCall);
     }
     this.freeSavedCall();
   }
