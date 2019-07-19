@@ -6,13 +6,12 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 
-import android.content.Context;
 import android.util.Log;
 import android.content.Intent;
 import android.net.Uri;
 
 
-@NativePlugin()
+@NativePlugin(permissionRequestCode = CapacitorVideoPlayer.RequestCodes.Video)
 public class CapacitorVideoPlayer extends Plugin {
     private static final String TAG = "CapacitorVideoPlayer";
 
@@ -27,10 +26,27 @@ public class CapacitorVideoPlayer extends Plugin {
         Uri uri = Uri.parse(url);
         Intent intent = new Intent(getActivity(), VideoPlayerActivity.class);
         intent.putExtra("videoUri",uri);
-        getActivity().startActivity(intent);
-        
+        startActivityForResult(call, intent, RequestCodes.Video);
+    }
+
+    @Override
+    protected void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
+        super.handleOnActivityResult(requestCode, resultCode, data);
+        PluginCall savedCall = getSavedCall();
+
+        if (savedCall == null) {
+            return;
+        }
         JSObject ret = new JSObject();
-        ret.put("result", true);
-        call.success(ret);
+        if (requestCode == RequestCodes.Video) {
+            ret.put("result", data.getBooleanExtra("result", false));
+            savedCall.resolve(ret);
+            return;
+        }
+        savedCall.reject("Plugin error");
+    }
+
+    public interface RequestCodes {
+        int Video = 10001;
     }
 }
