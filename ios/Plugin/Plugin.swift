@@ -1,11 +1,3 @@
-//
-//  Plugin.swift
-//  Plugin
-//
-//  Created by  Quéau Jean Pierre on 19/06/2019.
-//  Copyright © 2019 Max Lynch. All rights reserved.
-//
-
 import Foundation
 import Capacitor
 import AVKit
@@ -18,30 +10,39 @@ import AVKit
 public class CapacitorVideoPlayer: CAPPlugin {
     
     var player: AVPlayer!
-    var isVideoPlaying: Bool = false
+    public var call: CAPPluginCall!
+    var videoPlayer: AVPlayerViewController!
+    
+    override public func load() {
+        // add listeners here
+        NotificationCenter.default.addObserver(self, selector: #selector(didFinishPlaying),
+                                               name:Notification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+        
+        
+    }
     
     @objc func play(_ call: CAPPluginCall)  {
+        self.call = call
         guard let url = call.options["url"] as? String else {
             let error:String = "VideoPlayer Play: Must provide a video url"
             print(error)
-            call.success([
-                "result": false
-                ])
+            call.reject(error)
             return
         }
         guard let urlIn = URL(string: url) else {return}
-        let videoPlayer = AVPlayerViewController()
+        self.videoPlayer = AVPlayerViewController()
         DispatchQueue.main.async {
             self.player = AVPlayer(url: urlIn)
-            videoPlayer.player = self.player
-            self.bridge.viewController.present(videoPlayer, animated: true, completion:{
+            self.videoPlayer.player = self.player
+            self.bridge.viewController.present(self.videoPlayer, animated: true, completion:{
                 self.player.play()
-            })
+            });
         }
-        isVideoPlaying = !isVideoPlaying
-        call.success([
-            "result": true
-            ])
-        
+    }
+    
+    @objc func didFinishPlaying() {
+        self.videoPlayer.dismiss(animated: true,completion: nil)
+        call.success([ "result": true])
     }
 }
+
