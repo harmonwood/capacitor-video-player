@@ -27,6 +27,7 @@ public class CapacitorVideoPlayer extends Plugin {
         Intent intent = new Intent(getActivity(), VideoPlayerActivity.class);
         intent.putExtra("videoUri",uri);
         startActivityForResult(call, intent, RequestCodes.Video);
+        saveCall(call);
     }
 
     @Override
