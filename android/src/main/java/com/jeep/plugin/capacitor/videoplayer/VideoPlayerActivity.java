@@ -1,4 +1,5 @@
 package com.jeep.plugin.capacitor.videoplayer;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -9,12 +10,10 @@ import android.net.Uri;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.MediaController;
-import android.widget.Toast;
 import android.widget.VideoView;
 import android.media.MediaPlayer.OnPreparedListener;
 
 import com.jeep.plugin.capacitor.videoplayer.capacitorvideoplayer.R;
-
 
 public class VideoPlayerActivity  extends AppCompatActivity {
     private static final String TAG = "VideoPlayerActivity";
@@ -28,7 +27,7 @@ public class VideoPlayerActivity  extends AppCompatActivity {
         videoView = (VideoView) findViewById(R.id.videoViewId);
 
         // Get the Intent that started this activity and extract the string
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         Uri url = intent.getParcelableExtra("videoUri");
         Log.v(TAG,"display url: "+url);
         if (url != null) {
@@ -49,23 +48,23 @@ public class VideoPlayerActivity  extends AppCompatActivity {
             videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
-                    // On completion.
-                    Toast.makeText(VideoPlayerActivity.this, "Playback completed",
-                            Toast.LENGTH_SHORT).show();
-
+                // On completion.
+                    setResult(RESULT_OK, intent.putExtra("result", true));
                     finish();
                 }
             });
 
         }
         else {
-            //No Url
-            Toast.makeText(VideoPlayerActivity.this, "No video Url given",
-                    Toast.LENGTH_SHORT).show();
-
+            setResult(RESULT_CANCELED, intent.putExtra("result", false));
             finish();
         }
 
+    }
 
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_CANCELED, getIntent().putExtra("result", false));
+        finish();
     }
 }
