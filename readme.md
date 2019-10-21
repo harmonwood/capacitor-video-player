@@ -9,6 +9,13 @@ As capacitor provides fisrt-class Progressive Web App support so you can use thi
 ## Methods available
 
     play()                              play a video given by an url
+ 
+    the url parameter can be :
+      . "https:/..../video.mp4" for files from the web
+      . if not "https"
+        . for IOS "public/assets/video/video.mp4" 
+        . for Android "/raw/video" without the type. You have to create manually a raw folder under the res folder of your app and copy the video file in it
+        . for Web "assets/video/video.mp4"
 
 ## To use the Plugin in your Project
 ```bash
