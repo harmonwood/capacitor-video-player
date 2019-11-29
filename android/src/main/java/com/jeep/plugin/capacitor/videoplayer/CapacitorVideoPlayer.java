@@ -17,7 +17,8 @@ import android.content.Context;
 @NativePlugin(permissionRequestCode = CapacitorVideoPlayer.RequestCodes.Video)
 public class CapacitorVideoPlayer extends Plugin {
     private static final String TAG = "CapacitorVideoPlayer";
-    private  Context context;
+    private Context context;
+    private String videoPath;
 
     @PluginMethod()
     public void initPlayer(PluginCall call) {
@@ -39,18 +40,22 @@ public class CapacitorVideoPlayer extends Plugin {
         }
         Log.v(TAG,"display url: "+url);
         String http = url.substring(0,4);
-        if (http != "http") {
-            url = "android.resource://" + context.getPackageName() + "/" + url; // works
+        if (http.equals("http")) {
+            videoPath = url;
+        } else {
+            videoPath = "android.resource://" + context.getPackageName() + "/" + url; // works
             //            url = "content://"+appPath+ "/" + url ;
             Log.v(TAG,"calculated url: "+url);
         }
-        Uri uri = Uri.parse(url);
+        Log.v(TAG,"videoPath: "+ videoPath);
+        Uri uri = Uri.parse(videoPath);
+        Log.v(TAG,"display uri: "+uri);
         Intent intent = new Intent(getActivity(), VideoPlayerActivity.class);
         intent.putExtra("videoUri",uri);
         startActivityForResult(call, intent, RequestCodes.Video);
         saveCall(call);
     }
-    
+
     @Override
     protected void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
         super.handleOnActivityResult(requestCode, resultCode, data);
