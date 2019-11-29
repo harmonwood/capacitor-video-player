@@ -1,5 +1,6 @@
 import Foundation
 import Capacitor
+
 import AVKit
 
 /**
@@ -21,10 +22,24 @@ public class CapacitorVideoPlayer: CAPPlugin {
         
     }
     
-    @objc func play(_ call: CAPPluginCall)  {
+    @objc func initPlayer(_ call: CAPPluginCall)  {
         self.call = call
+
+        guard let mode = call.options["mode"] as? String else {
+            let error:String = "VideoPlayer initPlayer: Must provide a Mode (fullscreen/embedded)"
+            print(error)
+            call.reject(error)
+            return
+        }
+
         guard let url = call.options["url"] as? String else {
-            let error:String = "VideoPlayer Play: Must provide a video url"
+            let error:String = "VideoPlayer initPlayer: Must provide a video url"
+            print(error)
+            call.reject(error)
+            return
+        }
+        if (mode == "embedded") {
+            let error:String = "VideoPlayer initPlayer: Embedded Mode not yet implemented"
             print(error)
             call.reject(error)
             return
@@ -38,14 +53,14 @@ public class CapacitorVideoPlayer: CAPPlugin {
             if(path.count > 1) {
                 
             } else {
-                let error:String = "VideoPlayer Play: When not http url should have a path"
+                let error:String = "VideoPlayer initPlayer: When not http url should have a path"
                 print(error)
                 call.reject(error)
                 return
             }
             let cmp = path[path.count-1].components(separatedBy: ".")
             if(cmp.count != 2) {
-                let error:String = "VideoPlayer Play: When not http url should have an extension"
+                let error:String = "VideoPlayer initPlayer: When not http url should have an extension"
                 print(error)
                 call.reject(error)
                 return
@@ -76,4 +91,3 @@ public class CapacitorVideoPlayer: CAPPlugin {
         call.success([ "result": true])
     }
 }
-

@@ -223,6 +223,10 @@ public class CAPFilesystemPlugin : CAPPlugin {
     }
     
     let createIntermediateDirectories = call.get("createIntermediateDirectories", Bool.self, false)!
+    if let _ = call.get("createIntermediateDirectories", Bool.self) {
+        CAPLog.print("createIntermediateDirectories is deprecated, use recursive")
+    }
+    let recursive = call.get("recursive", Bool.self, false)!
     let directoryOption = call.get("directory", String.self, DEFAULT_DIRECTORY)!
     guard let fileUrl = getFileUrl(path, directoryOption) else {
       handleError(call, "Invalid path")
@@ -230,7 +234,7 @@ public class CAPFilesystemPlugin : CAPPlugin {
     }
     
     do {
-      try FileManager.default.createDirectory(at: fileUrl, withIntermediateDirectories: createIntermediateDirectories, attributes: nil)
+      try FileManager.default.createDirectory(at: fileUrl, withIntermediateDirectories: createIntermediateDirectories || recursive, attributes: nil)
       call.success()
     } catch let error as NSError {
       handleError(call, error.localizedDescription, error)
@@ -251,6 +255,18 @@ public class CAPFilesystemPlugin : CAPPlugin {
     guard let fileUrl = getFileUrl(path, directoryOption) else {
       handleError(call, "Invalid path")
       return
+    }
+    
+    let recursiveOption = call.get("recursive", Bool.self, false)!
+    
+    do {
+      let directoryContents = try FileManager.default.contentsOfDirectory(at: fileUrl, includingPropertiesForKeys: nil, options: [])
+      if (directoryContents.count != 0 && !recursiveOption) {
+        handleError(call, "Folder is not empty")
+        return
+      }
+    } catch {
+      handleError(call, error.localizedDescription, error)
     }
     
     do {
@@ -282,7 +298,7 @@ public class CAPFilesystemPlugin : CAPPlugin {
       let directoryContents = try FileManager.default.contentsOfDirectory(at: fileUrl, includingPropertiesForKeys: nil, options: [])
       
       let directoryPathStrings = directoryContents.map {(url: URL) -> String in
-        return url.path
+        return url.lastPathComponent
       }
       
       call.success([
@@ -341,24 +357,38 @@ public class CAPFilesystemPlugin : CAPPlugin {
    * Rename a file or directory.
    */
   @objc func rename(_ call: CAPPluginCall) {
-    guard let from = call.get("from", String.self) else {
-      handleError(call, "from must be provided and must be a string.")
-      return
-    }
-    
-    guard let to = call.get("to", String.self) else {
-      handleError(call, "to must be provided and must be a string.")
+    _copy(call: call, doRename: true);
+  }
+  
+  /**
+   * Copy a file or directory.
+   */
+  @objc func copy(_ call: CAPPluginCall) {
+    _copy(call: call, doRename: false);
+  }
+
+  /**
+   * Copy or rename a file or directory.
+   */
+  private func _copy(call: CAPPluginCall, doRename: Bool) {
+    guard let from = call.get("from", String.self), let to = call.get("to", String.self) else {
+      handleError(call, "Both to and from must be provided")
       return
     }
     
     let directoryOption = call.get("directory", String.self, DEFAULT_DIRECTORY)!
+    var toDirectoryOption = call.get("toDirectory", String.self, "")!
+    
+    if (toDirectoryOption == "") {
+      toDirectoryOption = directoryOption;
+    }
     
     guard let fromUrl = getFileUrl(from, directoryOption) else {
       handleError(call, "Invalid from path")
       return
     }
     
-    guard let toUrl = getFileUrl(to, directoryOption) else {
+    guard let toUrl = getFileUrl(to, toDirectoryOption) else {
       handleError(call, "Invalid to path")
       return
     }
@@ -376,7 +406,11 @@ public class CAPFilesystemPlugin : CAPPlugin {
         }
       }
       
-      try FileManager.default.moveItem(at: fromUrl, to: toUrl)
+      if (doRename) {
+        try FileManager.default.moveItem(at: fromUrl, to: toUrl)
+      } else {
+        try FileManager.default.copyItem(at: fromUrl, to: toUrl);
+      }
       call.success()
     } catch let error as NSError {
       handleError(call, error.localizedDescription, error)

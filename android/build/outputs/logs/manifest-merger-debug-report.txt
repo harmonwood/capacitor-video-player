@@ -1,36 +1,26 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-9:14
-INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-9:14
-INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-9:14
-INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-9:14
-INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-9:14
-INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-9:14
-INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-9:14
+ADDED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-4:14
+INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-4:14
+INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-4:14
+INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-4:14
+INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-4:14
+INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-4:14
+INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-4:14
 	package
-		ADDED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:3:5-73
+		ADDED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:3:7-54
 		INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml
 		INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml
 	android:versionName
 		INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml
-		ADDED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-9:14
+		ADDED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-4:14
 		INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml
 	android:versionCode
 		INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml
-		ADDED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-9:14
+		ADDED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-4:14
 		INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:13-71
-uses-permission#android.permission.INTERNET
-ADDED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:4:5-68
-	android:name
-		ADDED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:4:22-66
-application
-ADDED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:5:5-8:19
-activity#com.jeep.plugin.capacitor.videoplayer.VideoPlayerActivity
-ADDED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:6:7-7:18
-	android:name
-		ADDED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml:6:17-89
 uses-sdk
 INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /Users/queaujeanpierre/Documents/ProjectswithCapacitor/publishProjects/capacitor-one-plugins/capacitor-video-player/android/src/main/AndroidManifest.xml

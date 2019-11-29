@@ -1,10 +1,5 @@
 
   <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.jeep.plugin.capacitor.videoplayer.capacitorvideoplayer">
-    <uses-permission android:name = "android.permission.INTERNET"/>
-    <application>
-      <activity android:name="com.jeep.plugin.capacitor.videoplayer.VideoPlayerActivity">
-      </activity>
-    </application>
+      package="com.jeep.plugin.capacitor.videoplayer">
   </manifest>
   

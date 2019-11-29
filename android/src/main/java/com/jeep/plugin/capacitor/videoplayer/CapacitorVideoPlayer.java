@@ -6,9 +6,6 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 
-import java.io.File;
-
-import android.content.pm.ApplicationInfo;
 import android.util.Log;
 import android.content.Intent;
 import android.net.Uri;
@@ -20,12 +17,21 @@ public class CapacitorVideoPlayer extends Plugin {
     private  Context context;
 
     @PluginMethod()
-    public void play(PluginCall call) {
+    public void initPlayer(PluginCall call) {
         context = getContext();
 
+        String mode = call.getString("mode");
+        if(mode == null) {
+            call.reject("VideoPlayer initPlayer: Must provide a Mode (fullscreen/embedded)");
+            return;
+        }
         String url = call.getString("url");
         if(url == null) {
-            call.reject("Must provide an url");
+            call.reject("VideoPlayer initPlayer: Must provide an url");
+            return;
+        }
+        if (mode == "embedded") {
+            call.reject("VideoPlayer initPlayer: Embedded Mode not yet implemented");
             return;
         }
         Log.v(TAG,"display url: "+url);
