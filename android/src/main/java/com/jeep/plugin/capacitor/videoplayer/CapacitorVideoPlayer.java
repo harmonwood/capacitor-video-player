@@ -6,6 +6,9 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 
+import java.io.File;
+
+import android.content.pm.ApplicationInfo;
 import android.util.Log;
 import android.content.Intent;
 import android.net.Uri;
@@ -47,7 +50,7 @@ public class CapacitorVideoPlayer extends Plugin {
         startActivityForResult(call, intent, RequestCodes.Video);
         saveCall(call);
     }
-
+    
     @Override
     protected void handleOnActivityResult(int requestCode, int resultCode, Intent data) {
         super.handleOnActivityResult(requestCode, resultCode, data);

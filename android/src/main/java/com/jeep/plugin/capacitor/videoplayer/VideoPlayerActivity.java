@@ -1,15 +1,18 @@
 package com.jeep.plugin.capacitor.videoplayer;
-
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnPreparedListener;
-import android.net.Uri;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.net.Uri;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.MediaController;
 import android.widget.VideoView;
+import android.media.MediaPlayer.OnPreparedListener;
+
 import com.jeep.plugin.capacitor.videoplayer.R;
 
 public class VideoPlayerActivity  extends AppCompatActivity {
@@ -45,7 +48,7 @@ public class VideoPlayerActivity  extends AppCompatActivity {
             videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
-                    // On completion.
+                // On completion.
                     setResult(RESULT_OK, intent.putExtra("result", true));
                     finish();
                 }
