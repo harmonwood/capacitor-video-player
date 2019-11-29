@@ -9,7 +9,7 @@
     "clean": "rm -rf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "deploy": "npm run build && npm publish"
+    "deploy": "npm publish"
   },
   "author": "Jean Pierre Quéau",
   "license": "MIT",
