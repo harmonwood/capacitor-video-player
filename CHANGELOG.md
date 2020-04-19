@@ -1,3 +1,10 @@
+## 2.0.1-1(2020-04-19)
+
+### Chores
+
+* Update to Capacitor 2.0.1
+* Update to AndroidX
+
 ## 1.5.1 (2020-03-17)
 
 ### Added Features

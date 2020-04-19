@@ -3,18 +3,21 @@ package com.getcapacitor.ui;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.design.widget.CoordinatorLayout;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.LogUtils;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,10 +28,14 @@ public class ModalsBottomSheetDialogFragment extends BottomSheetDialogFragment {
     void onSelected(int index);
   }
 
+  private String title;
   private JSArray options;
 
   private OnSelectedListener listener;
 
+  public void setTitle(String title) {
+    this.title = title;
+  }
   public void setOptions(JSArray options) {
     this.options = options;
   }
@@ -76,7 +83,11 @@ public class ModalsBottomSheetDialogFragment extends BottomSheetDialogFragment {
     LinearLayout layout = new LinearLayout(getContext());
     layout.setOrientation(LinearLayout.VERTICAL);
     layout.setPadding(layoutPaddingPx16, layoutPaddingPx16, layoutPaddingPx16, layoutPaddingPx16);
-
+    TextView ttv = new TextView(getContext());
+    ttv.setTextColor(Color.parseColor("#757575"));
+    ttv.setPadding(layoutPaddingPx8, layoutPaddingPx8, layoutPaddingPx8, layoutPaddingPx8);
+    ttv.setText(title);
+    layout.addView(ttv);
     try {
       List<Object> optionsList = options.toList();
       for (int i = 0; i < optionsList.size(); i++) {

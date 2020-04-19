@@ -1,6 +1,6 @@
 {
   "name": "capacitor-video-player",
-  "version": "1.5.2",
+  "version": "2.0.1-1",
   "description": "Capacitor Video Player Plugin",
   "main": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -14,11 +14,11 @@
   "author": "Jean Pierre Quéau",
   "license": "MIT",
   "dependencies": {
-    "@capacitor/core": "^1.5.2"
+    "@capacitor/core": "^2.0.1"
   },
   "devDependencies": {
-    "@capacitor/android": "^1.5.2",
-    "@capacitor/ios": "^1.5.2",
+    "@capacitor/android": "^2.0.1",
+    "@capacitor/ios": "^2.0.1",
     "rimraf": "^3.0.0",
     "typescript": "^3.2.4"
   },
