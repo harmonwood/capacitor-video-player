@@ -1539,6 +1539,7 @@ id icon
 id icon_group
 id icon_only
 id image
+id indeterminateBar
 id info
 id invisible
 id italic

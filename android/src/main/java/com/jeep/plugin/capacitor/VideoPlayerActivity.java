@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.net.Uri;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.VideoView;
 import android.media.MediaPlayer.OnPreparedListener;
 
@@ -20,6 +22,7 @@ public class VideoPlayerActivity  extends AppCompatActivity {
     VideoView videoView;
     MediaController mCtrl;
     Boolean isTV;
+    ProgressBar Pbar;
 
     // Current playback position (in milliseconds).
     private int mCurrentPosition = 0;
@@ -35,7 +38,7 @@ public class VideoPlayerActivity  extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videoplayer);
         videoView = (VideoView) findViewById(R.id.videoViewId);
-
+        Pbar = (ProgressBar)findViewById(R.id.indeterminateBar);
 
         // Get the Intent that started this activity and extract the string
         final Intent intent = getIntent();
@@ -77,7 +80,7 @@ public class VideoPlayerActivity  extends AppCompatActivity {
                         // Skipping to 1 shows the first frame of the video.
                         videoView.seekTo(1);
                     }
-
+                    Pbar.setVisibility(View.GONE);
                     videoView.start();
                 }
             });

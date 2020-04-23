@@ -1,3 +1,9 @@
+## 2.0.1-2(2020-04-23)
+
+### Added Features
+
+* add a Progress Bar in Android Plugin
+
 ## 2.0.1-1(2020-04-19)
 
 ### Chores
