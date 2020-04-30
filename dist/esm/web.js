@@ -243,6 +243,19 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             }
         });
     }
+    /**
+     * Get the current time of the current video from a given playerId
+     *
+     */
+    stopAllPlayers() {
+        return __awaiter(this, void 0, void 0, function* () {
+            for (let i in this._players) {
+                this._players[i].videoEl.pause();
+            }
+            ;
+            return Promise.resolve({ method: "stopAllPlayers", result: true });
+        });
+    }
     checkSize(options) {
         let playerSize = {
             width: options.width ? options.width : 320,

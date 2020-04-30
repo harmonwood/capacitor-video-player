@@ -212,7 +212,16 @@ export class CapacitorVideoPlayerWeb extends WebPlugin implements CapacitorVideo
       return Promise.reject("VideoPlayer Pause: Given PlayerId does not exist)");
     }
   }
-
+  /**
+   * Get the current time of the current video from a given playerId
+   * 
+   */
+  async stopAllPlayers(): Promise<capVideoPlayerResult> {
+    for (let i in this._players) {
+      this._players[i].videoEl.pause();
+    };
+    return Promise.resolve({ method: "stopAllPlayers", result: true });
+  }
   private checkSize(options:capVideoPlayerOptions): IPlayerSize {
     let playerSize: IPlayerSize = {
       width : options.width ? options.width : 320,

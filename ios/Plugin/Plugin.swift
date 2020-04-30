@@ -141,7 +141,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
             return
         }
          if (self.videoPlayerTableViewController != nil && !self.videoPlayerTableViewController.videoPlayers.isEmpty) {
-             if let player = self.videoPlayerTableViewController.videoPlayers[playerId] {
+            if let player = self.videoPlayerTableViewController.videoPlayers[playerId] {
                 DispatchQueue.main.async {
                     player.pause()
                 }
@@ -392,6 +392,21 @@ public class CapacitorVideoPlayer: CAPPlugin {
             call.reject(error)
             return
         }
+    }
+    
+    // MARK: - Stop all player(s) playing
+    
+    @objc func stopAllPlayers()  {
+         if (self.videoPlayerTableViewController != nil && !self.videoPlayerTableViewController.videoPlayers.isEmpty) {
+            self.videoPlayerTableViewController.pauseAllPlayers()
+            call.success([ "result": true, "method":"stopAllPlayers"])
+         } else {
+            let error:String = "VideoPlayer stopAllPlayers: No videoPlayerTableViewController"
+            print(error)
+            call.reject(error)
+            return
+        }
+
     }
 
     // MARK: - Handle Notifications

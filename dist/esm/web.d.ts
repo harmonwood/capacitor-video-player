@@ -72,6 +72,11 @@ export declare class CapacitorVideoPlayerWeb extends WebPlugin implements Capaci
      * @param options
      */
     getCurrentTime(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>;
+    /**
+     * Get the current time of the current video from a given playerId
+     *
+     */
+    stopAllPlayers(): Promise<capVideoPlayerResult>;
     private checkSize;
     private _initializeVideoPlayerEmbedded;
     private _initializeVideoPlayerFullScreen;

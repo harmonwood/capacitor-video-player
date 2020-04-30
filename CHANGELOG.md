@@ -1,3 +1,9 @@
+## 2.0.1-4 (2020-04-30)
+
+### Bug Fixes
+
+* fix issue#12 add stopAllPlayers() method
+
 ## 2.0.1-3 (2020-04-30)
 
 ### Bug Fixes

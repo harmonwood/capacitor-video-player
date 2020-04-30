@@ -134,6 +134,14 @@ Get the Current Time of the Video
 #### returns
 Type: `Promise<{method:string,result:boolean,value:number}>`
 
+### `stopAllPlayers() => Promise<{method:string,result:boolean}>`
+
+Stop all Players in "embedded" mode
+
+#### returns
+Type: `Promise<{method:string,result:boolean}>`
+
+
 ## Events available for Web plugin
 
 | Event                       | Description                            | Type                                 |

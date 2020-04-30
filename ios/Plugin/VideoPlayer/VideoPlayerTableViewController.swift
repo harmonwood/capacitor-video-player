@@ -159,7 +159,7 @@ class VideoPlayerTableViewController: UITableViewController, UINavigationControl
 
     }
     
-    // MARK: - Pause all Players
+    // MARK: - Back to Page
     
     @objc func backToPage() {
         DispatchQueue.main.async{
@@ -167,8 +167,10 @@ class VideoPlayerTableViewController: UITableViewController, UINavigationControl
             NotificationCenter.default.post(name: .playerInTableDismiss, object: nil)
         }
     }
+    
+    // MARK: - Pause all Players
  
-    func pauseAllPlayers() {
+    @objc func pauseAllPlayers() {
         let keys = self.videoPlayers.keys
         for key in keys {
             if(key != "fullscreen") {

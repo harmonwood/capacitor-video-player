@@ -76,7 +76,12 @@ export interface CapacitorVideoPlayerPlugin {
    * @returns {Promise<VideoPlayerResult>} {result: boolean, method: string, value:string}
    */
   setMuted(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>
-
+  /**
+   * Stop all players playing
+   * 
+   * @returns {Promise<VideoPlayerResult>} {result: boolean, method: string, value:string}
+   */
+  stopAllPlayers(): Promise<capVideoPlayerResult>
 }
 export interface capVideoPlayerOptions {
   /**
