@@ -1,3 +1,9 @@
+## 2.0.1-3 (2020-04-30)
+
+### Bug Fixes
+
+* fix issue#11 test-angular-jeep-capacitor-plugins link in readme
+
 ## 2.0.1-2(2020-04-23)
 
 ### Added Features

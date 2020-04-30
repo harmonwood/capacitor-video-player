@@ -149,7 +149,7 @@ the target for the events is the document
 
 ### Ionic/Angular
 
-  - [test-angular-jeep-capacitor-plugins] (https://github.com/jepiqueau/capacitor-apps/IonicAngular/jeep-test-app)
+  - [test-angular-jeep-capacitor-plugins] (https://github.com/jepiqueau/capacitor-apps/tree/master/IonicAngular/jeep-test-app)
 
 
 
