@@ -7,10 +7,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+//import Hls from "hls.js";
+import Hls from "./hls/hls.js";
+import { isSupported } from './hls-utils';
 export class VideoPlayer {
     constructor(mode, url, playerId, container, zIndex, width, height) {
+        this._videoType = null;
+        //private _videoClass: string = null;
+        this._videoContainer = null;
+        this._isSupported = false;
         this._url = url;
-        this._container = container;
+        this._playerContainer = container;
         this._mode = mode;
         this._width = width ? width : 320;
         this._height = height ? height : 180;
@@ -21,125 +28,229 @@ export class VideoPlayer {
     }
     initialize() {
         return __awaiter(this, void 0, void 0, function* () {
-            // create a container
-            const container = document.createElement('div');
-            if (this._mode === "fullscreen") {
-                container.style.position = 'absolute';
-                container.style.width = '100vw';
-                container.style.height = '100vh';
-            }
-            if (this._mode === "embedded") {
-                container.style.position = 'relative';
-                container.style.width = this._width.toString() + 'px';
-                container.style.height = this._height.toString() + 'px';
-            }
-            container.style.left = '0';
-            container.style.top = '0';
-            container.style.display = 'flex';
-            container.style.alignItems = 'center';
-            container.style.justifyContent = 'center';
-            container.style.backgroundColor = '#000000';
-            container.style.zIndex = this._zIndex.toString();
-            this._container.appendChild(container);
-            const width = this._mode === "fullscreen" ? container.offsetWidth : this._width;
-            const height = this._mode === "fullscreen" ? container.offsetHeight : this._height;
-            const xmlns = "http://www.w3.org/2000/svg";
-            const svg = document.createElementNS(xmlns, 'svg');
-            svg.setAttributeNS(null, 'width', width.toString());
-            svg.setAttributeNS(null, 'height', height.toString());
-            const viewbox = '0 0 ' + width.toString() + ' ' + height.toString();
-            svg.setAttributeNS(null, 'viewBox', viewbox);
-            svg.style.zIndex = (this._zIndex + 1).toString();
-            const rect = document.createElementNS(xmlns, 'rect');
-            rect.setAttributeNS(null, "x", "0");
-            rect.setAttributeNS(null, "y", "0");
-            rect.setAttributeNS(null, "width", width.toString());
-            rect.setAttributeNS(null, "height", height.toString());
-            rect.setAttributeNS(null, "fill", "#000000");
-            svg.appendChild(rect);
-            container.appendChild(svg);
-            const heightVideo = width * this._height / this._width;
-            const videoContainer = document.createElement('div');
-            videoContainer.style.position = 'absolute';
-            videoContainer.style.left = "0";
-            videoContainer.style.width = width.toString() + 'px';
-            videoContainer.style.height = heightVideo.toString() + 'px';
-            videoContainer.style.zIndex = (this._zIndex + 2).toString();
-            container.appendChild(videoContainer);
-            this.videoEl = document.createElement('video');
-            this.videoEl.controls = true;
-            this.videoEl.src = this._url;
-            this.videoEl.style.zIndex = (this._zIndex + 3).toString();
-            if (this._mode === "fullscreen") {
-                this.videoEl.style.width = "100%";
-            }
-            if (this._mode === "embedded") {
-                this.videoEl.style.width = `${width.toString()}px`;
-                this.videoEl.style.height = `${height.toString()}px`;
-            }
-            videoContainer.appendChild(this.videoEl);
-            this.videoEl.onended = () => {
-                if (this._mode === "fullscreen")
-                    container.remove();
-                this._closeFullscreen();
-                this._createEvent("Ended", this._playerId);
-            };
-            this.videoEl.onplay = () => {
-                this._createEvent("Play", this._playerId);
-            };
-            this.videoEl.onplaying = () => {
-                this._createEvent("Playing", this._playerId);
-            };
-            this.videoEl.onpause = () => {
-                this._createEvent("Pause", this._playerId);
-            };
-            if (this._mode === "fullscreen") {
-                // create the video player exit button
-                const exitEl = document.createElement('button');
-                exitEl.textContent = "X";
-                exitEl.style.position = 'absolute';
-                exitEl.style.left = "1%";
-                exitEl.style.top = "5%";
-                exitEl.style.width = "5vmin";
-                exitEl.style.padding = "0.5%";
-                exitEl.style.fontSize = "1.2rem";
-                exitEl.style.background = "rgba(51,51,51,.4)";
-                exitEl.style.color = "#fff";
-                exitEl.style.visibility = "hidden";
-                exitEl.style.zIndex = (this._zIndex + 4).toString();
-                exitEl.style.border = "1px solid rgba(51,51,51,.4)";
-                exitEl.style.borderRadius = "20px";
-                this.videoEl.onclick = () => __awaiter(this, void 0, void 0, function* () {
-                    this._initial = yield this._doHide(exitEl, 3000);
-                });
-                this.videoEl.ontouchstart = () => __awaiter(this, void 0, void 0, function* () {
-                    this._initial = yield this._doHide(exitEl, 3000);
-                });
-                this.videoEl.onmousemove = () => __awaiter(this, void 0, void 0, function* () {
-                    this._initial = yield this._doHide(exitEl, 3000);
-                });
-                exitEl.onclick = () => {
-                    container.remove();
-                };
-                exitEl.ontouchstart = () => {
-                    container.remove();
-                };
-                videoContainer.appendChild(exitEl);
-                this._initial = yield this._doHide(exitEl, 3000);
-                if (videoContainer.requestFullscreen) {
-                    videoContainer.requestFullscreen();
+            if (isSupported())
+                this._isSupported = true;
+            // get the video type
+            const retB = this._getVideoType();
+            if (retB) {
+                // create a container
+                this._container = document.createElement('div');
+                if (this._mode === "fullscreen") {
+                    this._container.style.position = 'absolute';
+                    this._container.style.width = '100vw';
+                    this._container.style.height = '100vh';
                 }
-                else if (videoContainer.mozRequestFullScreen) { /* Firefox */
-                    videoContainer.mozRequestFullScreen();
+                if (this._mode === "embedded") {
+                    this._container.style.position = 'relative';
+                    this._container.style.width = this._width.toString() + 'px';
+                    this._container.style.height = this._height.toString() + 'px';
                 }
-                else if (videoContainer.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-                    videoContainer.webkitRequestFullscreen();
+                this._container.style.left = '0';
+                this._container.style.top = '0';
+                this._container.style.display = 'flex';
+                this._container.style.alignItems = 'center';
+                this._container.style.justifyContent = 'center';
+                this._container.style.backgroundColor = '#000000';
+                this._container.style.zIndex = this._zIndex.toString();
+                this._playerContainer.appendChild(this._container);
+                const width = this._mode === "fullscreen" ? this._container.offsetWidth : this._width;
+                const height = this._mode === "fullscreen" ? this._container.offsetHeight : this._height;
+                const xmlns = "http://www.w3.org/2000/svg";
+                const svg = document.createElementNS(xmlns, 'svg');
+                svg.setAttributeNS(null, 'width', width.toString());
+                svg.setAttributeNS(null, 'height', height.toString());
+                const viewbox = '0 0 ' + width.toString() + ' ' + height.toString();
+                svg.setAttributeNS(null, 'viewBox', viewbox);
+                svg.style.zIndex = (this._zIndex + 1).toString();
+                const rect = document.createElementNS(xmlns, 'rect');
+                rect.setAttributeNS(null, "x", "0");
+                rect.setAttributeNS(null, "y", "0");
+                rect.setAttributeNS(null, "width", width.toString());
+                rect.setAttributeNS(null, "height", height.toString());
+                rect.setAttributeNS(null, "fill", "#000000");
+                svg.appendChild(rect);
+                this._container.appendChild(svg);
+                const heightVideo = width * this._height / this._width;
+                this._videoContainer = document.createElement('div');
+                this._videoContainer.style.position = 'absolute';
+                this._videoContainer.style.left = "0";
+                this._videoContainer.style.width = width.toString() + 'px';
+                this._videoContainer.style.height = heightVideo.toString() + 'px';
+                this._videoContainer.style.zIndex = (this._zIndex + 2).toString();
+                this._container.appendChild(this._videoContainer);
+                /*   Create Video Element */
+                const isCreated = yield this.createVideoElement(width, heightVideo);
+                if (!isCreated) {
+                    this._createEvent("Exit", this._playerId, "Video Error: failed to create the Video Element");
                 }
-                else if (videoContainer.msRequestFullscreen) { /* IE/Edge */
-                    videoContainer.msRequestFullscreen();
-                }
+            }
+            else {
+                this._createEvent("Exit", this._playerId, "Url Error: type not supported");
             }
         });
+    }
+    createVideoElement(width, height) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.videoEl = document.createElement('video');
+            this.videoEl.controls = true;
+            this.videoEl.style.zIndex = (this._zIndex + 3).toString();
+            this.videoEl.style.width = `${width.toString()}px`;
+            this.videoEl.style.height = `${height.toString()}px`;
+            this._videoContainer.appendChild(this.videoEl);
+            // set the player 
+            const isSet = yield this._setPlayer();
+            if (isSet) {
+                this.videoEl.onended = () => {
+                    if (this._mode === "fullscreen") {
+                        this._container.remove();
+                        this._closeFullscreen();
+                    }
+                    this._createEvent("Ended", this._playerId);
+                };
+                this.videoEl.onplay = () => {
+                    this._createEvent("Play", this._playerId);
+                };
+                this.videoEl.onplaying = () => {
+                    this._createEvent("Playing", this._playerId);
+                };
+                this.videoEl.onpause = () => {
+                    this._createEvent("Pause", this._playerId);
+                };
+                if (this._mode === "fullscreen") {
+                    // create the video player exit button
+                    const exitEl = document.createElement('button');
+                    exitEl.textContent = "X";
+                    exitEl.style.position = 'absolute';
+                    exitEl.style.left = "1%";
+                    exitEl.style.top = "5%";
+                    exitEl.style.width = "5vmin";
+                    exitEl.style.padding = "0.5%";
+                    exitEl.style.fontSize = "1.2rem";
+                    exitEl.style.background = "rgba(51,51,51,.4)";
+                    exitEl.style.color = "#fff";
+                    exitEl.style.visibility = "hidden";
+                    exitEl.style.zIndex = (this._zIndex + 4).toString();
+                    exitEl.style.border = "1px solid rgba(51,51,51,.4)";
+                    exitEl.style.borderRadius = "20px";
+                    this.videoEl.onclick = () => __awaiter(this, void 0, void 0, function* () {
+                        this._initial = yield this._doHide(exitEl, 3000);
+                    });
+                    this.videoEl.ontouchstart = () => __awaiter(this, void 0, void 0, function* () {
+                        this._initial = yield this._doHide(exitEl, 3000);
+                    });
+                    this.videoEl.onmousemove = () => __awaiter(this, void 0, void 0, function* () {
+                        this._initial = yield this._doHide(exitEl, 3000);
+                    });
+                    exitEl.onclick = () => {
+                        this.videoEl.pause();
+                        this._container.remove();
+                        this._createEvent("Exit", this._playerId);
+                    };
+                    exitEl.ontouchstart = () => {
+                        this.videoEl.pause();
+                        this._container.remove();
+                        this._createEvent("Exit", this._playerId);
+                    };
+                    this._videoContainer.appendChild(exitEl);
+                    this._initial = yield this._doHide(exitEl, 3000);
+                    if (this._videoContainer.requestFullscreen) {
+                        this._videoContainer.requestFullscreen();
+                    }
+                    else if (this._videoContainer.mozRequestFullScreen) { /* Firefox */
+                        this._videoContainer.mozRequestFullScreen();
+                    }
+                    else if (this._videoContainer.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                        this._videoContainer.webkitRequestFullscreen();
+                    }
+                    else if (this._videoContainer.msRequestFullscreen) { /* IE/Edge */
+                        this._videoContainer.msRequestFullscreen();
+                    }
+                    this.videoEl.play();
+                }
+            }
+            return isSet;
+        });
+    }
+    _setPlayer() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+                if (this._isSupported && this._videoType === "application/x-mpegURL") {
+                    //                const { Hls } = await import('./hls/hls.js');
+                    // HLS
+                    var hls = new Hls();
+                    hls.attachMedia(this.videoEl);
+                    hls.on(Hls.Events.MEDIA_ATTACHED, () => {
+                        hls.loadSource(this._url);
+                        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                            this.videoEl.muted = true;
+                            this.videoEl.crossOrigin = "anonymous";
+                            resolve(true);
+                        });
+                    });
+                }
+                else if (this._videoType === "video/mp4") {
+                    // CMAF (fMP4) && MP4
+                    this.videoEl.src = this._url;
+                    if (this._url.substring(0, 5) != "https" &&
+                        this._url.substring(0, 4) === "http")
+                        this.videoEl.crossOrigin = "anonymous";
+                    if (this._url.substring(0, 5) === "https" ||
+                        this._url.substring(0, 4) === "http")
+                        this.videoEl.muted = true;
+                    resolve(true);
+                }
+                else {
+                    // Not Supported
+                    return (false);
+                }
+            }));
+        });
+    }
+    _getVideoType() {
+        let ret = false;
+        let vType = null;
+        try {
+            vType = this._url.match(/(.*)\.(.*)/)[2];
+            switch (vType) {
+                case "mp4":
+                case "cmaf":
+                case "cmfv":
+                case "cmfa": {
+                    this._videoType = "video/mp4";
+                    //                this._videoClass = "video-js";
+                    break;
+                }
+                case "m3u8": {
+                    this._videoType = "application/x-mpegURL";
+                    //                this._videoClass = "vjs-default-skin";
+                    break;
+                }
+                /*
+                case "mpd" : {
+                this._videoType = "application/dash+xml";
+                this._videoClass = "video-js";
+                break;
+                }
+                */
+                /*
+                case "youtube" : {
+                this._videoType = "video/youtube";
+                this._videoClass = "video-js vjs-default-skin";
+                break;
+                }
+                */
+                default: {
+                    this._videoType = null;
+                    //                this._videoClass = null;
+                    break;
+                }
+            }
+            ret = true;
+        }
+        catch (_a) {
+            ret = false;
+        }
+        return ret;
     }
     _doHide(exitEl, duration) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -151,9 +262,16 @@ export class VideoPlayer {
             return initial;
         });
     }
-    _createEvent(ev, playerId) {
-        const currentTime = this.videoEl.currentTime;
-        const event = new CustomEvent(`jeepCapVideoPlayer${ev}`, { detail: { fromPlayerId: playerId, currentTime: currentTime } });
+    _createEvent(ev, playerId, msg) {
+        const message = msg ? msg : null;
+        let event;
+        if (message != null) {
+            event = new CustomEvent(`jeepCapVideoPlayer${ev}`, { detail: { fromPlayerId: playerId, message: message } });
+        }
+        else {
+            const currentTime = this.videoEl.currentTime;
+            event = new CustomEvent(`jeepCapVideoPlayer${ev}`, { detail: { fromPlayerId: playerId, currentTime: currentTime } });
+        }
         document.dispatchEvent(event);
     }
     _closeFullscreen() {

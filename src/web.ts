@@ -37,17 +37,21 @@ export class CapacitorVideoPlayerWeb extends WebPlugin implements CapacitorVideo
       if (url == null || url.length === 0) {
         return Promise.reject("VideoPlayer initPlayer: Must provide a Video Url");
       }
+      let playerId:string = options.playerId;
+      if (playerId == null || playerId.length === 0) {
+        return Promise.reject("VideoPlayer initPlayer: Must provide a Player Id");
+      }
+      let componentTag:string = options.componentTag;
+      if (componentTag == null || componentTag.length === 0) {
+        return Promise.reject("VideoPlayer initPlayer: Must provide a Component Tag");
+      }
       if (mode === "embedded") {
-        let playerId:string = options.playerId;
-        if (playerId == null || playerId.length === 0) {
-          return Promise.reject("VideoPlayer initPlayer: Must provide a Player Id");
-        }
         const playerSize: IPlayerSize = this.checkSize(options)
-        const result = await this._initializeVideoPlayerEmbedded(url,playerId,playerSize)
+        const result = await this._initializeVideoPlayerEmbedded(url,playerId,componentTag,playerSize)
         return Promise.resolve({ result: result });
       }
       if( mode === "fullscreen") {
-        const result = await this._initializeVideoPlayerFullScreen(url)
+        const result = await this._initializeVideoPlayerFullScreen(url,playerId,componentTag)
         return Promise.resolve({ result: result });
       }
     } else {
@@ -238,22 +242,42 @@ export class CapacitorVideoPlayerWeb extends WebPlugin implements CapacitorVideo
     }
     return playerSize;
   }
-  private async _initializeVideoPlayerEmbedded(url: string, playerId: string,playerSize:IPlayerSize) : Promise<boolean> {
+  private async _initializeVideoPlayerEmbedded(url: string, playerId: string, 
+              componentTag: string,playerSize:IPlayerSize) : Promise<boolean> {
     const videoURL:string = url ? encodeURI(url) : null;
     if(videoURL === null) return Promise.resolve(false);
-    const videoContainer: HTMLDivElement = document.querySelector(`#${playerId}`);
+    const videoContainer:HTMLDivElement = await this._getContainerElement(playerId,
+      componentTag);
+    if(videoContainer === null) return Promise.resolve(false);
     this._players[playerId] = new VideoPlayer("embedded",videoURL,playerId,videoContainer,2,playerSize.width,playerSize.height);
     return Promise.resolve(true);
   }
-  private async _initializeVideoPlayerFullScreen(url: string) : Promise<boolean> {
+  private async _initializeVideoPlayerFullScreen(url: string, playerId: string,
+              componentTag: string) : Promise<boolean> {
     // encode the url
     const videoURL:string = url ? encodeURI(url) : null;
     if(videoURL === null) return Promise.resolve(false);
-    // create the video player
-    this._players["fullscreen"] = new VideoPlayer("fullscreen",videoURL,"fullscreen",document.body,99995);
+    const videoContainer:HTMLDivElement = await this._getContainerElement(playerId,
+            componentTag);
+    if(videoContainer === null) return Promise.resolve(false);
+
+    this._players["fullscreen"] = new VideoPlayer("fullscreen",videoURL,"fullscreen",videoContainer,99995);
     this._players["fullscreen"].videoEl.play();
     return Promise.resolve(true);
   }
+  private async _getContainerElement(playerId: string,
+    componentTag: string): Promise<HTMLDivElement> {
+      let cmpTagEl: HTMLElement = null;
+      cmpTagEl = document.querySelector(`${componentTag}`);
+      if(cmpTagEl === null ) return Promise.resolve(null);
+      let videoContainer: HTMLDivElement = null;   
+      try {
+        videoContainer = cmpTagEl.shadowRoot.querySelector(`#${playerId}`);
+      } catch {
+        videoContainer = cmpTagEl.querySelector(`#${playerId}`);
+      }
+      return Promise.resolve(videoContainer); 
+    }
 }
 
 const CapacitorVideoPlayer = new CapacitorVideoPlayerWeb();

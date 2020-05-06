@@ -1,3 +1,9 @@
+## 2.0.1-5 (2020-05-06)
+
+###  Added Features
+
+* Add support for Hls video for Web & IOS plugin (issue#10)
+
 ## 2.0.1-4 (2020-04-30)
 
 ### Bug Fixes

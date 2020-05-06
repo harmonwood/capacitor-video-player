@@ -80,6 +80,7 @@ export declare class CapacitorVideoPlayerWeb extends WebPlugin implements Capaci
     private checkSize;
     private _initializeVideoPlayerEmbedded;
     private _initializeVideoPlayerFullScreen;
+    private _getContainerElement;
 }
 declare const CapacitorVideoPlayer: CapacitorVideoPlayerWeb;
 export { CapacitorVideoPlayer };

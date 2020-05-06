@@ -92,13 +92,14 @@ export interface capVideoPlayerOptions {
     mode: string;
     url: string;
     playerId: string;
-    width: number;
-    height: number;
-    volume: number;
-    seektime: number;
-    muted: boolean;
-    videoList: Array<any>;
-    pageTitle: string;
+    componentTag: string;
+    width?: number;
+    height?: number;
+    volume?: number;
+    seektime?: number;
+    muted?: boolean;
+    videoList?: Array<any>;
+    pageTitle?: string;
 }
 export interface capVideoPlayerResult {
     /**

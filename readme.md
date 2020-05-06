@@ -5,6 +5,13 @@ Capacitor Video Player Plugin is a custom Native Capacitor plugin to play a vide
  - embedded on Web and Electron platforms
 As capacitor provides first-class Progressive Web App support so you can use this plugin in your app which will later be deployed to the app stores and the mobile web.
 
+### `available since 2.0.1-5`
+
+  - Adding support for Hls sreaming video
+  - the playerId is required in fullscreen mode
+  - the component or selector tag is required
+
+
 ## Methods Available for IOS, Android, Web Plugins
 
 ### `initPlayer(options) => Promise<{result:boolean}>`
@@ -14,19 +21,24 @@ Initialize the Video Player
 #### options
  - available for IOS, Android, Web Plugins
 
-   ```{mode: "fullscreen", url: string}```
-   play a video given by an url
+   ```{mode: "fullscreen", url: string, playerId: string, componentTag:string}```
+   initialize the player for a video given by an url
  
-    the url parameter can be :
+    the `url` parameter can be :
       . "https:/..../video.mp4" for files from the web
       . if not "https"
         . for IOS "public/assets/video/video.mp4" 
         . for Android "/raw/video" without the type. You have to create manually a raw folder under the res folder of your app and copy the video file in it
         . for Web "assets/video/video.mp4"
 
+    the `playerId` is the id of a div element used as container for the player
+
+    the `componentTag` is the component tag or component selector from where the video player is called
+
+
  - available for  Web Plugin only 
 
-   ```{mode: "embedded", url: string, playerId: string, width:number, height:number}```
+   ```{mode: "embedded", url: string, playerId: string,componentTag:string, width:number, height:number}```
    initialize a video given by an url with a given playerId and size
 
 #### returns
@@ -144,12 +156,13 @@ Type: `Promise<{method:string,result:boolean}>`
 
 ## Events available for Web plugin
 
-| Event                       | Description                            | Type                                 |
-| --------------------------- | -------------------------------------- | ------------------------------------ |
-| `jeepCapVideoPlayerPlay`    | Emitted when the video start to play   | `CustomEvent<{fromPlayerId:string,currentTime:number}>` |
-| `jeepCapVideoPlayerPause`   | Emitted when the video is paused       | `CustomEvent<{fromPlayerId:string,currentTime:number}>` |
-| `jeepCapVideoPlayerPlaying` | Emitted when the video restart to play | `CustomEvent<{fromPlayerId:string,currentTime:number}>` |
-| `jeepCapVideoPlayerEnded`   | Emitted when the video has ended       | `CustomEvent<{fromPlayerId:string,currentTime:number}>` |
+| Event                       | Description                                        | Type                                 |
+| --------------------------- | -------------------------------------------------- | ------------------------------------ |
+| `jeepCapVideoPlayerPlay`    | Emitted when the video start to play               | `CustomEvent<{fromPlayerId:string,currentTime:number}>` |
+| `jeepCapVideoPlayerPause`   | Emitted when the video is paused                   | `CustomEvent<{fromPlayerId:string,currentTime:number}>` |
+| `jeepCapVideoPlayerPlaying` | Emitted when the video restart to play             | `CustomEvent<{fromPlayerId:string,currentTime:number}>` |
+| `jeepCapVideoPlayerEnded`   | Emitted when the video has ended                   | `CustomEvent<{fromPlayerId:string,currentTime:number}>` |
+| `jeepCapVideoPlayerExit`    | Emitted when the Exit button clicked in fullscreen | `CustomEvent<{fromPlayerId:string}>` |
 
 the target for the events is the document
 
@@ -158,6 +171,13 @@ the target for the events is the document
 ### Ionic/Angular
 
   - [test-angular-jeep-capacitor-plugins](https://github.com/jepiqueau/capacitor-apps/tree/master/IonicAngular/jeep-test-app)
+
+### Application Starter
+
+  - [pwa-video-player-app-starter](https://github.com/jepiqueau/pwa-video-player-app-starter)
+
+  - [angular-video-player-starter](https://github.com/jepiqueau/angular-videoplayer-app-starter)
+
 
 
 
@@ -174,10 +194,14 @@ the target for the events is the document
 
  ```ts
   import { Plugins } from '@capacitor/core';
-  import * as PluginsLibrary from 'capacitor-video-player';
+  import * as WebVPPlugin from 'capacitor-video-player';
   const { CapacitorVideoPlayer,Device } = Plugins;
 
-  @Component( ... )
+  @Component({
+    tag: 'my-page',
+    styleUrl: 'my-page.css',
+    shadow: true,
+  })
   export class MyPage {
     _videoPlayer: any;
     _url: string;
@@ -189,7 +213,7 @@ the target for the events is the document
       if (info.platform === "ios" || info.platform === "android") {
         this._videoPlayer = CapacitorVideoPlayer;
       } else {
-        this._videoPlayer = PluginsLibrary.CapacitorVideoPlayer
+        this._videoPlayer = WebVPPlugin.CapacitorVideoPlayer
       }
 
     }
@@ -199,7 +223,7 @@ the target for the events is the document
       document.addEventListener('jeepCapVideoPlayerPlay', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerPlay ', e.detail)}, false);
       document.addEventListener('jeepCapVideoPlayerPause', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerPause ', e.detail)}, false);
       document.addEventListener('jeepCapVideoPlayerEnded', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerEnded ', e.detail)}, false);
-      const res:any  = await this._videoPlayer.initPlayer({mode:"fullscreen",url:this._url});
+      const res:any  = await this._videoPlayer.initPlayer({mode:"fullscreen",url:this._url,playerId:"vp-container",componentTag:"my-page"});
 
         ...
       }
@@ -207,6 +231,14 @@ the target for the events is the document
     ...
   }
  ```
+
+ ```html
+  ...
+    <div id="fullscreen">
+    </div>      
+  ...
+ ```
+
 ### Running on Android
 
  ```bash
@@ -220,7 +252,7 @@ the target for the events is the document
 
  ```java 
   ...
- import com.jeep.plugins.capacitor.CapacitorVideoPlayer;
+ import com.jeep.plugin.capacitor.CapacitorVideoPlayer;
 
   ...
 
@@ -294,7 +326,7 @@ the target for the events is the document
     document.addEventListener('jeepCapVideoPlayerPlay', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerPlay ', e.detail)}, false);
     document.addEventListener('jeepCapVideoPlayerPause', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerPause ', e.detail)}, false);
     document.addEventListener('jeepCapVideoPlayerEnded', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerEnded ', e.detail)}, false);
-    const res:any  = await videoPlayer.initPlayer({mode:"fullscreen",url:url});
+    const res:any  = await videoPlayer.initPlayer({mode:"fullscreen",url:url,playerId="fullscreen",componentTag="my-page"});
     console.log('result of echo ', res)
     }
   }

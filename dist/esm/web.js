@@ -39,17 +39,21 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 if (url == null || url.length === 0) {
                     return Promise.reject("VideoPlayer initPlayer: Must provide a Video Url");
                 }
+                let playerId = options.playerId;
+                if (playerId == null || playerId.length === 0) {
+                    return Promise.reject("VideoPlayer initPlayer: Must provide a Player Id");
+                }
+                let componentTag = options.componentTag;
+                if (componentTag == null || componentTag.length === 0) {
+                    return Promise.reject("VideoPlayer initPlayer: Must provide a Component Tag");
+                }
                 if (mode === "embedded") {
-                    let playerId = options.playerId;
-                    if (playerId == null || playerId.length === 0) {
-                        return Promise.reject("VideoPlayer initPlayer: Must provide a Player Id");
-                    }
                     const playerSize = this.checkSize(options);
-                    const result = yield this._initializeVideoPlayerEmbedded(url, playerId, playerSize);
+                    const result = yield this._initializeVideoPlayerEmbedded(url, playerId, componentTag, playerSize);
                     return Promise.resolve({ result: result });
                 }
                 if (mode === "fullscreen") {
-                    const result = yield this._initializeVideoPlayerFullScreen(url);
+                    const result = yield this._initializeVideoPlayerFullScreen(url, playerId, componentTag);
                     return Promise.resolve({ result: result });
                 }
             }
@@ -272,26 +276,46 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         }
         return playerSize;
     }
-    _initializeVideoPlayerEmbedded(url, playerId, playerSize) {
+    _initializeVideoPlayerEmbedded(url, playerId, componentTag, playerSize) {
         return __awaiter(this, void 0, void 0, function* () {
             const videoURL = url ? encodeURI(url) : null;
             if (videoURL === null)
                 return Promise.resolve(false);
-            const videoContainer = document.querySelector(`#${playerId}`);
+            const videoContainer = yield this._getContainerElement(playerId, componentTag);
+            if (videoContainer === null)
+                return Promise.resolve(false);
             this._players[playerId] = new VideoPlayer("embedded", videoURL, playerId, videoContainer, 2, playerSize.width, playerSize.height);
             return Promise.resolve(true);
         });
     }
-    _initializeVideoPlayerFullScreen(url) {
+    _initializeVideoPlayerFullScreen(url, playerId, componentTag) {
         return __awaiter(this, void 0, void 0, function* () {
             // encode the url
             const videoURL = url ? encodeURI(url) : null;
             if (videoURL === null)
                 return Promise.resolve(false);
-            // create the video player
-            this._players["fullscreen"] = new VideoPlayer("fullscreen", videoURL, "fullscreen", document.body, 99995);
+            const videoContainer = yield this._getContainerElement(playerId, componentTag);
+            if (videoContainer === null)
+                return Promise.resolve(false);
+            this._players["fullscreen"] = new VideoPlayer("fullscreen", videoURL, "fullscreen", videoContainer, 99995);
             this._players["fullscreen"].videoEl.play();
             return Promise.resolve(true);
+        });
+    }
+    _getContainerElement(playerId, componentTag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let cmpTagEl = null;
+            cmpTagEl = document.querySelector(`${componentTag}`);
+            if (cmpTagEl === null)
+                return Promise.resolve(null);
+            let videoContainer = null;
+            try {
+                videoContainer = cmpTagEl.shadowRoot.querySelector(`#${playerId}`);
+            }
+            catch (_a) {
+                videoContainer = cmpTagEl.querySelector(`#${playerId}`);
+            }
+            return Promise.resolve(videoContainer);
         });
     }
 }

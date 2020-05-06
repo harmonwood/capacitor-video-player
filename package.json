@@ -1,11 +1,12 @@
 {
   "name": "capacitor-video-player",
-  "version": "2.0.1-4",
+  "version": "2.0.1-5",
   "description": "Capacitor Video Player Plugin",
   "main": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "npm run clean && tsc",
+    "build": "npm run clean && tsc && npm run copy:hls",
+    "copy:hls": "cp -r src/web-utils/hls dist/esm/web-utils",
     "clean": "rm -rf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
@@ -14,7 +15,9 @@
   "author": "Jean Pierre Quéau",
   "license": "MIT",
   "dependencies": {
-    "@capacitor/core": "^2.0.1"
+    "@capacitor/core": "^2.0.1",
+    "@types/hls.js": "^0.12.6",
+    "hls.js": "^0.13.2"
   },
   "devDependencies": {
     "@capacitor/android": "^2.0.1",
