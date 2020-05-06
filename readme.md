@@ -7,7 +7,7 @@ As capacitor provides first-class Progressive Web App support so you can use thi
 
 ### `available since 2.0.1-5`
 
-  - Adding support for Hls sreaming video
+  - Adding support for Hls sreaming video for Web and IOS plugins
   - the playerId is required in fullscreen mode
   - the component or selector tag is required
 
