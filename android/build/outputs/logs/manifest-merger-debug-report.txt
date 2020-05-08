@@ -1,23 +1,23 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-10:14
-INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-10:14
-INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-10:14
-INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-10:14
-INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-10:14
-INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-10:14
-INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-10:14
+ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-11:14
+INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-11:14
+INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-11:14
+INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-11:14
+INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-11:14
+INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-11:14
+INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-11:14
 	package
 		ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:3:7-63
 		INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml
 		INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml
 	android:versionName
 		INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml
-		ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-10:14
+		ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-11:14
 		INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml
 	android:versionCode
 		INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml
-		ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-10:14
+		ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:3-11:14
 		INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:2:13-71
@@ -25,14 +25,18 @@ uses-permission#android.permission.INTERNET
 ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:4:5-68
 	android:name
 		ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:4:22-66
-application
-ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:5:5-9:19
-activity#com.jeep.plugin.capacitor.VideoPlayerActivity
-ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:6:7-8:18
-	android:configChanges
-		ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:7:11-99
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:5:5-79
 	android:name
-		ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:6:17-77
+		ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:5:22-77
+application
+ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:6:5-10:19
+activity#com.jeep.plugin.capacitor.VideoPlayerActivity
+ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:7:7-9:18
+	android:configChanges
+		ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:8:11-99
+	android:name
+		ADDED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml:7:17-77
 uses-sdk
 INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /Users/queaujeanpierre/Documents/StencilWebComponent/publishCapacitorPlugins/capacitor-video-player/android/src/main/AndroidManifest.xml

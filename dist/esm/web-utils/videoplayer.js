@@ -213,6 +213,7 @@ export class VideoPlayer {
             vType = this._url.match(/(.*)\.(.*)/)[2];
             switch (vType) {
                 case "mp4":
+                case "webm":
                 case "cmaf":
                 case "cmfv":
                 case "cmfa": {

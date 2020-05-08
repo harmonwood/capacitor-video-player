@@ -7,15 +7,10 @@
     android:layout_height="match_parent"
     android:background="@android:color/black"
     tools:context="com.jeep.plugins.capacitor.VideoPlayerActivity">
-    <VideoView
+    <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/videoViewId"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="16:9"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
     <ProgressBar
         android:id="@+id/indeterminateBar"
         android:layout_width="wrap_content"

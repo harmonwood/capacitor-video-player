@@ -20,7 +20,7 @@ import android.os.Build;
 import android.content.res.Configuration;
 
 
-@NativePlugin(permissionRequestCode = CapacitorVideoPlayer.RequestCodes.Video)
+@NativePlugin(requestCodes = {CapacitorVideoPlayer.RequestCodes.Video})
 public class CapacitorVideoPlayer extends Plugin {
     private static final String TAG = "CapacitorVideoPlayer";
     private Context context;
@@ -37,6 +37,7 @@ public class CapacitorVideoPlayer extends Plugin {
     }
     @PluginMethod()
     public void initPlayer(PluginCall call) {
+        saveCall(call);
         context = getContext();
         // Check if running on a TV Device
         isTV = isDeviceTV(context);
@@ -73,7 +74,6 @@ public class CapacitorVideoPlayer extends Plugin {
         intent.putExtras(extras);
 
         startActivityForResult(call, intent, RequestCodes.Video);
-        saveCall(call);
     }
 
     @Override
@@ -86,7 +86,11 @@ public class CapacitorVideoPlayer extends Plugin {
         }
         JSObject ret = new JSObject();
         if (requestCode == RequestCodes.Video) {
-            ret.put("result", data.getBooleanExtra("result", false));
+            if(data != null) {
+                ret.put("result", data.getBooleanExtra("result", false));
+            } else {
+                ret.put("result",false);
+            }
             savedCall.resolve(ret);
             return;
         }

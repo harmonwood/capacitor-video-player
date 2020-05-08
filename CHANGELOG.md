@@ -1,3 +1,9 @@
+## 2.0.1 (2020-05-08)
+
+###  Added Features
+
+* Add support for DASH, HLS, ISM videos for Android plugin by using the ExoPlayer  (issue#10)
+
 ## 2.0.1-6 (2020-05-06)
 
 ### Bug Fixes

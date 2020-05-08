@@ -10,7 +10,11 @@ As capacitor provides first-class Progressive Web App support so you can use thi
   - Adding support for Hls sreaming video for Web and IOS plugins
   - the playerId is required in fullscreen mode
   - the component or selector tag is required
+  - in the Web player, the video start with the muted on
 
+### `available since 2.0.1`
+
+  - Adding support for DASH, HLS, ISM videos for Android plugin by using the ExoPlayer
 
 ## Methods Available for IOS, Android, Web Plugins
 
