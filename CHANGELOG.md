@@ -1,3 +1,13 @@
+## 2.1.0-1
+
+### Chores
+
+* Update to Capacitor 2.1.0
+
+### Added Features
+
+* issue#13 Background Video support for ios
+
 ## 2.0.1 (2020-05-08)
 
 ###  Added Features

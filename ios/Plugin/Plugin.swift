@@ -1,7 +1,7 @@
 import Foundation
 import Capacitor
-
 import AVKit
+import UIKit
 
 /**
  * Please read the Capacitor iOS Plugin Development Guide
@@ -10,17 +10,20 @@ import AVKit
 @objc(CapacitorVideoPlayer)
 public class CapacitorVideoPlayer: CAPPlugin {
      
-    var player: AVPlayer!
+    public var player: AVPlayer!
     public var call: CAPPluginCall!
-    var videoPlayer: AVPlayerViewController!
+    public var videoPlayer: AVPlayerViewController!
+    public var bgPlayer: AVPlayer!
     var videoPlayerTableViewController: VideoPlayerTableViewController!
     var videoPlayerFullScreenView: FullScreenVideoPlayerView!
+    var audioSession: AVAudioSession!
     var mode : String!
     var playerList: [String: SmallVideoPlayerView] = [:]
     
     // MARK: - Load plugin
         
     override public func load() {
+
         // add listeners here
         NotificationCenter.default.addObserver(self, selector: #selector(didFinishPlaying),
                                                name:Notification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
@@ -30,6 +33,13 @@ public class CapacitorVideoPlayer: CAPPlugin {
         NotificationCenter.default.addObserver(forName: .playerItemEnd, object: nil, queue: nil, using: playerItemEnd)
         NotificationCenter.default.addObserver(forName: .playerItemReady, object: nil, queue: nil, using: playerItemReady)
         NotificationCenter.default.addObserver(forName: .playerInTableDismiss, object: nil, queue: nil, using: playerInTableDismiss)
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { (notification) in
+            self.bgPlayer = self.videoPlayerFullScreenView.videoPlayer.player
+            self.videoPlayerFullScreenView.videoPlayer.player = nil
+        }
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: OperationQueue.main) { (notification) in
+            self.videoPlayerFullScreenView.videoPlayer.player = self.bgPlayer
+        }
     }
     
     // MARK: - Echo
@@ -59,11 +69,30 @@ public class CapacitorVideoPlayer: CAPPlugin {
                 call.reject(error)
                 return
             }
+            
+            self.audioSession = AVAudioSession.sharedInstance()
+            do {
+                // Set the audio session category, mode, and options.
+                try self.audioSession.setCategory(.playback, mode: .moviePlayback, options: [])
+            } catch {
+                print("Failed to set audio session category.")
+            }
+
             DispatchQueue.main.async {
                 self.videoPlayerFullScreenView = FullScreenVideoPlayerView(videoPath: url)
 
-                self.bridge.viewController.present(self.videoPlayerFullScreenView.videoPlayer, animated: true, completion:{
-                    self.videoPlayerFullScreenView.player.play()
+                // Present the Player View Controller
+                self.bridge.viewController  .present(self.videoPlayerFullScreenView.videoPlayer, animated: true, completion:{
+                    do {
+                        // Activate the audio session.
+                        try self.audioSession.setActive(true)
+                        self.videoPlayerFullScreenView.player.play()
+                    } catch {
+                        let error:String = "VideoPlayer initPlayer: Failed to set audio session category"
+                        print(error)
+                        call.reject(error)
+                        return
+                    }
                 });
             }
         } else if (mode == "embedded") {
@@ -458,6 +487,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
             self.bridge.viewController.dismiss(animated: true, completion: nil)
         }
     }
+
 
 }
 
