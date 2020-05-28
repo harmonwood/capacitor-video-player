@@ -102,7 +102,7 @@ public class VideoPlayerActivity  extends AppCompatActivity {
                 mCurrentPosition = savedInstanceState.getInt(PLAYBACK_TIME);
             }
 
-         }
+        }
         else {
             Log.d(TAG, "Video path wrong or type not supported");
             Toast.makeText(this, "Video path wrong or type not supported", Toast.LENGTH_SHORT).show();
@@ -131,7 +131,7 @@ public class VideoPlayerActivity  extends AppCompatActivity {
         boolean isAppBackground = isApplicationSentToBackground(this);
         if (!isAppBackground){
             if (Util.SDK_INT >= 24) {
-            releasePlayer();
+                releasePlayer();
             }
             setResult(RESULT_CANCELED, getIntent().putExtra("result", false));
             finish();
@@ -329,19 +329,22 @@ public class VideoPlayerActivity  extends AppCompatActivity {
     }
     private String getVideoType(Uri uri) {
         String ret = null;
-        String ext;
         String lastSegment = uri.getLastPathSegment();
         for (String type : supportedFormat) {
             if(ret != null) break;
             if(lastSegment.contains(type)) ret = type;
             if (ret == null) {
                 List<String> segments = uri.getPathSegments();
-                for (String segment : segments) {
-                    for (String sType : supportedFormat) {
-                        if(segment.contains(sType)) {
-                            ret = sType;
-                            break;
-                        }
+                String segment;
+                if( segments.get(segments.size() - 1).equals("manifest")) {
+                    segment = segments.get(segments.size() - 2);
+                } else {
+                    segment = segments.get(segments.size() - 1);
+                }
+                for (String sType : supportedFormat) {
+                    if(segment.contains(sType)) {
+                        ret = sType;
+                        break;
                     }
                 }
             }

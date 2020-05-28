@@ -217,7 +217,6 @@ export class VideoPlayer {
             else {
                 vType = this._url.match(/(.*)\.(.*)/)[2];
             }
-            console.log("vType ", vType);
             switch (vType) {
                 case "mp4":
                 case "":
@@ -227,7 +226,6 @@ export class VideoPlayer {
                 case "cmfa": {
                     this._videoType = "video/mp4";
                     //                this._videoClass = "video-js";
-                    console.log("this._videoType ", this._videoType);
                     break;
                 }
                 case "m3u8": {

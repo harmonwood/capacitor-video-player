@@ -1,3 +1,9 @@
+## 2.1.0-3 (2020-05-28)
+
+### Bug Fixes
+
+* fix Android ism type not playing
+
 ## 2.1.0-2 (2020-05-28)
 
 ### Bug Fixes
