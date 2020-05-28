@@ -46,7 +46,7 @@ import java.util.List;
 public class VideoPlayerActivity  extends AppCompatActivity {
     private static final String TAG = VideoPlayerActivity.class.getName();
     private List<String> supportedFormat = Arrays.asList(
-            new String[]{"mp4","webm","ogv","3gp","flv","dash","mpd","m3u8","ism","ytube"});
+            new String[]{"mp4","webm","ogv","3gp","flv","dash","mpd","m3u8","ism","ytube",""});
     private PlaybackStateListener playbackStateListener;
     private PlayerView playerView;
     private String vType = null;
@@ -216,7 +216,7 @@ public class VideoPlayerActivity  extends AppCompatActivity {
                 new DefaultDataSourceFactory(this, httpDataSourceFactory);
 
         if (vType.equals("mp4") || vType.equals("webm") || vType.equals("ogv")
-                || vType.equals("3gp") || vType.equals("flv")) {
+                || vType.equals("3gp") || vType.equals("flv") || vType.equals("")) {
             mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory)
                     .createMediaSource(uri);
         } else if (vType.equals("dash") || vType.equals("mpd") ) {
@@ -332,6 +332,7 @@ public class VideoPlayerActivity  extends AppCompatActivity {
         String ext;
         String lastSegment = uri.getLastPathSegment();
         for (String type : supportedFormat) {
+            if(ret != null) break;
             if(lastSegment.contains(type)) ret = type;
             if (ret == null) {
                 List<String> segments = uri.getPathSegments();

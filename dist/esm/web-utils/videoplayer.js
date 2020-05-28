@@ -210,15 +210,24 @@ export class VideoPlayer {
         let ret = false;
         let vType = null;
         try {
-            vType = this._url.match(/(.*)\.(.*)/)[2];
+            const val = this._url.substring(this._url.lastIndexOf('/')).match(/(.*)\.(.*)/);
+            if (val == null) {
+                vType = "";
+            }
+            else {
+                vType = this._url.match(/(.*)\.(.*)/)[2];
+            }
+            console.log("vType ", vType);
             switch (vType) {
                 case "mp4":
+                case "":
                 case "webm":
                 case "cmaf":
                 case "cmfv":
                 case "cmfa": {
                     this._videoType = "video/mp4";
                     //                this._videoClass = "video-js";
+                    console.log("this._videoType ", this._videoType);
                     break;
                 }
                 case "m3u8": {

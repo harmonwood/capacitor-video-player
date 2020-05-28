@@ -1,3 +1,9 @@
+## 2.1.0-2 (2020-05-28)
+
+### Bug Fixes
+
+* fix issue#14 url without type
+
 ## 2.1.0-1
 
 ### Chores

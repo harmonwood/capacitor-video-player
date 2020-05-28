@@ -208,10 +208,17 @@ private _isSupported: boolean = false;
     private _getVideoType(): boolean {
         let ret: boolean = false;
         let vType: string = null;
+        
         try {
-            vType = this._url.match(/(.*)\.(.*)/)[2];
+            const val = this._url.substring(this._url.lastIndexOf('/')).match(/(.*)\.(.*)/);
+            if(val == null) {
+                vType = "";
+            } else {
+                vType = this._url.match(/(.*)\.(.*)/)[2];
+            }
             switch (vType) {
                 case "mp4" : 
+                case "":        
                 case "webm":        
                 case "cmaf" :
                 case "cmfv" :
