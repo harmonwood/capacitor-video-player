@@ -13,7 +13,7 @@
 
     <application>
         <activity
-            android:name="com.jeep.plugin.capacitor.VideoPlayerActivity"
+            android:name="com.jeep.plugin.capacitor.FullscreenExoPlayerFragment"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|navigation" >
         </activity>
     </application>

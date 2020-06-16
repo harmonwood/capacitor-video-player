@@ -6,6 +6,7 @@
 CAP_PLUGIN(CapacitorVideoPlayer, "CapacitorVideoPlayer",
            CAP_PLUGIN_METHOD(echo, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(initPlayer, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(isPlaying, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(play, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(pause, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getDuration, CAPPluginReturnPromise);

@@ -3,10 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fsExoPlayer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
-    tools:context="com.jeep.plugins.capacitor.VideoPlayerActivity">
+    tools:context="com.jeep.plugin.capacitor.FullscreenExoPlayerFragment">
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/videoViewId"
         android:layout_width="match_parent"
@@ -19,6 +20,5 @@
         app:layout_constraintEnd_toEndOf="@+id/videoViewId"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
+

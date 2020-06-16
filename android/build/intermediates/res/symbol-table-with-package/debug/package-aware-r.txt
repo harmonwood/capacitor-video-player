@@ -1642,6 +1642,8 @@ id fixed
 id fixed_height
 id fixed_width
 id forever
+id frameLayout
+id fsExoPlayer
 id ghost_view
 id ghost_view_holder
 id gone
@@ -1870,7 +1872,6 @@ layout abc_search_dropdown_item_icons_2line
 layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
-layout activity_videoplayer
 layout bridge_layout_main
 layout browser_actions_context_menu_page
 layout browser_actions_context_menu_row
@@ -1897,6 +1898,7 @@ layout exo_player_view
 layout exo_simple_player_view
 layout exo_track_selection_dialog
 layout fragment_bridge
+layout fragment_fs_exoplayer
 layout mtrl_alert_dialog
 layout mtrl_alert_dialog_actions
 layout mtrl_alert_dialog_title

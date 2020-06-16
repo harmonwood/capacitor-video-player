@@ -1,3 +1,12 @@
+## 2.1.0 (2020-06-15)
+
+### Added Features
+
+* add interactive apis for native players (issue#15)
+* remove Web Plugin Events 
+* add plugin listeners for Web and Native Plugins
+
+
 ## 2.1.0-3 (2020-05-28)
 
 ### Bug Fixes

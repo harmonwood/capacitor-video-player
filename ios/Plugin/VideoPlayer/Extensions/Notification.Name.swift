@@ -13,4 +13,5 @@ extension NSNotification.Name {
     static var playerItemEnd: Notification.Name{return .init(rawValue: "playerItemEnd")}
     static var playerItemReady: Notification.Name{return .init(rawValue: "playerItemReady")}
     static var playerInTableDismiss: Notification.Name{return .init(rawValue: "playerInTableDismiss")}
+    static var playerFullscreenDismiss: Notification.Name{return .init(rawValue: "playerFullscreenDismiss")}
 }

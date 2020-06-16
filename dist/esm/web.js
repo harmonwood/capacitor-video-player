@@ -20,7 +20,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
     echo(options) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('ECHO', options);
-            return options;
+            return Promise.resolve({ "result": true, "method": "echo", "value": options });
         });
     }
     /**
@@ -32,33 +32,52 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         return __awaiter(this, void 0, void 0, function* () {
             let mode = options.mode;
             if (mode == null || mode.length === 0) {
-                return Promise.reject("VideoPlayer initPlayer: Must provide a Mode (fullscreen/embedded)");
+                return Promise.resolve({ "result": false, "method": "initPlayer", "message": "Must provide a Mode (fullscreen/embedded)" });
             }
             if (mode === "fullscreen" || mode === "embedded") {
                 let url = options.url;
                 if (url == null || url.length === 0) {
-                    return Promise.reject("VideoPlayer initPlayer: Must provide a Video Url");
+                    return Promise.resolve({ "result": false, "method": "initPlayer", "message": "Must provide a Video Url" });
                 }
                 let playerId = options.playerId;
                 if (playerId == null || playerId.length === 0) {
-                    return Promise.reject("VideoPlayer initPlayer: Must provide a Player Id");
+                    return Promise.resolve({ "result": false, "method": "initPlayer", "message": "Must provide a Player Id" });
                 }
                 let componentTag = options.componentTag;
                 if (componentTag == null || componentTag.length === 0) {
-                    return Promise.reject("VideoPlayer initPlayer: Must provide a Component Tag");
+                    return Promise.resolve({ "result": false, "method": "initPlayer", "message": "Must provide a Component Tag" });
                 }
+                let playerSize = null;
                 if (mode === "embedded") {
-                    const playerSize = this.checkSize(options);
-                    const result = yield this._initializeVideoPlayerEmbedded(url, playerId, componentTag, playerSize);
-                    return Promise.resolve({ result: result });
+                    playerSize = this.checkSize(options);
                 }
-                if (mode === "fullscreen") {
-                    const result = yield this._initializeVideoPlayerFullScreen(url, playerId, componentTag);
-                    return Promise.resolve({ result: result });
-                }
+                const result = yield this._initializeVideoPlayer(url, playerId, mode, componentTag, playerSize);
+                return Promise.resolve({ result: result });
             }
             else {
-                return Promise.reject("VideoPlayer initPlayer: Must provide a Mode either fullscreen or embedded)");
+                return Promise.resolve({ "result": false, "method": "initPlayer", "message": "Must provide a Mode either fullscreen or embedded)" });
+            }
+        });
+    }
+    /**
+     * Return if a given playerId is playing
+     *
+     * @param options
+     */
+    isPlaying(options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let playerId = options.playerId;
+            if (playerId == null || playerId.length === 0) {
+                playerId = "fullscreen";
+            }
+            if (this._players[playerId]) {
+                let playing = false;
+                if (!this._players[playerId].videoEl.paused)
+                    playing = true;
+                return Promise.resolve({ method: "isPlaying", result: true, value: playing });
+            }
+            else {
+                return Promise.resolve({ method: "isPlaying", result: false, message: "Given PlayerId does not exist)" });
             }
         });
     }
@@ -74,11 +93,11 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 playerId = "fullscreen";
             }
             if (this._players[playerId]) {
-                this._players[playerId].videoEl.play();
-                return Promise.resolve({ method: "play", result: true });
+                yield this._players[playerId].videoEl.play();
+                return Promise.resolve({ method: "play", result: true, value: true });
             }
             else {
-                return Promise.reject("VideoPlayer Play: Given PlayerId does not exist)");
+                return Promise.resolve({ method: "play", result: false, message: "Given PlayerId does not exist)" });
             }
         });
     }
@@ -94,11 +113,12 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 playerId = "fullscreen";
             }
             if (this._players[playerId]) {
-                this._players[playerId].videoEl.pause();
+                if (!this._players[playerId].videoEl.pause)
+                    yield this._players[playerId].videoEl.pause();
                 return Promise.resolve({ method: "pause", result: true });
             }
             else {
-                return Promise.reject("VideoPlayer Pause: Given PlayerId does not exist)");
+                return Promise.resolve({ method: "pause", result: false, message: "Given PlayerId does not exist)" });
             }
         });
     }
@@ -118,7 +138,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 return Promise.resolve({ method: "getDuration", result: true, value: duration });
             }
             else {
-                return Promise.reject("VideoPlayer Pause: Given PlayerId does not exist)");
+                return Promise.resolve({ method: "getDuration", result: false, message: "Given PlayerId does not exist)" });
             }
         });
     }
@@ -139,7 +159,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 return Promise.resolve({ method: "setVolume", result: true, value: volume });
             }
             else {
-                return Promise.reject("VideoPlayer Pause: Given PlayerId does not exist)");
+                return Promise.resolve({ method: "setVolume", result: false, message: "Given PlayerId does not exist)" });
             }
         });
     }
@@ -159,7 +179,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 return Promise.resolve({ method: "getVolume", result: true, value: volume });
             }
             else {
-                return Promise.reject("VideoPlayer Pause: Given PlayerId does not exist)");
+                return Promise.resolve({ method: "getVolume", result: false, message: "Given PlayerId does not exist)" });
             }
         });
     }
@@ -177,10 +197,11 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             let muted = options.muted ? options.muted : false;
             if (this._players[playerId]) {
                 this._players[playerId].videoEl.muted = muted;
+                console.log("in setMuted videoEL ", this._players[playerId].videoEl.outerHTML);
                 return Promise.resolve({ method: "setMuted", result: true, value: muted });
             }
             else {
-                return Promise.reject("VideoPlayer Pause: Given PlayerId does not exist)");
+                return Promise.resolve({ method: "setMuted", result: false, message: "Given PlayerId does not exist)" });
             }
         });
     }
@@ -196,11 +217,12 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 playerId = "fullscreen";
             }
             if (this._players[playerId]) {
+                console.log("in getMuted videoEL ", this._players[playerId].videoEl.outerHTML);
                 let muted = this._players[playerId].videoEl.muted;
                 return Promise.resolve({ method: "getMuted", result: true, value: muted });
             }
             else {
-                return Promise.reject("VideoPlayer Pause: Given PlayerId does not exist)");
+                return Promise.resolve({ method: "getMuted", result: false, message: "Given PlayerId does not exist)" });
             }
         });
     }
@@ -223,7 +245,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 return Promise.resolve({ method: "setCurrentTime", result: true, value: seekTime });
             }
             else {
-                return Promise.reject("VideoPlayer Pause: Given PlayerId does not exist)");
+                return Promise.resolve({ method: "setCurrentTime", result: false, message: "Given PlayerId does not exist)" });
             }
         });
     }
@@ -243,7 +265,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 return Promise.resolve({ method: "getCurrentTime", result: true, value: seekTime });
             }
             else {
-                return Promise.reject("VideoPlayer Pause: Given PlayerId does not exist)");
+                return Promise.resolve({ method: "getCurrentTime", result: false, message: "Given PlayerId does not exist)" });
             }
         });
     }
@@ -254,10 +276,11 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
     stopAllPlayers() {
         return __awaiter(this, void 0, void 0, function* () {
             for (let i in this._players) {
-                this._players[i].videoEl.pause();
+                if (!this._players[i].videoEl.paused)
+                    this._players[i].videoEl.pause();
             }
             ;
-            return Promise.resolve({ method: "stopAllPlayers", result: true });
+            return Promise.resolve({ method: "stopAllPlayers", result: true, value: true });
         });
     }
     checkSize(options) {
@@ -276,7 +299,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         }
         return playerSize;
     }
-    _initializeVideoPlayerEmbedded(url, playerId, componentTag, playerSize) {
+    _initializeVideoPlayer(url, playerId, mode, componentTag, playerSize) {
         return __awaiter(this, void 0, void 0, function* () {
             const videoURL = url ? encodeURI(url) : null;
             if (videoURL === null)
@@ -284,22 +307,40 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             const videoContainer = yield this._getContainerElement(playerId, componentTag);
             if (videoContainer === null)
                 return Promise.resolve(false);
-            this._players[playerId] = new VideoPlayer("embedded", videoURL, playerId, videoContainer, 2, playerSize.width, playerSize.height);
-            return Promise.resolve(true);
-        });
-    }
-    _initializeVideoPlayerFullScreen(url, playerId, componentTag) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // encode the url
-            const videoURL = url ? encodeURI(url) : null;
-            if (videoURL === null)
+            if (mode === "embedded" && playerSize == null)
                 return Promise.resolve(false);
-            const videoContainer = yield this._getContainerElement(playerId, componentTag);
-            if (videoContainer === null)
-                return Promise.resolve(false);
-            this._players["fullscreen"] = new VideoPlayer("fullscreen", videoURL, "fullscreen", videoContainer, 99995);
-            this._players["fullscreen"].videoEl.play();
-            return Promise.resolve(true);
+            // add listeners 
+            videoContainer.addEventListener("videoPlayerPlay", (ev) => {
+                this.handlePlayerPlay(ev.detail);
+            });
+            videoContainer.addEventListener("videoPlayerPause", (ev) => {
+                this.handlePlayerPause(ev.detail);
+            });
+            videoContainer.addEventListener("videoPlayerEnded", (ev) => {
+                if (mode === "fullscreen") {
+                    videoContainer.remove();
+                }
+                this.handlePlayerEnded(ev.detail);
+            });
+            videoContainer.addEventListener("videoPlayerReady", (ev) => {
+                this.handlePlayerReady(ev.detail);
+            });
+            videoContainer.addEventListener("videoPlayerExit", (ev) => {
+                if (mode === "fullscreen") {
+                    videoContainer.remove();
+                }
+                this.handlePlayerExit(ev.detail);
+            });
+            if (mode === "embedded") {
+                this._players[playerId] = new VideoPlayer("embedded", videoURL, playerId, videoContainer, 2, playerSize.width, playerSize.height);
+            }
+            else if (mode === "fullscreen") {
+                this._players["fullscreen"] = new VideoPlayer("fullscreen", videoURL, "fullscreen", videoContainer, 99995);
+            }
+            else {
+                return Promise.resolve({ method: "initPlayer", result: false, message: "mode not supported" });
+            }
+            return Promise.resolve({ method: "initPlayer", result: true, value: true });
         });
     }
     _getContainerElement(playerId, componentTag) {
@@ -308,15 +349,32 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             cmpTagEl = document.querySelector(`${componentTag}`);
             if (cmpTagEl === null)
                 return Promise.resolve(null);
-            let videoContainer = null;
+            let container = null;
             try {
-                videoContainer = cmpTagEl.shadowRoot.querySelector(`#${playerId}`);
+                container = cmpTagEl.shadowRoot.querySelector(`#${playerId}`);
             }
             catch (_a) {
-                videoContainer = cmpTagEl.querySelector(`#${playerId}`);
+                container = cmpTagEl.querySelector(`#${playerId}`);
             }
+            const videoContainer = document.createElement('div');
+            container.appendChild(videoContainer);
             return Promise.resolve(videoContainer);
         });
+    }
+    handlePlayerPlay(data) {
+        this.notifyListeners("jeepCapVideoPlayerPlay", data);
+    }
+    handlePlayerPause(data) {
+        this.notifyListeners("jeepCapVideoPlayerPause", data);
+    }
+    handlePlayerEnded(data) {
+        this.notifyListeners("jeepCapVideoPlayerEnded", data);
+    }
+    handlePlayerExit(data) {
+        this.notifyListeners("jeepCapVideoPlayerExit", data);
+    }
+    handlePlayerReady(data) {
+        this.notifyListeners("jeepCapVideoPlayerReady", data);
     }
 }
 const CapacitorVideoPlayer = new CapacitorVideoPlayerWeb();

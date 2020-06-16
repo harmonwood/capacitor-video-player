@@ -45,13 +45,25 @@ Initialize the Video Player
    ```{mode: "embedded", url: string, playerId: string,componentTag:string, width:number, height:number}```
    initialize a video given by an url with a given playerId and size
 
-#### returns
-Type: `Promise<{result:boolean}>`
+#### returns for all methods
+  - success {"result": true, "method":"methodName", "value": valueReturned}
+  - reject {"result": false, "method":"methodName", "message": errorMessage}
+
+Type: `Promise<{result:boolean, method:string,value:any}>`
+Type: `Promise<{result:boolean, method:string,message:string}>`
 
 
-## Methods Available for Web Plugin Only
+## Methods Available for Interacting with the plugin
 
-### `play(options) => Promise<{method:string,result:boolean}>`
+### `isPlaying(options) => Promise<{method:string,result:boolean,value?:any,message?:string}>`
+
+Return the isPlaying video player status
+
+#### options
+
+   ```{playerId: string}  default "fullscreen"```
+
+### `play(options) => Promise<{method:string,result:boolean,value?:any,message?:string}>`
 
 Play the Video 
 
@@ -59,10 +71,7 @@ Play the Video
 
    ```{playerId: string}  default "fullscreen"```
 
-#### returns
-Type: `Promise<{method:string,result:boolean}>`
-
-### `pause(options) => Promise<{method:string,result:boolean}>`
+### `pause(options) => Promise<{method:string,result:boolean,value?:any,message?:string}>`
 
 Pause the Video 
 
@@ -70,21 +79,15 @@ Pause the Video
 
    ```{playerId: string}  default "fullscreen"```
 
-#### returns
-Type: `Promise<{method:string,result:boolean}>`
+### `getDuration(options) => Promise<{method:string,result:boolean,value?:any,message?:string}>`
 
-### `getDuration(options) => Promise<{method:string,result:boolean,value:any}>`
-
-Get the Duration of the Video 
+Get the Duration of the Video in seconds
 
 #### options
 
    ```{playerId: string}  default "fullscreen"```
 
-#### returns
-Type: `Promise<{method:string,result:boolean,value:number}>`
-
-### `setVolume(options) => Promise<{method:string,result:boolean,value:any}>`
+### `setVolume(options) => Promise<{method:string,result:boolean,value?:any,message?:string}>`
 
 Set the Volume of the Video 
 
@@ -92,10 +95,7 @@ Set the Volume of the Video
 
    ```{playerId: string, volume: number}  range[0-1] default 0.5```
 
-#### returns
-Type: `Promise<{method:string,result:boolean,value:number}>`
-
-### `getVolume(options) => Promise<{method:string,result:boolean,value:any}>`
+### `getVolume(options) => Promise<{method:string,result:boolean,value?:any,message?:string}>`
 
 Get the Volume of the Video 
 
@@ -103,10 +103,7 @@ Get the Volume of the Video
 
    ```{playerId: string}  default "fullscreen"```
 
-#### returns
-Type: `Promise<{method:string,result:boolean,value:number}>`
-
-### `setMuted(options) => Promise<{method:string,result:boolean,value:any}>`
+### `setMuted(options) => Promise<{method:string,result:boolean,value?:any,message?:string}>`
 
 Set the Muted parameter of the Video 
 
@@ -114,10 +111,7 @@ Set the Muted parameter of the Video
 
    ```{playerId: string, muted: boolean} ```
 
-#### returns
-Type: `Promise<{method:string,result:boolean,value:boolean}>`
-
-### `getMuted(options) => Promise<{method:string,result:boolean,value:any}>`
+### `getMuted(options) => Promise<{method:string,result:boolean,value?:any,message?:string}>`
 
 Get the Muted parameter of the Video 
 
@@ -125,32 +119,23 @@ Get the Muted parameter of the Video
 
    ```{playerId: string}  default "fullscreen"```
 
-#### returns
-Type: `Promise<{method:string,result:boolean,value:boolean}>`
+### `setCurrentTime(options) => Promise<{method:string,result:boolean,value?:any,message?:string}>`
 
-### `setCurrentTime(options) => Promise<{method:string,result:boolean,value:any}>`
-
-Set the Current Time to Seek the Video to 
+Set the Current Time to Seek the Video to in seconds
 
 #### options
 
    ```{playerId: string, seektime: number} ```
 
-#### returns
-Type: `Promise<{method:string,result:boolean,value:number}>`
+### `getCurrentTime(options) => Promise<{method:string,result:boolean,value?:any,message?:string}>`
 
-### `getCurrentTime(options) => Promise<{method:string,result:boolean,value:any}>`
-
-Get the Current Time of the Video 
+Get the Current Time of the Video in seconds
 
 #### options
 
    ```{playerId: string}  default "fullscreen"```
 
-#### returns
-Type: `Promise<{method:string,result:boolean,value:number}>`
-
-### `stopAllPlayers() => Promise<{method:string,result:boolean}>`
+### `stopAllPlayers() => Promise<{method:string,result:boolean,value?:any,message?:string}>`
 
 Stop all Players in "embedded" mode
 
@@ -158,17 +143,17 @@ Stop all Players in "embedded" mode
 Type: `Promise<{method:string,result:boolean}>`
 
 
-## Events available for Web plugin
+## Plugin Listeners
+
+The listeners are attached to the plugin not anymore to the DOM document element.
 
 | Event                       | Description                                        | Type                                 |
 | --------------------------- | -------------------------------------------------- | ------------------------------------ |
-| `jeepCapVideoPlayerPlay`    | Emitted when the video start to play               | `CustomEvent<{fromPlayerId:string,currentTime:number}>` |
-| `jeepCapVideoPlayerPause`   | Emitted when the video is paused                   | `CustomEvent<{fromPlayerId:string,currentTime:number}>` |
-| `jeepCapVideoPlayerPlaying` | Emitted when the video restart to play             | `CustomEvent<{fromPlayerId:string,currentTime:number}>` |
-| `jeepCapVideoPlayerEnded`   | Emitted when the video has ended                   | `CustomEvent<{fromPlayerId:string,currentTime:number}>` |
-| `jeepCapVideoPlayerExit`    | Emitted when the Exit button clicked in fullscreen | `CustomEvent<{fromPlayerId:string}>` |
-
-the target for the events is the document
+| `jeepCapVideoPlayerReady`    | Emitted when the video start to play              | `data:{fromPlayerId:string,currentTime:number}` |
+| `jeepCapVideoPlayerPlay`    | Emitted when the video start to play               | `data:{fromPlayerId:string,currentTime:number}` |
+| `jeepCapVideoPlayerPause`   | Emitted when the video is paused                   | `data:{fromPlayerId:string,currentTime:number}` |
+| `jeepCapVideoPlayerEnded`   | Emitted when the video has ended                   | `data:{fromPlayerId:string,currentTime:number}` |
+| `jeepCapVideoPlayerExit`    | Emitted when the Exit button is clicked            | `data:{dismiss:boolean}` |
 
 ## Applications demonstrating the use of the plugin
 
@@ -197,37 +182,130 @@ the target for the events is the document
  - In your code
 
  ```ts
+  import { Component, OnInit } from '@angular/core';
   import { Plugins } from '@capacitor/core';
   import * as WebVPPlugin from 'capacitor-video-player';
   const { CapacitorVideoPlayer,Device } = Plugins;
 
   @Component({
     tag: 'my-page',
-    styleUrl: 'my-page.css',
-    shadow: true,
+    styleUrl: 'my-page.css'
   })
-  export class MyPage {
-    _videoPlayer: any;
-    _url: string;
+  export class MyPage implements OnInit {
+    private _videoPlayer: any;
+    private _url: string;
+    private _handlerPlay: any;
+    private _handlerPause: any;
+    private _handlerEnded: any;
+    private _handlerReady: any;
+    private _handlerPlaying: any;
+    private _handlerExit: any;
+    private _first: boolean = false;
+    private _apiTimer1: any;
+    private _apiTimer2: any;
+    private _apiTimer3: any;
+    private _testApi: boolean = true;
 
     ...
-
-    async ngAfterViewInit()() {
+    async ngOnInit() {
+      // define the plugin to use
       const info = await Device.getInfo();
       if (info.platform === "ios" || info.platform === "android") {
         this._videoPlayer = CapacitorVideoPlayer;
       } else {
         this._videoPlayer = WebVPPlugin.CapacitorVideoPlayer
       }
+      // define the video url
+      this._url = "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4"
+      // add listeners to the plugin
+      this._addListenersToPlayerPlugin();
+    }
+    async ionViewDidEnter() {
+      ...
+      const res:any  = await this._videoPlayer.initPlayer({mode:"fullscreen",url:this._url,playerId:"fullscreen",componentTag:"my-page"});
+      ...
 
     }
 
-    async testVideoPlayerPlugin() {
-      this._url = "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4";
-      document.addEventListener('jeepCapVideoPlayerPlay', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerPlay ', e.detail)}, false);
-      document.addEventListener('jeepCapVideoPlayerPause', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerPause ', e.detail)}, false);
-      document.addEventListener('jeepCapVideoPlayerEnded', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerEnded ', e.detail)}, false);
-      const res:any  = await this._videoPlayer.initPlayer({mode:"fullscreen",url:this._url,playerId:"vp-container",componentTag:"my-page"});
+  private _addListenersToPlayerPlugin() {
+    this._handlerPlay = this._videoPlayer.addListener('jeepCapVideoPlayerPlay', (data:any) => { 
+      console.log('Event jeepCapVideoPlayerPlay ', data);
+      ...
+    }, false);
+    this._handlerPause = this._videoPlayer.addListener('jeepCapVideoPlayerPause', (data:any) => {
+      console.log('Event jeepCapVideoPlayerPause ', data);
+      ...
+    }, false);
+    this._handlerEnded = this._videoPlayer.addListener('jeepCapVideoPlayerEnded', async (data:any) => {
+      console.log('Event jeepCapVideoPlayerEnded ', data);
+      ...
+    }, false);
+    this._handlerExit = this._videoPlayer.addListener('jeepCapVideoPlayerExit', async (data:any) => { 
+      console.log('Event jeepCapVideoPlayerExit ', data)
+      ...
+      }, false);
+    this._handlerReady = this._videoPlayer.addListener('jeepCapVideoPlayerReady', async (data:any) => { 
+      console.log('Event jeepCapVideoPlayerReady ', data)
+      console.log("testVideoPlayerPlugin testAPI ",this._testApi);
+      console.log("testVideoPlayerPlugin first ",this._first);
+      if(this._testApi && this._first) {
+        // test the API
+        this._first = false;
+        console.log("testVideoPlayerPlugin calling isPlaying ");
+        const isPlaying = await this._videoPlayer.isPlaying({playerId:"fullscreen"});
+        console.log('const isPlaying ', isPlaying)
+        this._apiTimer1 = setTimeout(async () => {
+          const pause = await this._videoPlayer.pause({playerId:"fullscreen"});
+          console.log('const pause ', pause)
+          const isPlaying = await this._videoPlayer.isPlaying({playerId:"fullscreen"});
+          console.log('const isPlaying after pause ', isPlaying)
+          let currentTime = await this._videoPlayer.getCurrentTime({playerId:"fullscreen"});
+          console.log('const currentTime ', currentTime);
+          let muted = await this._videoPlayer.getMuted({playerId:"fullscreen"});
+          console.log('initial muted ', muted);
+          const setMuted = await this._videoPlayer.setMuted({playerId:"fullscreen",muted:!muted.value});
+          console.log('setMuted ', setMuted);
+          muted = await this._videoPlayer.getMuted({playerId:"fullscreen"});
+          console.log('const muted ', muted);
+          const duration = await this._videoPlayer.getDuration({playerId:"fullscreen"});
+          console.log("duration ",duration);
+          // valid for movies havin a duration > 25
+          const seektime = currentTime.value + 0.5 * duration.value < duration.value -25 ? currentTime.value + 0.5 * duration.value
+                          : duration.value -25;
+          const setCurrentTime = await this._videoPlayer.setCurrentTime({playerId:"fullscreen",seektime:(seektime)});
+          console.log('const setCurrentTime ', setCurrentTime);
+          const play = await this._videoPlayer.play({playerId:"fullscreen"});
+          console.log("play ",play);
+          this._apiTimer2 = setTimeout(async () => {
+            const setMuted = await this._videoPlayer.setMuted({playerId:"fullscreen",muted:false});
+            console.log('setMuted ', setMuted);
+            const setVolume = await this._videoPlayer.setVolume({playerId:"fullscreen",volume:0.5});
+            console.log("setVolume ",setVolume);
+            const volume = await this._videoPlayer.getVolume({playerId:"fullscreen"});
+            console.log("Volume ",volume);
+            this._apiTimer3 = setTimeout(async () => {
+              const pause = await this._videoPlayer.pause({playerId:"fullscreen"});
+              console.log('const pause ', pause);  
+              const duration = await this._videoPlayer.getDuration({playerId:"fullscreen"});
+              console.log("duration ",duration);
+              const volume = await this._videoPlayer.setVolume({playerId:"fullscreen",volume:1.0});
+              console.log("Volume ",volume);
+              const setCurrentTime = await this._videoPlayer.setCurrentTime({playerId:"fullscreen",seektime:(duration.value - 3)});
+              console.log('const setCurrentTime ', setCurrentTime);
+              const play = await this._videoPlayer.play({playerId:"fullscreen"});
+              console.log('const play ', play);      
+            }, 10000);
+          }, 10000);
+
+        }, 5000);
+      }
+    }, false);
+    this._handlerPlaying = this._videoPlayer.addListener('jeepCapVideoPlayerPlaying', async (data:any) => { 
+      console.log('Event jeepCapVideoPlayerPlaying ', data)
+      ...
+    }, false);
+
+  }
 
         ...
       }
@@ -238,8 +316,9 @@ the target for the events is the document
 
  ```html
   ...
-    <div id="fullscreen">
-    </div>      
+  <!-- Mandatory id="fullscreen" -->
+  <div id="fullscreen" slot="fixed">
+  </div>
   ...
  ```
 
@@ -300,6 +379,16 @@ the target for the events is the document
  end
  ```
 
+**Enabling Background Audio**
+In Xcode follows these steps
+
+ - Choose your project in the Project Navigator,
+ - Choose the target on the Project Editor,
+ - Choose the Signing & Capabilities tab,
+ - Add the capability for ```Background Modes```,
+ - Select the ```Audio, Airplay, and Picture-in-Picture``` option under the list of available modes.
+
+
  ```bash
  npx cap update
  npm run build
@@ -323,15 +412,66 @@ the target for the events is the document
  ```ts
  import {  CapacitorVideoPlayer } from 'capacitor-video-player';
   @Component( ... )
-  export class MyApp {
-    componentDidLoad() {
-    const videoPlayer: any = CapacitorVideoPlayer;
-    const url:string = "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4";
-    document.addEventListener('jeepCapVideoPlayerPlay', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerPlay ', e.detail)}, false);
-    document.addEventListener('jeepCapVideoPlayerPause', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerPause ', e.detail)}, false);
-    document.addEventListener('jeepCapVideoPlayerEnded', (e:CustomEvent) => { console.log('Event jeepCapVideoPlayerEnded ', e.detail)}, false);
-    const res:any  = await videoPlayer.initPlayer({mode:"fullscreen",url:url,playerId="fullscreen",componentTag="my-page"});
-    console.log('result of echo ', res)
+  export class MyPage {
+    private _videoPlayer: any;
+    private _url: string;
+    private _handlerPlay: any;
+    private _handlerPause: any;
+    private _handlerEnded: any;
+    private _handlerReady: any;
+    private _handlerPlaying: any;
+    private _handlerExit: any;
+
+    componentWillLoad() {
+      ...
+      this._videoPlayer = CapacitorVideoPlayer;
+      this._url = "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4";
+      this._addListenersToPlayerPlugin();
+      ...
+    }
+    async componentDidLoad() {
+      ...
+      const res:any  = await videoPlayer.initPlayer({mode:"fullscreen",url:this._url,playerId="fullscreen",componentTag="my-page"});
+      console.log('result of init ', res)
+      ...
+    }
+    private _addListenersToPlayerPlugin() {
+      this._handlerPlay = this._videoPlayer.addListener('jeepCapVideoPlayerPlay', (data:any) => { 
+        console.log('Event jeepCapVideoPlayerPlay ', data);
+        ...
+      }, false);
+      this._handlerPause = this._videoPlayer.addListener('jeepCapVideoPlayerPause', (data:any) => {
+        console.log('Event jeepCapVideoPlayerPause ', data);
+        ...
+      }, false);
+      this._handlerEnded = this._videoPlayer.addListener('jeepCapVideoPlayerEnded', async (data:any) => {
+        console.log('Event jeepCapVideoPlayerEnded ', data);
+        ...
+      }, false);
+      this._handlerExit = this._videoPlayer.addListener('jeepCapVideoPlayerExit', async (data:any) => { 
+        console.log('Event jeepCapVideoPlayerExit ', data)
+        ...
+        }, false);
+      this._handlerReady = this._videoPlayer.addListener('jeepCapVideoPlayerReady', async (data:any) => { 
+        console.log('Event jeepCapVideoPlayerReady ', data)
+        ...
+      }, false);
+      this._handlerPlaying = this._videoPlayer.addListener('jeepCapVideoPlayerPlaying', async (data:any) => { 
+        console.log('Event jeepCapVideoPlayerPlaying ', data)
+        ...
+      }, false);
+
+    }
+    render() {
+      return (
+        <Host>
+          <slot>
+            <div id="fullscreen">
+
+            </div>
+          </slot>
+        </Host>
+      );
     }
   }
  ```

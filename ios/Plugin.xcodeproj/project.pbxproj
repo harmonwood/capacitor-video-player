@@ -9,11 +9,8 @@
 /* Begin PBXBuildFile section */
 		03FC29A292ACC40490383A1F /* Pods_Plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */; };
 		20C0B05DCFC8E3958A738AF2 /* Pods_PluginTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6753A823D3815DB436415E3 /* Pods_PluginTests.framework */; };
-		2C141495241FEA39008A7B45 /* SmallVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C14148A241FEA39008A7B45 /* SmallVideoPlayerView.swift */; };
-		2C141496241FEA39008A7B45 /* VideoPlayerTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C14148B241FEA39008A7B45 /* VideoPlayerTableViewController.swift */; };
 		2C141497241FEA39008A7B45 /* VideoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C14148D241FEA39008A7B45 /* VideoModel.swift */; };
 		2C141498241FEA39008A7B45 /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C14148E241FEA39008A7B45 /* Video.swift */; };
-		2C141499241FEA39008A7B45 /* VideoPlayerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C14148F241FEA39008A7B45 /* VideoPlayerTableViewCell.swift */; };
 		2C14149A241FEA39008A7B45 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C141491241FEA39008A7B45 /* View.swift */; };
 		2C14149B241FEA39008A7B45 /* Notification.Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C141492241FEA39008A7B45 /* Notification.Name.swift */; };
 		2C14149C241FEA39008A7B45 /* CMTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C141493241FEA39008A7B45 /* CMTime.swift */; };
@@ -37,11 +34,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2C14148A241FEA39008A7B45 /* SmallVideoPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmallVideoPlayerView.swift; sourceTree = "<group>"; };
-		2C14148B241FEA39008A7B45 /* VideoPlayerTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayerTableViewController.swift; sourceTree = "<group>"; };
 		2C14148D241FEA39008A7B45 /* VideoModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoModel.swift; sourceTree = "<group>"; };
 		2C14148E241FEA39008A7B45 /* Video.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
-		2C14148F241FEA39008A7B45 /* VideoPlayerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPlayerTableViewCell.swift; sourceTree = "<group>"; };
 		2C141491241FEA39008A7B45 /* View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		2C141492241FEA39008A7B45 /* Notification.Name.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notification.Name.swift; sourceTree = "<group>"; };
 		2C141493241FEA39008A7B45 /* CMTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CMTime.swift; sourceTree = "<group>"; };
@@ -88,10 +82,7 @@
 		2C141489241FEA39008A7B45 /* VideoPlayer */ = {
 			isa = PBXGroup;
 			children = (
-				2C14148A241FEA39008A7B45 /* SmallVideoPlayerView.swift */,
-				2C14148B241FEA39008A7B45 /* VideoPlayerTableViewController.swift */,
 				2C14148C241FEA39008A7B45 /* Models */,
-				2C14148F241FEA39008A7B45 /* VideoPlayerTableViewCell.swift */,
 				2C141490241FEA39008A7B45 /* Extensions */,
 				2C141494241FEA39008A7B45 /* FullScreenVideoPlayerView.swift */,
 			);
@@ -357,11 +348,8 @@
 				2C14149A241FEA39008A7B45 /* View.swift in Sources */,
 				50E1A94820377CB70090CE1A /* Plugin.swift in Sources */,
 				2C141498241FEA39008A7B45 /* Video.swift in Sources */,
-				2C141499241FEA39008A7B45 /* VideoPlayerTableViewCell.swift in Sources */,
 				50ADFFA82020EE4F00D50D53 /* Plugin.m in Sources */,
-				2C141496241FEA39008A7B45 /* VideoPlayerTableViewController.swift in Sources */,
 				2C141497241FEA39008A7B45 /* VideoModel.swift in Sources */,
-				2C141495241FEA39008A7B45 /* SmallVideoPlayerView.swift in Sources */,
 				2C14149C241FEA39008A7B45 /* CMTime.swift in Sources */,
 				2C14149B241FEA39008A7B45 /* Notification.Name.swift in Sources */,
 			);

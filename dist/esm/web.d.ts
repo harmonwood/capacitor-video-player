@@ -9,15 +9,19 @@ export declare class CapacitorVideoPlayerWeb extends WebPlugin implements Capaci
     constructor();
     echo(options: {
         value: string;
-    }): Promise<{
-        value: string;
-    }>;
+    }): Promise<capVideoPlayerResult>;
     /**
      *  Player initialization
      *
      * @param options
      */
     initPlayer(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>;
+    /**
+     * Return if a given playerId is playing
+     *
+     * @param options
+     */
+    isPlaying(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>;
     /**
      * Play the current video from a given playerId
      *
@@ -78,9 +82,13 @@ export declare class CapacitorVideoPlayerWeb extends WebPlugin implements Capaci
      */
     stopAllPlayers(): Promise<capVideoPlayerResult>;
     private checkSize;
-    private _initializeVideoPlayerEmbedded;
-    private _initializeVideoPlayerFullScreen;
+    private _initializeVideoPlayer;
     private _getContainerElement;
+    private handlePlayerPlay;
+    private handlePlayerPause;
+    private handlePlayerEnded;
+    private handlePlayerExit;
+    private handlePlayerReady;
 }
 declare const CapacitorVideoPlayer: CapacitorVideoPlayerWeb;
 export { CapacitorVideoPlayer };

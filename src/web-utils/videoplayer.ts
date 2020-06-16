@@ -6,7 +6,6 @@ export class VideoPlayer {
 public videoEl: HTMLVideoElement
 private _url: string;
 private _playerId: string;
-private _playerContainer: any;
 private _container: HTMLDivElement;
 private _mode: string;
 private _width: number;
@@ -17,10 +16,11 @@ private _videoType: string = null;
 //private _videoClass: string = null;
 private _videoContainer: any = null;
 private _isSupported: boolean = false;
+private _firstReadyToPlay: boolean = true;
 
     constructor(mode: string, url:string, playerId:string,container:any, zIndex:number, width?:number, height?:number) {
         this._url = url;
-        this._playerContainer = container;
+        this._container = container;
         this._mode = mode;
         this._width = width ? width : 320;
         this._height = height ? height : 180;
@@ -30,12 +30,12 @@ private _isSupported: boolean = false;
         this.initialize();
     }
     private async initialize() {
+
         if (isSupported()) this._isSupported = true;
         // get the video type
         const retB:boolean = this._getVideoType();
         if(retB) {
-            // create a container
-            this._container = document.createElement('div');
+            // style the container
             if(this._mode === "fullscreen") {
                 this._container.style.position = 'absolute';
                 this._container.style.width = '100vw';
@@ -53,7 +53,6 @@ private _isSupported: boolean = false;
             this._container.style.justifyContent = 'center';
             this._container.style.backgroundColor = '#000000';  
             this._container.style.zIndex = this._zIndex.toString();
-            this._playerContainer.appendChild(this._container);
 
             const width: number = this._mode === "fullscreen" ? this._container.offsetWidth : this._width;
             const height: number = this._mode === "fullscreen" ? this._container.offsetHeight : this._height;
@@ -104,11 +103,19 @@ private _isSupported: boolean = false;
         if(isSet) {
             this.videoEl.onended = () => {
                 if(this._mode === "fullscreen") {
-                    this._container.remove();
                     this._closeFullscreen();
                 }
                 this._createEvent("Ended",this._playerId);
             };
+            this.videoEl.oncanplay =  async () => {
+                if(this._firstReadyToPlay) {
+                    this._createEvent("Ready",this._playerId);
+                    this.videoEl.muted = false;
+                    console.log("in onCanPlay videoEL ", this.videoEl.outerHTML)
+                    if(this._mode === "fullscreen") await this.videoEl.play();
+                    this._firstReadyToPlay = false;
+                }
+            }
             this.videoEl.onplay = () => {
                 this._createEvent("Play",this._playerId);
             };
@@ -134,25 +141,21 @@ private _isSupported: boolean = false;
                 exitEl.style.zIndex = (this._zIndex + 4).toString();
                 exitEl.style.border = "1px solid rgba(51,51,51,.4)";
                 exitEl.style.borderRadius = "20px";
-                this.videoEl.onclick = async () => {
+                this._videoContainer.onclick = async () => {
                     this._initial = await this._doHide(exitEl,3000);
                 };
-                this.videoEl.ontouchstart = async () => {
+                this._videoContainer.ontouchstart = async () => {
                     this._initial = await this._doHide(exitEl,3000);
                 };
       
-                this.videoEl.onmousemove = async () => {
+                this._videoContainer.onmousemove = async () => {
                     this._initial = await this._doHide(exitEl,3000);
                 };
       
                 exitEl.onclick = () => {
-                    this.videoEl.pause();
-                    this._container.remove();
                     this._createEvent("Exit",this._playerId);
                 }
                 exitEl.ontouchstart = () => {
-                    this.videoEl.pause();
-                    this._container.remove();
                     this._createEvent("Exit",this._playerId);
                 }
       
@@ -168,7 +171,6 @@ private _isSupported: boolean = false;
                 } else if (this._videoContainer.msRequestFullscreen) { /* IE/Edge */
                     this._videoContainer.msRequestFullscreen();
                 }
-                this.videoEl.play();   
             }
         }
         return isSet;
@@ -202,6 +204,7 @@ private _isSupported: boolean = false;
                 // Not Supported
                 return(false);
             }
+            console.log("in setPlayer videoEL ", this.videoEl.outerHTML)
         });
     }
 
@@ -271,12 +274,12 @@ private _isSupported: boolean = false;
         const message = msg ? msg : null;
         let event: CustomEvent;
         if(message != null) {
-            event = new CustomEvent(`jeepCapVideoPlayer${ev}`, { detail: {fromPlayerId:playerId,message:message}});     
+            event = new CustomEvent(`videoPlayer${ev}`, { detail: {fromPlayerId:playerId,message:message}});     
         } else {
             const currentTime: number = this.videoEl.currentTime;
-            event = new CustomEvent(`jeepCapVideoPlayer${ev}`, { detail: {fromPlayerId:playerId,currentTime:currentTime}});     
+            event = new CustomEvent(`videoPlayer${ev}`, { detail: {fromPlayerId:playerId,currentTime:currentTime}});     
         } 
-        document.dispatchEvent(event) ;      
+        this._container.dispatchEvent(event) ;      
     }
     private _closeFullscreen() {
         const mydoc: any = document;

@@ -2,7 +2,6 @@ export declare class VideoPlayer {
     videoEl: HTMLVideoElement;
     private _url;
     private _playerId;
-    private _playerContainer;
     private _container;
     private _mode;
     private _width;
@@ -12,6 +11,7 @@ export declare class VideoPlayer {
     private _videoType;
     private _videoContainer;
     private _isSupported;
+    private _firstReadyToPlay;
     constructor(mode: string, url: string, playerId: string, container: any, zIndex: number, width?: number, height?: number);
     private initialize;
     private createVideoElement;

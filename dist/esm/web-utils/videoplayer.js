@@ -16,8 +16,9 @@ export class VideoPlayer {
         //private _videoClass: string = null;
         this._videoContainer = null;
         this._isSupported = false;
+        this._firstReadyToPlay = true;
         this._url = url;
-        this._playerContainer = container;
+        this._container = container;
         this._mode = mode;
         this._width = width ? width : 320;
         this._height = height ? height : 180;
@@ -33,8 +34,7 @@ export class VideoPlayer {
             // get the video type
             const retB = this._getVideoType();
             if (retB) {
-                // create a container
-                this._container = document.createElement('div');
+                // style the container
                 if (this._mode === "fullscreen") {
                     this._container.style.position = 'absolute';
                     this._container.style.width = '100vw';
@@ -52,7 +52,6 @@ export class VideoPlayer {
                 this._container.style.justifyContent = 'center';
                 this._container.style.backgroundColor = '#000000';
                 this._container.style.zIndex = this._zIndex.toString();
-                this._playerContainer.appendChild(this._container);
                 const width = this._mode === "fullscreen" ? this._container.offsetWidth : this._width;
                 const height = this._mode === "fullscreen" ? this._container.offsetHeight : this._height;
                 const xmlns = "http://www.w3.org/2000/svg";
@@ -102,11 +101,20 @@ export class VideoPlayer {
             if (isSet) {
                 this.videoEl.onended = () => {
                     if (this._mode === "fullscreen") {
-                        this._container.remove();
                         this._closeFullscreen();
                     }
                     this._createEvent("Ended", this._playerId);
                 };
+                this.videoEl.oncanplay = () => __awaiter(this, void 0, void 0, function* () {
+                    if (this._firstReadyToPlay) {
+                        this._createEvent("Ready", this._playerId);
+                        this.videoEl.muted = false;
+                        console.log("in onCanPlay videoEL ", this.videoEl.outerHTML);
+                        if (this._mode === "fullscreen")
+                            yield this.videoEl.play();
+                        this._firstReadyToPlay = false;
+                    }
+                });
                 this.videoEl.onplay = () => {
                     this._createEvent("Play", this._playerId);
                 };
@@ -132,23 +140,19 @@ export class VideoPlayer {
                     exitEl.style.zIndex = (this._zIndex + 4).toString();
                     exitEl.style.border = "1px solid rgba(51,51,51,.4)";
                     exitEl.style.borderRadius = "20px";
-                    this.videoEl.onclick = () => __awaiter(this, void 0, void 0, function* () {
+                    this._videoContainer.onclick = () => __awaiter(this, void 0, void 0, function* () {
                         this._initial = yield this._doHide(exitEl, 3000);
                     });
-                    this.videoEl.ontouchstart = () => __awaiter(this, void 0, void 0, function* () {
+                    this._videoContainer.ontouchstart = () => __awaiter(this, void 0, void 0, function* () {
                         this._initial = yield this._doHide(exitEl, 3000);
                     });
-                    this.videoEl.onmousemove = () => __awaiter(this, void 0, void 0, function* () {
+                    this._videoContainer.onmousemove = () => __awaiter(this, void 0, void 0, function* () {
                         this._initial = yield this._doHide(exitEl, 3000);
                     });
                     exitEl.onclick = () => {
-                        this.videoEl.pause();
-                        this._container.remove();
                         this._createEvent("Exit", this._playerId);
                     };
                     exitEl.ontouchstart = () => {
-                        this.videoEl.pause();
-                        this._container.remove();
                         this._createEvent("Exit", this._playerId);
                     };
                     this._videoContainer.appendChild(exitEl);
@@ -165,7 +169,6 @@ export class VideoPlayer {
                     else if (this._videoContainer.msRequestFullscreen) { /* IE/Edge */
                         this._videoContainer.msRequestFullscreen();
                     }
-                    this.videoEl.play();
                 }
             }
             return isSet;
@@ -203,6 +206,7 @@ export class VideoPlayer {
                     // Not Supported
                     return (false);
                 }
+                console.log("in setPlayer videoEL ", this.videoEl.outerHTML);
             }));
         });
     }
@@ -274,13 +278,13 @@ export class VideoPlayer {
         const message = msg ? msg : null;
         let event;
         if (message != null) {
-            event = new CustomEvent(`jeepCapVideoPlayer${ev}`, { detail: { fromPlayerId: playerId, message: message } });
+            event = new CustomEvent(`videoPlayer${ev}`, { detail: { fromPlayerId: playerId, message: message } });
         }
         else {
             const currentTime = this.videoEl.currentTime;
-            event = new CustomEvent(`jeepCapVideoPlayer${ev}`, { detail: { fromPlayerId: playerId, currentTime: currentTime } });
+            event = new CustomEvent(`videoPlayer${ev}`, { detail: { fromPlayerId: playerId, currentTime: currentTime } });
         }
-        document.dispatchEvent(event);
+        this._container.dispatchEvent(event);
     }
     _closeFullscreen() {
         const mydoc = document;

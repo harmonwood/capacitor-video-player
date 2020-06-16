@@ -14,40 +14,19 @@ public class CapacitorVideoPlayer: CAPPlugin {
     public var call: CAPPluginCall!
     public var videoPlayer: AVPlayerViewController!
     public var bgPlayer: AVPlayer!
-    var videoPlayerTableViewController: VideoPlayerTableViewController!
     var videoPlayerFullScreenView: FullScreenVideoPlayerView!
     var audioSession: AVAudioSession!
-    var mode : String!
-    var playerList: [String: SmallVideoPlayerView] = [:]
+    var mode: String!
+    var fsPlayerId: String = "fullscreen"
     
-    // MARK: - Load plugin
-        
     override public func load() {
-
-        // add listeners here
-        NotificationCenter.default.addObserver(self, selector: #selector(didFinishPlaying),
-                                               name:Notification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-        // add Observers
-        NotificationCenter.default.addObserver(forName: .playerItemPlay, object: nil, queue: nil, using: playerItemPlay)
-        NotificationCenter.default.addObserver(forName: .playerItemPause, object: nil, queue: nil, using: playerItemPause)
-        NotificationCenter.default.addObserver(forName: .playerItemEnd, object: nil, queue: nil, using: playerItemEnd)
-        NotificationCenter.default.addObserver(forName: .playerItemReady, object: nil, queue: nil, using: playerItemReady)
-        NotificationCenter.default.addObserver(forName: .playerInTableDismiss, object: nil, queue: nil, using: playerInTableDismiss)
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { (notification) in
-            self.bgPlayer = self.videoPlayerFullScreenView.videoPlayer.player
-            self.videoPlayerFullScreenView.videoPlayer.player = nil
-        }
-        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: OperationQueue.main) { (notification) in
-            self.videoPlayerFullScreenView.videoPlayer.player = self.bgPlayer
-        }
+        self.addObserversToNotificationCenter()
     }
-    
+        
     // MARK: - Echo
     @objc func echo(_ call: CAPPluginCall) {
         let value = call.getString("value") ?? ""
-        call.success([
-            "value": value
-        ])
+        call.success([ "result": true, "method":"echo", "value": value])
     }
     
     // MARK: - Init player(s)
@@ -56,105 +35,152 @@ public class CapacitorVideoPlayer: CAPPlugin {
         self.call = call
 
         guard let mode = call.options["mode"] as? String else {
-            let error:String = "VideoPlayer initPlayer: Must provide a Mode (fullscreen/embedded/intable)"
+            let error:String = "Must provide a Mode (fullscreen/embedded)"
             print(error)
-            call.reject(error)
+            call.success([ "result": false, "method":"initPlayer", "message": error])
             return
         }
+        guard let playerId = call.options["playerId"] as? String else {
+            let error:String = "Must provide a PlayerId"
+            print(error)
+            call.success([ "result": false, "method":"initPlayer", "message": error])
+            return
+        }
+        self.fsPlayerId = playerId
         self.mode = mode
+        // add audio session
+        self.audioSession = AVAudioSession.sharedInstance()
+        do {
+            // Set the audio session category, mode, and options.
+            try self.audioSession.setCategory(.playback, mode: .moviePlayback, options: [])
+        } catch {
+            let error:String = "Failed to set audio session category."
+            print(error)
+            call.success([ "result": false, "method":"initPlayer", "message": error])
+            return
+        }
+
         if (mode == "fullscreen") {
             guard let url = call.options["url"] as? String else {
-                let error:String = "VideoPlayer initPlayer: Must provide a video url"
+                let error:String = "Must provide a video url"
                 print(error)
-                call.reject(error)
+                call.success([ "result": false, "method":"initPlayer", "message": error])
                 return
-            }
-            
-            self.audioSession = AVAudioSession.sharedInstance()
-            do {
-                // Set the audio session category, mode, and options.
-                try self.audioSession.setCategory(.playback, mode: .moviePlayback, options: [])
-            } catch {
-                print("Failed to set audio session category.")
             }
 
             DispatchQueue.main.async {
-                self.videoPlayerFullScreenView = FullScreenVideoPlayerView(videoPath: url)
+                self.videoPlayerFullScreenView = FullScreenVideoPlayerView(videoPath: url,playerId: self.fsPlayerId,exitOnEnd: true)
+                self.bgPlayer = self.videoPlayerFullScreenView.videoPlayer.player
 
                 // Present the Player View Controller
                 self.bridge.viewController  .present(self.videoPlayerFullScreenView.videoPlayer, animated: true, completion:{
                     do {
                         // Activate the audio session.
                         try self.audioSession.setActive(true)
-                        self.videoPlayerFullScreenView.player.play()
+                        call.success([ "result": true, "method":"initPlayer", "value": true])
+                        return
                     } catch {
-                        let error:String = "VideoPlayer initPlayer: Failed to set audio session category"
+                        let error:String = "Failed to set audio session category"
                         print(error)
-                        call.reject(error)
+                        call.success([ "result": false, "method":"initPlayer", "message": error])
                         return
                     }
+ 
                 });
             }
         } else if (mode == "embedded") {
-            call.success([ "result": false, "message":"Not implemented"])
-
-        } else if (mode == "intable") {
-            let pageTitle: String = call.getString("pageTitle") ?? "In Table Videos"
-            let videoWidth: Int = call.getInt("width") ?? 320
-            let videoHeight: Int = call.getInt("height") ?? 180
-
-            guard let videoList = call.options["videoList"] as? Array<Dictionary<String,String>> else {
-                let error:String = "VideoPlayer initPlayer: Must provide a video list"
-                print(error)
-                call.reject(error)
-                return
-            }
-            
-            DispatchQueue.main.async {
-                self.videoPlayerTableViewController = VideoPlayerTableViewController()
-                self.videoPlayerTableViewController.pageTitle = pageTitle
-                self.videoPlayerTableViewController.videoWidth = videoWidth
-                self.videoPlayerTableViewController.videoHeight = videoHeight
-                self.videoPlayerTableViewController.videoList = videoList
-                let navigationController = UINavigationController(rootViewController: self.videoPlayerTableViewController)
-                navigationController.modalPresentationStyle = .fullScreen
-                self.bridge.viewController.present(navigationController, animated: true, completion:{
-                    self.notifyListeners("jeepCapVideoPlayerInTableReady", data: ["ready": true], retainUntilConsumed: true)
-
-                });
-
-            }
+            call.success([ "result": false, "method":"initPlayer","message":"Not implemented"])
         }
 
     }
     
+    // MARK: - Add Observers
+    
+    @objc func addObserversToNotificationCenter() {
+        // add Observers
+
+        NotificationCenter.default.addObserver(forName: .playerItemPlay, object: nil, queue: nil, using: playerItemPlay)
+        NotificationCenter.default.addObserver(forName: .playerItemPause, object: nil, queue: nil, using: playerItemPause)
+        NotificationCenter.default.addObserver(forName: .playerItemEnd, object: nil, queue: nil, using: playerItemEnd)
+        NotificationCenter.default.addObserver(forName: .playerItemReady, object: nil, queue: nil, using: playerItemReady)
+        NotificationCenter.default.addObserver(forName: .playerFullscreenDismiss, object: nil, queue: nil, using: playerFullscreenDismiss)
+
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { (notification) in
+            self.videoPlayerFullScreenView.videoPlayer.player = nil
+        }
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: OperationQueue.main) { (notification) in
+            self.videoPlayerFullScreenView.videoPlayer.player = self.bgPlayer
+        }
+    }
+    
+    // MARK: - Play the given player
+
+    @objc func isPlaying(_ call: CAPPluginCall)  {
+        self.call = call
+        guard let playerId = call.options["playerId"] as? String else {
+            let error:String = "Must provide a playerId"
+            print(error)
+            call.success([ "result": false, "method":"isPlaying", "message": error])
+            return
+        }
+        if (self.mode == "fullscreen" && self.fsPlayerId == playerId) {
+
+             if (self.videoPlayerFullScreenView != nil) {
+                 if let playerView = self.videoPlayerFullScreenView {
+                     DispatchQueue.main.async {
+                        let isPlaying: Bool = playerView.isPlaying;
+                        call.success([ "result": true, "method":"isPlaying", "value": isPlaying])
+                        return
+                     }
+                 } else {
+                    let error:String = "Fullscreen player not found"
+                    print(error)
+                    call.success([ "result": false, "method":"isPlaying", "message": error])
+                    return
+                }
+                 
+             } else {
+                let error:String = "No videoPlayerFullScreenView"
+                print(error)
+                call.success([ "result": false, "method":"isPlaying", "message": error])
+                return
+            }
+
+        }
+
+    }
     // MARK: - Play the given player
 
     @objc func play(_ call: CAPPluginCall)  {
         self.call = call
-
         guard let playerId = call.options["playerId"] as? String else {
-            let error:String = "VideoPlayer play: Must provide a playerId"
+            let error:String = "Must provide a playerId"
             print(error)
-            call.reject(error)
+            call.success([ "result": false, "method":"play", "message": error])
             return
         }
-        if (self.videoPlayerTableViewController != nil && !self.videoPlayerTableViewController.videoPlayers.isEmpty) {
-             if let player = self.videoPlayerTableViewController.videoPlayers[playerId] {
-                DispatchQueue.main.async {
-                    player.play()
-                }
+        if (self.mode == "fullscreen" && self.fsPlayerId == playerId) {
+
+            if (self.videoPlayerFullScreenView != nil) {
+                if let playerView = self.videoPlayerFullScreenView {
+                    DispatchQueue.main.async {
+                        playerView.play()
+                        call.success([ "result": true, "method":"play","value": true])
+                        return
+                    }
+                } else {
+                   let error:String = "Fullscreen player not found"
+                   print(error)
+                   call.success([ "result": false, "method":"play", "message": error])
+                   return
+               }
+                
             } else {
-                let error:String = "VideoPlayer play: Given playerId not found"
-                print(error)
-                call.reject(error)
-                return
-            }
-        } else {
-            let error:String = "VideoPlayer play: No videoPlayerTableViewController"
-            print(error)
-            call.reject(error)
-            return
+               let error:String = "No videoPlayerFullScreenView"
+               print(error)
+               call.success([ "result": false, "method":"play", "message": error])
+               return
+           }
         }
     }
     
@@ -164,58 +190,67 @@ public class CapacitorVideoPlayer: CAPPlugin {
         self.call = call
 
         guard let playerId = call.options["playerId"] as? String else {
-            let error:String = "VideoPlayer pause: Must provide a playerId"
+            let error:String = "Must provide a playerId"
             print(error)
-            call.reject(error)
+            call.success([ "result": false, "method":"pause", "message": error])
             return
         }
-         if (self.videoPlayerTableViewController != nil && !self.videoPlayerTableViewController.videoPlayers.isEmpty) {
-            if let player = self.videoPlayerTableViewController.videoPlayers[playerId] {
-                DispatchQueue.main.async {
-                    player.pause()
+        if (self.mode == "fullscreen" && self.fsPlayerId == playerId) {
+            if(self.videoPlayerFullScreenView != nil) {
+                if let playerView = self.videoPlayerFullScreenView {
+                    DispatchQueue.main.async {
+                        playerView.pause()
+                        call.success([ "result": true, "method":"pause","value":true])
+                        return
+                    }
+                } else {
+                   let error:String = "Fullscreen player not found"
+                   print(error)
+                   call.success([ "result": false, "method":"pause", "message": error])
+                   return
                 }
             } else {
-                let error:String = "VideoPlayer pause: Given playerId not found"
-                print(error)
-                call.reject(error)
-                return
+               let error:String = "No videoPlayerFullScreenView"
+               print(error)
+               call.success([ "result": false, "method":"pause", "message": error])
+               return
+
             }
-        } else {
-            let error:String = "VideoPlayer pause: No videoPlayerTableViewController"
-            print(error)
-            call.reject(error)
-            return
         }
     }
-    
+
     // MARK: - get Duration for the given player
 
     @objc func getDuration(_ call: CAPPluginCall)  {
         self.call = call
 
         guard let playerId = call.options["playerId"] as? String else {
-            let error:String = "VideoPlayer getDuration: Must provide a playerId"
+            let error:String = "Must provide a playerId"
             print(error)
-            call.reject(error)
+            call.success([ "result": false, "method":"getDuration", "message": error])
             return
         }
-        if (self.videoPlayerTableViewController != nil && !self.videoPlayerTableViewController.videoPlayers.isEmpty) {
-            if let player = self.videoPlayerTableViewController.videoPlayers[playerId] {
-                DispatchQueue.main.async {
-                    let duration: Double = player.getDuration()
-                    call.success([ "result": true, "method":"getDuration", "value": duration])
+        if (self.mode == "fullscreen" && self.fsPlayerId == playerId) {
+            if (videoPlayerFullScreenView != nil) {
+                if let playerView = self.videoPlayerFullScreenView {
+                    DispatchQueue.main.async {
+                        let duration: Double = playerView.getDuration()
+                        call.success([ "result": true, "method":"getDuration", "value": duration])
+                        return
+                    }
+                } else {
+                    let error:String = "Fullscreen playerId not found"
+                    print(error)
+                    call.success([ "result": false, "method":"getDuration", "message": error])
+                    return
                 }
             } else {
-                let error:String = "VideoPlayer getDuration: Given playerId not found"
+                let error:String = "No videoPlayerFullScreenView"
                 print(error)
-                call.reject(error)
+                call.success([ "result": false, "method":"getDuration", "message": error])
                 return
             }
-        } else {
-            let error:String = "VideoPlayer getDuration: No videoPlayerTableViewController"
-            print(error)
-            call.reject(error)
-            return
+
         }
     }
     
@@ -225,28 +260,31 @@ public class CapacitorVideoPlayer: CAPPlugin {
         self.call = call
 
         guard let playerId = call.options["playerId"] as? String else {
-            let error:String = "VideoPlayer getCurrentTime: Must provide a playerId"
+            let error:String = "Must provide a playerId"
             print(error)
-            call.reject(error)
+            call.success([ "result": false, "method":"getCurrentTime", "message": error])
             return
         }
-        if (self.videoPlayerTableViewController != nil && !self.videoPlayerTableViewController.videoPlayers.isEmpty) {
-            if let player = self.videoPlayerTableViewController.videoPlayers[playerId] {
-                DispatchQueue.main.async {
-                    let currentTime: Double = player.getCurrentTime()
-                    call.success([ "result": true, "method":"getCurrentTime", "value": currentTime])
+        if (self.mode == "fullscreen" && self.fsPlayerId == playerId) {
+            if (videoPlayerFullScreenView != nil) {
+                if let playerView = self.videoPlayerFullScreenView {
+                    DispatchQueue.main.async {
+                        let currentTime: Double = playerView.getCurrentTime()
+                        call.success([ "result": true, "method":"getCurrentTime", "value": currentTime])
+                        return
+                    }
+                } else {
+                    let error:String = "Fullscreen playerId not found"
+                    print(error)
+                    call.success([ "result": false, "method":"getCurrentTime", "message": error])
+                    return
                 }
             } else {
-                let error:String = "VideoPlayer getCurrentTime: Given playerId not found"
+                let error:String = "No videoPlayerFullScreenView"
                 print(error)
-                call.reject(error)
+                call.success([ "result": false, "method":"getCurrentTime", "message": error])
                 return
             }
-        } else {
-            let error:String = "VideoPlayer getCurrentTime: No videoPlayerTableViewController"
-            print(error)
-            call.reject(error)
-            return
         }
     }
     
@@ -256,34 +294,38 @@ public class CapacitorVideoPlayer: CAPPlugin {
         self.call = call
 
         guard let playerId = call.options["playerId"] as? String else {
-            let error:String = "VideoPlayer setCurrentTime: Must provide a playerId"
+            let error:String = "Must provide a playerId"
             print(error)
-            call.reject(error)
+            call.success([ "result": false, "method":"setCurrentTime", "message": error])
             return
         }
         guard let seekTime = call.options["seektime"] as? Double else {
-            let error:String = "VideoPlayer setCurrentTime: Must provide a playerId"
+            let error:String = "Must provide a time in second"
             print(error)
-            call.reject(error)
+            call.success([ "result": false, "method":"setCurrentTime", "message": error])
             return
         }
-        if (self.videoPlayerTableViewController != nil && !self.videoPlayerTableViewController.videoPlayers.isEmpty) {
-            if let player = self.videoPlayerTableViewController.videoPlayers[playerId] {
-                DispatchQueue.main.async {
-                    player.setCurrentTime(time: seekTime)
-                    call.success([ "result": true, "method":"setCurrentTime", "value": seekTime])
+        if (self.mode == "fullscreen" && self.fsPlayerId == playerId) {
+            if (videoPlayerFullScreenView != nil) {
+                if let playerView = self.videoPlayerFullScreenView {
+                    DispatchQueue.main.async {
+                        playerView.setCurrentTime(time: seekTime)
+                        call.success([ "result": true, "method":"setCurrentTime", "value": seekTime])
+                        return
+                    }
+                } else {
+                    let error:String = "Fullscreen playerId not found"
+                    print(error)
+                    call.success([ "result": false, "method":"setCurrentTime", "message": error])
+                    return
                 }
             } else {
-                let error:String = "VideoPlayer setCurrentTime: Given playerId not found"
+                let error:String = "No videoPlayerFullScreenView"
                 print(error)
-                call.reject(error)
+                call.success([ "result": false, "method":"setCurrentTime", "message": error])
                 return
             }
-        } else {
-            let error:String = "VideoPlayer setCurrentTime: No videoPlayerTableViewController"
-            print(error)
-            call.reject(error)
-            return
+
         }
     }
     
@@ -293,28 +335,31 @@ public class CapacitorVideoPlayer: CAPPlugin {
         self.call = call
 
         guard let playerId = call.options["playerId"] as? String else {
-            let error:String = "VideoPlayer getVolume: Must provide a playerId"
+            let error:String = "Must provide a playerId"
             print(error)
-            call.reject(error)
+            call.success([ "result": false, "method":"getVolume", "message": error])
             return
         }
-        if (self.videoPlayerTableViewController != nil && !self.videoPlayerTableViewController.videoPlayers.isEmpty) {
-            if let player = self.videoPlayerTableViewController.videoPlayers[playerId] {
-                DispatchQueue.main.async {
-                    let volume: Float = player.getVolume()
-                    call.success([ "result": true, "method":"getVolume", "value": volume])
+        if (self.mode == "fullscreen" && self.fsPlayerId == playerId) {
+            if (videoPlayerFullScreenView != nil) {
+                if let playerView = self.videoPlayerFullScreenView {
+                    DispatchQueue.main.async {
+                        let volume: Float = playerView.getVolume()
+                        call.success([ "result": true, "method":"getVolume", "value": volume])
+                        return
+                    }
+                } else {
+                    let error:String = "Fullscreen playerId not found"
+                    print(error)
+                    call.success([ "result": false, "method":"getVolume", "message": error])
+                    return
                 }
             } else {
-                let error:String = "VideoPlayer getVolume: Given playerId not found"
+                let error:String = "No videoPlayerFullScreenView"
                 print(error)
-                call.reject(error)
+                call.success([ "result": false, "method":"getVolume", "message": error])
                 return
             }
-        } else {
-            let error:String = "VideoPlayer getVolume: No videoPlayerTableViewController"
-            print(error)
-            call.reject(error)
-            return
         }
     }
     
@@ -324,35 +369,40 @@ public class CapacitorVideoPlayer: CAPPlugin {
         self.call = call
 
         guard let playerId = call.options["playerId"] as? String else {
-            let error:String = "VideoPlayer setVolume: Must provide a playerId"
+            let error:String = "Must provide a playerId"
             print(error)
-            call.reject(error)
+            call.success([ "result": false, "method":"setVolume", "message": error])
             return
         }
         guard let volume = call.options["volume"] as? Float else {
-            let error:String = "VideoPlayer setVolume: Must provide a playerId"
+            let error:String = "Must provide a volume value"
             print(error)
-            call.reject(error)
+            call.success([ "result": false, "method":"setVolume", "message": error])
+
             return
         }
-        if (self.videoPlayerTableViewController != nil && !self.videoPlayerTableViewController.videoPlayers.isEmpty) {
-            if let player = self.videoPlayerTableViewController.videoPlayers[playerId] {
-                DispatchQueue.main.async {
-                    player.setVolume(volume:volume)
-                    call.success([ "result": true, "method":"setVolume", "value": volume])
-                }
-            } else {
-                let error:String = "VideoPlayer setVolume: Given playerId not found"
-                print(error)
-                call.reject(error)
-                return
-            }
-        } else {
-            let error:String = "VideoPlayer setVolume: No videoPlayerTableViewController"
-            print(error)
-            call.reject(error)
-            return
-        }
+        if (self.mode == "fullscreen" && self.fsPlayerId == playerId) {
+           if (videoPlayerFullScreenView != nil) {
+               if let playerView = self.videoPlayerFullScreenView {
+                   DispatchQueue.main.async {
+                       playerView.setVolume(volume:volume)
+                       call.success([ "result": true, "method":"setVolume", "value": volume])
+                    return
+                   }
+               } else {
+                   let error:String = "Fullscreen playerId not found"
+                   print(error)
+                   call.success([ "result": false, "method":"setVolume", "message": error])
+                   return
+               }
+           } else {
+               let error:String = "No videoPlayerFullScreenView"
+               print(error)
+               call.success([ "result": false, "method":"setVolume", "message": error])
+               return
+           }
+       }
+
     }
     
     // MARK: - get Muted for the given player
@@ -361,28 +411,31 @@ public class CapacitorVideoPlayer: CAPPlugin {
         self.call = call
 
         guard let playerId = call.options["playerId"] as? String else {
-            let error:String = "VideoPlayer getMuted: Must provide a playerId"
+            let error:String = "Must provide a playerId"
             print(error)
-            call.reject(error)
+            call.success([ "result": false, "method":"getMuted", "message": error])
             return
         }
-        if (self.videoPlayerTableViewController != nil && !self.videoPlayerTableViewController.videoPlayers.isEmpty) {
-            if let player = self.videoPlayerTableViewController.videoPlayers[playerId] {
-                DispatchQueue.main.async {
-                    let muted: Bool = player.getMuted()
-                    call.success([ "result": true, "method":"getMuted", "value": muted])
+        if (self.mode == "fullscreen" && self.fsPlayerId == playerId) {
+            if (videoPlayerFullScreenView != nil) {
+                if let playerView = self.videoPlayerFullScreenView {
+                    DispatchQueue.main.async {
+                        let muted: Bool = playerView.getMuted()
+                        call.success([ "result": true, "method":"getMuted", "value": muted])
+                        return
+                    }
+                } else {
+                    let error:String = "Fullscreen playerId not found"
+                    print(error)
+                    call.success([ "result": false, "method":"getMuted", "message": error])
+                    return
                 }
             } else {
-                let error:String = "VideoPlayer getMuted: Given playerId not found"
+                let error:String = "No videoPlayerFullScreenView"
                 print(error)
-                call.reject(error)
+                call.success([ "result": false, "method":"getMuted", "message": error])
                 return
             }
-        } else {
-            let error:String = "VideoPlayer getMuted: No videoPlayerTableViewController"
-            print(error)
-            call.reject(error)
-            return
         }
     }
     
@@ -392,102 +445,138 @@ public class CapacitorVideoPlayer: CAPPlugin {
         self.call = call
 
         guard let playerId = call.options["playerId"] as? String else {
-            let error:String = "VideoPlayer setMuted: Must provide a playerId"
+            let error:String = "Must provide a playerId"
             print(error)
-            call.reject(error)
+            call.success([ "result": false, "method":"setMuted", "message": error])
             return
         }
         guard let muted = call.options["muted"] as? Bool else {
-            let error:String = "VideoPlayer setMuted: Must provide a playerId"
+            let error:String = "Must provide a boolean true/false"
             print(error)
-            call.reject(error)
+            call.success([ "result": false, "method":"setMuted", "message": error])
             return
         }
-        if (self.videoPlayerTableViewController != nil && !self.videoPlayerTableViewController.videoPlayers.isEmpty) {
-            if let player = self.videoPlayerTableViewController.videoPlayers[playerId] {
-                DispatchQueue.main.async {
-                    player.setMuted(muted:muted)
-                    call.success([ "result": true, "method":"setMuted", "value": muted])
+        if (self.mode == "fullscreen" && self.fsPlayerId == playerId) {
+            if (videoPlayerFullScreenView != nil) {
+                if let playerView = self.videoPlayerFullScreenView {
+                    DispatchQueue.main.async {
+                        playerView.setMuted(muted:muted)
+                        call.success([ "result": true, "method":"setMuted", "value": muted])
+                        return
+                    }
+                } else {
+                    let error:String = "Fullscreen playerId not found"
+                    print(error)
+                    call.success([ "result": false, "method":"setMuted", "message": error])
+                    return
                 }
             } else {
-                let error:String = "VideoPlayer setMuted: Given playerId not found"
+                let error:String = "No videoPlayerFullScreenView"
                 print(error)
-                call.reject(error)
+                call.success([ "result": false, "method":"setMuted", "message": error])
+
                 return
             }
-        } else {
-            let error:String = "VideoPlayer setMuted: No videoPlayerTableViewController"
-            print(error)
-            call.reject(error)
-            return
         }
     }
     
     // MARK: - Stop all player(s) playing
     
-    @objc func stopAllPlayers()  {
-         if (self.videoPlayerTableViewController != nil && !self.videoPlayerTableViewController.videoPlayers.isEmpty) {
-            self.videoPlayerTableViewController.pauseAllPlayers()
-            call.success([ "result": true, "method":"stopAllPlayers"])
-         } else {
-            let error:String = "VideoPlayer stopAllPlayers: No videoPlayerTableViewController"
-            print(error)
-            call.reject(error)
-            return
+    @objc func stopAllPlayers(_ call: CAPPluginCall)  {
+        self.call = call
+        if (self.mode == "fullscreen") {
+            if(self.videoPlayerFullScreenView != nil) {
+                if let playerView = self.videoPlayerFullScreenView {
+                    DispatchQueue.main.async {
+                        if(playerView.isPlaying) {
+                            playerView.pause()
+                        }
+                        call.success([ "result": true, "method":"stopAllPlayers","value":true])
+                        return
+                    }
+                } else {
+                   let error:String = "Fullscreen player not found"
+                   print(error)
+                   call.success([ "result": false, "method":"stopAllPlayers", "message": error])
+                   return
+                }
+            } else {
+               let error:String = "No videoPlayerFullScreenView"
+               print(error)
+               call.success([ "result": false, "method":"stopAllPlayers", "message": error])
+               return
+
+            }
+
         }
-
     }
-
     // MARK: - Handle Notifications
 
-    @objc func didFinishPlaying() {
-        if (mode == "fullscreen") {
-            DispatchQueue.main.async {
-                self.videoPlayerFullScreenView.videoPlayer.dismiss(animated: true,completion: nil)
-                self.call.success([ "result": true])
-            }
-        }
-    }
     @objc func playerItemPlay(notification: Notification) -> Void {
         guard let info = notification.userInfo as? [String: Any] else { return }
         DispatchQueue.main.async {
             self.notifyListeners("jeepCapVideoPlayerPlay", data: info, retainUntilConsumed: true)
+            return
         }
     }
     @objc func playerItemPause(notification: Notification) -> Void {
         guard let info = notification.userInfo as? [String: Any] else { return }
         DispatchQueue.main.async {
             self.notifyListeners("jeepCapVideoPlayerPause", data: info, retainUntilConsumed: true)
+            return
         }
     }
+
     @objc func playerItemEnd(notification: Notification) -> Void {
         guard let info = notification.userInfo as? [String: Any] else { return }
         DispatchQueue.main.async {
-            self.notifyListeners("jeepCapVideoPlayerEnd", data: info, retainUntilConsumed: true)
+            self.notifyListeners("jeepCapVideoPlayerEnded", data: info, retainUntilConsumed: true)
+            if (self.mode == "fullscreen") {
+                self.playerFullscreenExit()
+            }
+                
+            return
         }
     }
     @objc func playerItemReady(notification: Notification) -> Void {
         guard let info = notification.userInfo as? [String: Any] else { return }
         DispatchQueue.main.async {
             self.notifyListeners("jeepCapVideoPlayerReady", data: info, retainUntilConsumed: true)
-        }
-    }
-    @objc func playerInTableDismiss(notification: Notification) -> Void {
-         let info : [String:Any] = ["dismiss":true]
-        DispatchQueue.main.async {
-            self.notifyListeners("jeepCapVideoPlayerDismiss", data: info, retainUntilConsumed: true)
-            NotificationCenter.default.removeObserver(self)
-            self.videoPlayerTableViewController.destroyAllGestures()
-            self.videoPlayerTableViewController.destroyAllPlayers()
-            self.playerList = [:]
-            self.videoPlayer = nil
-            self.videoPlayerTableViewController = nil
-            self.videoPlayerFullScreenView = nil
-            self.player = nil
-            self.bridge.viewController.dismiss(animated: true, completion: nil)
+            if(self.mode == "fullscreen" && info["fromPlayerId"] as! String == self.fsPlayerId) {
+                self.videoPlayerFullScreenView.play()
+            }
+            return
         }
     }
 
+    @objc func playerFullscreenDismiss(notification: Notification) -> Void {
+        let info : [String:Any] = ["dismiss":true]
+        DispatchQueue.main.async {
+            
+            self.notifyListeners("jeepCapVideoPlayerExit", data: info, retainUntilConsumed: true)
+            if (self.mode == "fullscreen") {
+                self.playerFullscreenExit()
+            }
+            return
+        }
+    }
+ 
+    func playerFullscreenExit() -> Void {
+        self.videoPlayerFullScreenView.removeObservers()
+        NotificationCenter.default.removeObserver(self)
+        self.bridge.viewController.dismiss(animated: true, completion: {
+            do {
+                // DeActivate the audio session.
+                try self.audioSession.setActive(false)
+                self.audioSession = nil
+            } catch {
+                let error:String = "playerFullscreenExit: Failed to deactivate audio session category"
+                print(error)
+            }
+
+        })
+        return
+    }
 
 }
 
