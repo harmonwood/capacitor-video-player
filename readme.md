@@ -34,7 +34,9 @@ npm install capacitor-video-player
 npx cap sync
 ```
 
-- On iOS, Web and Electron no further steps are needed.
+- On Web and Electron, no further steps are needed.
+
+- on iOS, you need to set your app Capabilities Background Modes (Audio and AirPlay) in Xcode
 
 - On Android, register the plugin in your main activity:
 
