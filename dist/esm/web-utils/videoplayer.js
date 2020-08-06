@@ -7,8 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-//import Hls from "hls.js";
-import Hls from "./hls/hls.js";
+import Hls from 'hls.js';
+//import Hls from "./hls/hls.js";
 import { isSupported } from './hls-utils';
 export class VideoPlayer {
     constructor(mode, url, playerId, container, zIndex, width, height) {

@@ -15,9 +15,9 @@ class Video: NSObject {
     var width: Int?
     var height: Int?
     override init() {
-        
+
     }
-    init(urlPath:String, imgPath:String?, title:String, content:String, width:Int, height:Int) {
+    init(urlPath: String, imgPath: String?, title: String, content: String, width: Int, height: Int) {
         self.urlPath = urlPath
         self.imgPath = imgPath
         self.title = title

@@ -1,6 +1,7 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.android.datatransport:transport-runtime:2.2.0@aar">
     <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/transport-runtime-2.2.0.aar/b416f9b889f293f0a91c7a0082320033/AndroidManifest.xml" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/transport-runtime-2.2.0.aar/b416f9b889f293f0a91c7a0082320033/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/transport-runtime-2.2.0.aar/b416f9b889f293f0a91c7a0082320033/res" />
     </CLASSES>
