@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.util.Log;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
@@ -17,6 +19,8 @@ import com.jeep.plugin.capacitor.capacitorvideoplayer.R;
 @NativePlugin(requestCodes = { CapacitorVideoPlayer.RequestCodes.Video })
 public class CapacitorVideoPlayer extends Plugin {
     private static final String TAG = "CapacitorVideoPlayer";
+    private int frameLayoutViewId = 256;
+
     private Context context;
     private String videoPath;
     private Boolean isTV;
@@ -34,10 +38,10 @@ public class CapacitorVideoPlayer extends Plugin {
     }
 
     @PluginMethod
-    public void initPlayer(PluginCall call) {
+    public void initPlayer(final PluginCall call) {
         saveCall(call);
         context = getContext();
-        JSObject ret = new JSObject();
+        final JSObject ret = new JSObject();
         ret.put("method", "initPlayer");
         ret.put("result", false);
         // Check if running on a TV Device
@@ -81,6 +85,7 @@ public class CapacitorVideoPlayer extends Plugin {
         }
         Log.v(TAG, "videoPath: " + videoPath);
         AddObserversToNotificationCenter();
+
         fsFragment = new FullscreenExoPlayerFragment();
 
         fsFragment.videoPath = videoPath;
@@ -94,7 +99,28 @@ public class CapacitorVideoPlayer extends Plugin {
 
                     @Override
                     public void run() {
-                        loadFragment(fsFragment);
+                        JSObject ret = new JSObject();
+                        ret.put("method", "initPlayer");
+                        FrameLayout frameLayoutView = getBridge().getActivity().findViewById(frameLayoutViewId);
+                        if (frameLayoutView != null) {
+                            ret.put("result", false);
+                            ret.put("message", "FrameLayout for ExoPlayer already exists");
+                        } else {
+                            // Initialize a new FrameLayout as container for fragment
+                            frameLayoutView = new FrameLayout(getActivity().getApplicationContext());
+                            frameLayoutView.setId(frameLayoutViewId);
+                            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.MATCH_PARENT
+                            );
+                            // Apply the Layout Parameters to frameLayout
+                            frameLayoutView.setLayoutParams(lp);
+
+                            ((ViewGroup) getBridge().getWebView().getParent()).addView(frameLayoutView);
+                            loadFragment(fsFragment, frameLayoutViewId);
+                            ret.put("result", true);
+                        }
+                        call.success(ret);
                     }
                 }
             );
@@ -520,13 +546,13 @@ public class CapacitorVideoPlayer extends Plugin {
         return false;
     }
 
-    private void loadFragment(/*VideoPlayerFragment*/FullscreenExoPlayerFragment vpFragment) {
+    private void loadFragment(/*VideoPlayerFragment*/FullscreenExoPlayerFragment vpFragment, int frameLayoutId) {
         // create a FragmentManager
         FragmentManager fm = getBridge().getActivity().getFragmentManager();
         // create a FragmentTransaction to begin the transaction and replace the Fragment
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         // replace the FrameLayout with new Fragment
-        fragmentTransaction.replace(R.id.frameLayout, vpFragment);
+        fragmentTransaction.replace(frameLayoutId, vpFragment);
         fragmentTransaction.commit(); // save the changes
     }
 
@@ -604,7 +630,12 @@ public class CapacitorVideoPlayer extends Plugin {
 
                                     @Override
                                     public void run() {
-                                        removeFragment(fsFragment);
+                                        FrameLayout frameLayoutView = getBridge().getActivity().findViewById(frameLayoutViewId);
+
+                                        if (frameLayoutView != null) {
+                                            ((ViewGroup) getBridge().getWebView().getParent()).removeView(frameLayoutView);
+                                            removeFragment(fsFragment);
+                                        }
                                         fsFragment = null;
                                         NotificationCenter.defaultCenter().removeAllNotifications();
                                         notifyListeners("jeepCapVideoPlayerEnded", data);
@@ -633,7 +664,12 @@ public class CapacitorVideoPlayer extends Plugin {
 
                                     @Override
                                     public void run() {
-                                        removeFragment(fsFragment);
+                                        FrameLayout frameLayoutView = getBridge().getActivity().findViewById(frameLayoutViewId);
+
+                                        if (frameLayoutView != null) {
+                                            ((ViewGroup) getBridge().getWebView().getParent()).removeView(frameLayoutView);
+                                            removeFragment(fsFragment);
+                                        }
                                         fsFragment = null;
                                         NotificationCenter.defaultCenter().removeAllNotifications();
                                         notifyListeners("jeepCapVideoPlayerExit", data);

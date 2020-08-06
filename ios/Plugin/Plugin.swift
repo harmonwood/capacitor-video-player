@@ -69,7 +69,8 @@ public class CapacitorVideoPlayer: CAPPlugin {
         self.audioSession = AVAudioSession.sharedInstance()
         do {
             // Set the audio session category, mode, and options.
-            try self.audioSession?.setCategory(.playback, mode: .moviePlayback, options: [])
+            try self.audioSession?.setCategory(.playback, mode: .moviePlayback,
+                                               options: [.mixWithOthers, .allowAirPlay])
         } catch {
             let error: String = "Failed to set audio session category."
             print(error)
@@ -148,7 +149,9 @@ public class CapacitorVideoPlayer: CAPPlugin {
         foregroundObserver =
             NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil,
                                                    queue: OperationQueue.main) { (_) in
-            self.videoPlayerFullScreenView?.videoPlayer.player = self.bgPlayer
+            if self.bgPlayer != nil {
+                self.videoPlayerFullScreenView?.videoPlayer.player = self.bgPlayer
+            }
         }
     }
 
