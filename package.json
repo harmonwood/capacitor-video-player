@@ -1,6 +1,6 @@
 {
   "name": "capacitor-video-player",
-  "version": "2.1.0",
+  "version": "2.3.0-beta.1",
   "description": "Capacitor Video Player Plugin",
   "homepage": "https://github.com/jepiqueau/capacitor-video-player",
   "main": "dist/esm/index.js",
