@@ -38,32 +38,32 @@ npx cap sync
 
 - On Android, register the plugin in your main activity:
 
-  ```java
-  import com.jeep.plugin.capacitor.CapacitorVideoPlayer;
+```java
+import com.jeep.plugin.capacitor.CapacitorVideoPlayer;
 
-  public class MainActivity extends BridgeActivity {
+public class MainActivity extends BridgeActivity {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-      // Initializes the Bridge
-      this.init(
-          savedInstanceState,
-          new ArrayList<Class<? extends Plugin>>() {
+    // Initializes the Bridge
+    this.init(
+        savedInstanceState,
+        new ArrayList<Class<? extends Plugin>>() {
 
-            {
-              // Additional plugins you've installed go here
-              // Ex: add(TotallyAwesomePlugin.class);
-              add(CapacitorVideoPlayer.class);
-            }
+          {
+            // Additional plugins you've installed go here
+            // Ex: add(TotallyAwesomePlugin.class);
+            add(CapacitorVideoPlayer.class);
           }
-        );
-    }
+        }
+      );
   }
-  ```
+}
+```
 
-  Then build YOUR_APPLICATION
+Then build YOUR_APPLICATION
 
 ```
 npm run build
@@ -252,6 +252,8 @@ No configuration required for this plugin
     ...
  }
 ```
+
+then in my-page.html
 
 ```html
 ...
