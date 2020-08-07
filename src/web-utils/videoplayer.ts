@@ -250,7 +250,7 @@ export class VideoPlayer {
       if (val == null) {
         vType = '';
       } else {
-        vType = this._url.match(/(.*)\.(.*)/)[2];
+        vType = this._url.match(/(.*)\.(.*)/)[2].split('?')[0];
       }
       switch (vType) {
         case 'mp4':
