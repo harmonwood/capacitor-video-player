@@ -239,6 +239,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
             player.removeListener(playbackStateListener);
             player.release();
             player = null;
+            showSystemUI();
             resetVariables();
         }
     }
@@ -268,6 +269,14 @@ public class FullscreenExoPlayerFragment extends Fragment {
             View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
             View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
         );
+    }
+
+    /**
+     * Leave the fullsreen mode and reset the status bar to visible
+     */
+    private void showSystemUI() {
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getActivity().getWindow().getDecorView().setSystemUiVisibility(View.VISIBLE);
     }
 
     /**
