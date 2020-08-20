@@ -4,6 +4,9 @@ import { isSupported } from './hls-utils';
 
 export class VideoPlayer {
   public videoEl: HTMLVideoElement;
+  public pipMode: boolean = false;
+  public pipWindow: Window;
+
   private _url: string;
   private _playerId: string;
   private _container: HTMLDivElement;
@@ -17,6 +20,7 @@ export class VideoPlayer {
   private _videoContainer: any = null;
   private _isSupported: boolean = false;
   private _firstReadyToPlay: boolean = true;
+  private _isEnded: boolean = false;
 
   constructor(
     mode: string,
@@ -37,6 +41,7 @@ export class VideoPlayer {
     this._playerId = playerId;
     this.initialize();
   }
+
   private async initialize() {
     if (isSupported()) this._isSupported = true;
     // get the video type
@@ -128,6 +133,7 @@ export class VideoPlayer {
         if (this._mode === 'fullscreen') {
           this._closeFullscreen();
         }
+        this._isEnded = true;
         this._createEvent('Ended', this._playerId);
       };
       this.videoEl.oncanplay = async () => {
@@ -185,23 +191,25 @@ export class VideoPlayer {
         this._videoContainer.appendChild(exitEl);
         this._initial = await this._doHide(exitEl, 3000);
 
-        if (this._videoContainer.requestFullscreen) {
-          this._videoContainer.requestFullscreen();
-        } else if (this._videoContainer.mozRequestFullScreen) {
-          /* Firefox */
-          this._videoContainer.mozRequestFullScreen();
-        } else if (this._videoContainer.webkitRequestFullscreen) {
-          /* Chrome, Safari & Opera */
-          this._videoContainer.webkitRequestFullscreen();
-        } else if (this._videoContainer.msRequestFullscreen) {
-          /* IE/Edge */
-          this._videoContainer.msRequestFullscreen();
-        }
+        this._goFullscreen();
       }
     }
     return isSet;
   }
-
+  private _goFullscreen() {
+    if (this._videoContainer.requestFullscreen) {
+      this._videoContainer.requestFullscreen();
+    } else if (this._videoContainer.mozRequestFullScreen) {
+      /* Firefox */
+      this._videoContainer.mozRequestFullScreen();
+    } else if (this._videoContainer.webkitRequestFullscreen) {
+      /* Chrome, Safari & Opera */
+      this._videoContainer.webkitRequestFullscreen();
+    } else if (this._videoContainer.msRequestFullscreen) {
+      /* IE/Edge */
+      this._videoContainer.msRequestFullscreen();
+    }
+  }
   private async _setPlayer(): Promise<boolean> {
     return new Promise(async resolve => {
       if (this._isSupported && this._videoType === 'application/x-mpegURL') {
@@ -235,6 +243,21 @@ export class VideoPlayer {
         // Not Supported
         return false;
       }
+      this.videoEl.addEventListener('enterpictureinpicture', (event: any) => {
+        this.pipWindow = event.pictureInPictureWindow;
+        console.log(' Enter PiP Mode ', this.pipWindow);
+        this.pipMode = true;
+        this._closeFullscreen();
+      });
+
+      this.videoEl.addEventListener('leavepictureinpicture', () => {
+        console.log(' Exit PiP Mode ');
+        this.pipMode = false;
+        if (!this._isEnded) {
+          this._goFullscreen();
+          this.videoEl.play();
+        }
+      });
       console.log('in setPlayer videoEL ', this.videoEl.outerHTML);
     });
   }

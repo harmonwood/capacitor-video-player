@@ -3,12 +3,14 @@ package com.jeep.plugin.capacitor;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Fragment;
+import android.content.ContentUris;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -52,6 +54,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public String videoPath;
     public String playerId;
     public Boolean isTV;
+    public Boolean isInternal;
+    public Long videoId;
 
     private static final String TAG = FullscreenExoPlayerFragment.class.getName();
     public static final long UNKNOWN_TIME = -1L;
@@ -107,12 +111,14 @@ public class FullscreenExoPlayerFragment extends Fragment {
             Toast.makeText(context, "Device is a TV ", Toast.LENGTH_SHORT).show();
         }
 
-        uri = Uri.parse(videoPath);
-        Log.v(TAG, "display url: " + uri);
-        Log.v(TAG, "display isTV: " + isTV);
-        // get video type
-        vType = getVideoType(uri);
-        if (uri != null) {
+        if (!isInternal) {
+            uri = Uri.parse(videoPath);
+            Log.v(TAG, "display url: " + uri);
+            Log.v(TAG, "display isTV: " + isTV);
+            // get video type
+            vType = getVideoType(uri);
+        }
+        if (uri != null || isInternal) {
             // go fullscreen
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             if (savedInstanceState != null) {
@@ -179,7 +185,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * Perform backPressed Action
      */
     private void backPressed() {
-        Map<String, String> info = new HashMap<String, String>() {
+        Map<String, Object> info = new HashMap<String, Object>() {
 
             {
                 put("dismiss", "1");
@@ -296,14 +302,20 @@ public class FullscreenExoPlayerFragment extends Fragment {
                     .build();
         }
         playerView.setPlayer(player);
-        MediaSource mediaSource = buildMediaSource();
+        MediaSource mediaSource;
+        if (!isInternal) {
+            mediaSource = buildHttpMediaSource();
+        } else {
+            Uri videoUri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, videoId);
+            mediaSource = buildInternalMediaSource(videoUri);
+        }
 
         if (mediaSource != null) {
             player.setAudioAttributes(AudioAttributes.DEFAULT, true);
             player.addListener(playbackStateListener);
             player.prepare(mediaSource, false, false);
         }
-        Map<String, String> info = new HashMap<String, String>() {
+        Map<String, Object> info = new HashMap<String, Object>() {
 
             {
                 put("fromPlayerId", playerId);
@@ -313,10 +325,18 @@ public class FullscreenExoPlayerFragment extends Fragment {
     }
 
     /**
-     * Build the MediaSource
+     * Build the Internal MediaSource
+     */
+    private MediaSource buildInternalMediaSource(Uri uri) {
+        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, "jeep-exoplayer-plugin");
+        return new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+    }
+
+    /**
+     * Build the Http MediaSource
      * @return MediaSource
      */
-    private MediaSource buildMediaSource() {
+    private MediaSource buildHttpMediaSource() {
         MediaSource mediaSource = null;
         HttpDataSource.Factory httpDataSourceFactory = new DefaultHttpDataSourceFactory(
             "jeep-exoplayer-plugin",
@@ -495,7 +515,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             String stateString;
-            Map<String, String> info = new HashMap<String, String>() {
+            Map<String, Object> info = new HashMap<String, Object>() {
 
                 {
                     put("fromPlayerId", playerId);

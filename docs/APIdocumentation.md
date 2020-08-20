@@ -14,6 +14,7 @@ Initialize the Video Player
   initialize the player for a video given by an url
 
   the `url` parameter can be :
+  . "internal" for video from gallery for iOS and Android plugin only
   . "https:/..../video.mp4" for files from the web
   . if not "https"
   . for IOS "public/assets/video/video.mp4"

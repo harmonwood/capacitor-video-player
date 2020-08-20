@@ -15,6 +15,8 @@
 		2C14149B241FEA39008A7B45 /* Notification.Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C141492241FEA39008A7B45 /* Notification.Name.swift */; };
 		2C14149C241FEA39008A7B45 /* CMTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C141493241FEA39008A7B45 /* CMTime.swift */; };
 		2C14149D241FEA39008A7B45 /* FullScreenVideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C141494241FEA39008A7B45 /* FullScreenVideoPlayerView.swift */; };
+		2C77A09724E505C900436782 /* VideoHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C77A09524E505C900436782 /* VideoHelper.swift */; };
+		2C77A09824E505C900436782 /* VideoPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C77A09624E505C900436782 /* VideoPickerViewController.swift */; };
 		50ADFF92201F53D600D50D53 /* Plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50ADFF88201F53D600D50D53 /* Plugin.framework */; };
 		50ADFF97201F53D600D50D53 /* PluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ADFF96201F53D600D50D53 /* PluginTests.swift */; };
 		50ADFF99201F53D600D50D53 /* Plugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ADFF8B201F53D600D50D53 /* Plugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -40,6 +42,8 @@
 		2C141492241FEA39008A7B45 /* Notification.Name.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notification.Name.swift; sourceTree = "<group>"; };
 		2C141493241FEA39008A7B45 /* CMTime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CMTime.swift; sourceTree = "<group>"; };
 		2C141494241FEA39008A7B45 /* FullScreenVideoPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FullScreenVideoPlayerView.swift; sourceTree = "<group>"; };
+		2C77A09524E505C900436782 /* VideoHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoHelper.swift; sourceTree = "<group>"; };
+		2C77A09624E505C900436782 /* VideoPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPickerViewController.swift; sourceTree = "<group>"; };
 		3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		50ADFF88201F53D600D50D53 /* Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		50ADFF8B201F53D600D50D53 /* Plugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Plugin.h; sourceTree = "<group>"; };
@@ -108,6 +112,15 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		2C77A09424E505C900436782 /* VideoPicker */ = {
+			isa = PBXGroup;
+			children = (
+				2C77A09524E505C900436782 /* VideoHelper.swift */,
+				2C77A09624E505C900436782 /* VideoPickerViewController.swift */,
+			);
+			path = VideoPicker;
+			sourceTree = "<group>";
+		};
 		50ADFF7E201F53D600D50D53 = {
 			isa = PBXGroup;
 			children = (
@@ -131,6 +144,7 @@
 		50ADFF8A201F53D600D50D53 /* Plugin */ = {
 			isa = PBXGroup;
 			children = (
+				2C77A09424E505C900436782 /* VideoPicker */,
 				2C141489241FEA39008A7B45 /* VideoPlayer */,
 				50E1A94720377CB70090CE1A /* Plugin.swift */,
 				50ADFF8B201F53D600D50D53 /* Plugin.h */,
@@ -344,6 +358,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C77A09824E505C900436782 /* VideoPickerViewController.swift in Sources */,
+				2C77A09724E505C900436782 /* VideoHelper.swift in Sources */,
 				2C14149D241FEA39008A7B45 /* FullScreenVideoPlayerView.swift in Sources */,
 				2C14149A241FEA39008A7B45 /* View.swift in Sources */,
 				50E1A94820377CB70090CE1A /* Plugin.swift in Sources */,

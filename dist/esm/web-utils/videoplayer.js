@@ -12,11 +12,13 @@ import Hls from 'hls.js';
 import { isSupported } from './hls-utils';
 export class VideoPlayer {
     constructor(mode, url, playerId, container, zIndex, width, height) {
+        this.pipMode = false;
         this._videoType = null;
         //private _videoClass: string = null;
         this._videoContainer = null;
         this._isSupported = false;
         this._firstReadyToPlay = true;
+        this._isEnded = false;
         this._url = url;
         this._container = container;
         this._mode = mode;
@@ -105,6 +107,7 @@ export class VideoPlayer {
                     if (this._mode === 'fullscreen') {
                         this._closeFullscreen();
                     }
+                    this._isEnded = true;
                     this._createEvent('Ended', this._playerId);
                 };
                 this.videoEl.oncanplay = () => __awaiter(this, void 0, void 0, function* () {
@@ -159,25 +162,28 @@ export class VideoPlayer {
                     };
                     this._videoContainer.appendChild(exitEl);
                     this._initial = yield this._doHide(exitEl, 3000);
-                    if (this._videoContainer.requestFullscreen) {
-                        this._videoContainer.requestFullscreen();
-                    }
-                    else if (this._videoContainer.mozRequestFullScreen) {
-                        /* Firefox */
-                        this._videoContainer.mozRequestFullScreen();
-                    }
-                    else if (this._videoContainer.webkitRequestFullscreen) {
-                        /* Chrome, Safari & Opera */
-                        this._videoContainer.webkitRequestFullscreen();
-                    }
-                    else if (this._videoContainer.msRequestFullscreen) {
-                        /* IE/Edge */
-                        this._videoContainer.msRequestFullscreen();
-                    }
+                    this._goFullscreen();
                 }
             }
             return isSet;
         });
+    }
+    _goFullscreen() {
+        if (this._videoContainer.requestFullscreen) {
+            this._videoContainer.requestFullscreen();
+        }
+        else if (this._videoContainer.mozRequestFullScreen) {
+            /* Firefox */
+            this._videoContainer.mozRequestFullScreen();
+        }
+        else if (this._videoContainer.webkitRequestFullscreen) {
+            /* Chrome, Safari & Opera */
+            this._videoContainer.webkitRequestFullscreen();
+        }
+        else if (this._videoContainer.msRequestFullscreen) {
+            /* IE/Edge */
+            this._videoContainer.msRequestFullscreen();
+        }
     }
     _setPlayer() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -211,6 +217,20 @@ export class VideoPlayer {
                     // Not Supported
                     return false;
                 }
+                this.videoEl.addEventListener('enterpictureinpicture', (event) => {
+                    this.pipWindow = event.pictureInPictureWindow;
+                    console.log(" Enter PiP Mode ", this.pipWindow);
+                    this.pipMode = true;
+                    this._closeFullscreen();
+                });
+                this.videoEl.addEventListener('leavepictureinpicture', () => {
+                    console.log(" Exit PiP Mode ");
+                    this.pipMode = false;
+                    if (!this._isEnded) {
+                        this._goFullscreen();
+                        this.videoEl.play();
+                    }
+                });
                 console.log('in setPlayer videoEL ', this.videoEl.outerHTML);
             }));
         });

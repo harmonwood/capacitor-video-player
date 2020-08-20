@@ -1,3 +1,10 @@
+## 2.3.0-beta.4 (202-08-20)
+
+### Bug Fixes
+
+- fix issue#20 Exit player when in PIP mode
+- fix issue#19 Play video from local storage by giving the **url = "internal"**
+
 ## 2.3.0-beta.3 (2020-08-09)
 
 ### Bug Fixes

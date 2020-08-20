@@ -27,6 +27,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
     var fsDismissObserver: Any?
     var backgroundObserver: Any?
     var foregroundObserver: Any?
+    var vpInternalObserver: Any?
 
     override public func load() {
         self.addObserversToNotificationCenter()
@@ -39,6 +40,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
         NotificationCenter.default.removeObserver(fsDismissObserver as Any)
         NotificationCenter.default.removeObserver(backgroundObserver as Any)
         NotificationCenter.default.removeObserver(foregroundObserver as Any)
+        NotificationCenter.default.removeObserver(vpInternalObserver as Any)
     }
     // MARK: - Echo
     @objc func echo(_ call: CAPPluginCall) {
@@ -85,8 +87,14 @@ public class CapacitorVideoPlayer: CAPPlugin {
                 call.success([ "result": false, "method": "initPlayer", "message": error])
                 return
             }
-            if let url = URL(string: videoPath) {
-                createVideoPlayerFullScreenView(call: call, url: url)
+            if videoPath == "internal" {
+                self.pickVideoFromInternal()
+            } else {
+                if videoPath.count > 0 {
+                    if let url = URL(string: videoPath) {
+                        createVideoPlayerFullScreenView(call: call, videoUrl: url)
+                    }
+                }
             }
         } else if mode == "embedded" {
             call.success([ "result": false, "method": "initPlayer", "message": "Not implemented"])
@@ -96,10 +104,11 @@ public class CapacitorVideoPlayer: CAPPlugin {
 
     // MARK: - createVideoPlayerFullScreenView
 
-    func createVideoPlayerFullScreenView(call: CAPPluginCall, url: URL) {
+    func createVideoPlayerFullScreenView(call: CAPPluginCall, videoUrl: URL) {
         DispatchQueue.main.async {
+
             self.videoPlayerFullScreenView =
-            FullScreenVideoPlayerView(url: url, playerId: self.fsPlayerId, exitOnEnd: true)
+            FullScreenVideoPlayerView(url: videoUrl, playerId: self.fsPlayerId, exitOnEnd: true)
             self.bgPlayer = self.videoPlayerFullScreenView?.videoPlayer.player
             guard let videoPlayer: AVPlayerViewController =
                 self.videoPlayerFullScreenView?.videoPlayer else {
@@ -125,6 +134,20 @@ public class CapacitorVideoPlayer: CAPPlugin {
         }
     }
 
+    // MARK: - Pick Video From Internal
+
+    func pickVideoFromInternal() {
+        DispatchQueue.main.async {
+
+            let videoPickerViewController: VideoPickerViewController =
+                VideoPickerViewController()
+            self.bridge.viewController.present(videoPickerViewController, animated: true, completion: {
+                return
+            })
+        }
+        return
+
+    }
     // MARK: - Add Observers
 
     @objc func addObserversToNotificationCenter() {
@@ -140,6 +163,8 @@ public class CapacitorVideoPlayer: CAPPlugin {
                                                                using: playerItemReady)
         fsDismissObserver = NotificationCenter.default.addObserver(forName: .playerFullscreenDismiss, object: nil,
                                                                    queue: nil, using: playerFullscreenDismiss)
+        vpInternalObserver = NotificationCenter.default.addObserver(forName: .videoPathInternalReady, object: nil,
+                                                                   queue: nil, using: videoPathInternalReady)
 
         backgroundObserver =
             NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil,
@@ -616,6 +641,15 @@ public class CapacitorVideoPlayer: CAPPlugin {
             }
 
         })
+        return
+    }
+    func videoPathInternalReady(notification: Notification) {
+        guard let info = notification.userInfo as? [String: Any] else { return }
+        guard let videoUrl = info["videoUrl"] as? URL else { return}
+        guard let call = self.call else { return }
+        self.bridge.viewController.dismiss(animated: true, completion: {
+        })
+        self.createVideoPlayerFullScreenView(call: call, videoUrl: videoUrl)
         return
     }
 }

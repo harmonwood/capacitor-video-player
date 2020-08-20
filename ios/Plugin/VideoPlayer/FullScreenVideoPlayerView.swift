@@ -31,6 +31,7 @@ class FullScreenVideoPlayerView: UIView {
     var videoPlayerFrameObserver: NSKeyValueObservation?
 
     init(url: URL, playerId: String, exitOnEnd: Bool) {
+        //self._videoPath = videoPath
         self._url = url
         self._exitOnEnd = exitOnEnd
         self._videoId = playerId

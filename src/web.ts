@@ -51,6 +51,13 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
           message: 'Must provide a Video Url',
         });
       }
+      if (url == 'internal') {
+        return Promise.resolve({
+          result: false,
+          method: 'initPlayer',
+          message: 'Internal Videos not supported on Web Platform',
+        });
+      }
       let playerId: string = options.playerId;
       if (playerId == null || playerId.length === 0) {
         return Promise.resolve({
@@ -368,6 +375,12 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
    */
   async stopAllPlayers(): Promise<capVideoPlayerResult> {
     for (let i in this._players) {
+      if (this._players[i].pipMode) {
+        var doc: any = document;
+        if (doc.pictureInPictureElement) {
+          await doc.exitPictureInPicture();
+        }
+      }
       if (!this._players[i].videoEl.paused) this._players[i].videoEl.pause();
     }
     return Promise.resolve({
@@ -399,7 +412,11 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
     componentTag: string,
     playerSize: IPlayerSize,
   ): Promise<any> {
-    const videoURL: string = url ? encodeURI(url) : null;
+    const videoURL: string = url
+      ? url.indexOf('%2F') == -1
+        ? encodeURI(url)
+        : url
+      : null;
     if (videoURL === null) return Promise.resolve(false);
     const videoContainer: HTMLDivElement = await this._getContainerElement(
       playerId,

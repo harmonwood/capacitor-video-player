@@ -1,5 +1,7 @@
 package com.jeep.plugin.capacitor;
 
+import android.Manifest;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.UiModeManager;
@@ -14,12 +16,17 @@ import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
-import com.jeep.plugin.capacitor.capacitorvideoplayer.R;
+import com.jeep.plugin.capacitor.PickerVideo.PickerVideoFragment;
 
-@NativePlugin(requestCodes = { CapacitorVideoPlayer.RequestCodes.Video })
+@NativePlugin(
+    permissions = { Manifest.permission.INTERNET, Manifest.permission.READ_EXTERNAL_STORAGE },
+    requestCodes = { CapacitorVideoPlayer.REQUEST_VIDEO_PERMISSION }
+)
 public class CapacitorVideoPlayer extends Plugin {
+    static final int REQUEST_VIDEO_PERMISSION = 9539;
     private static final String TAG = "CapacitorVideoPlayer";
     private int frameLayoutViewId = 256;
+    private int pickerLayoutViewId = 257;
 
     private Context context;
     private String videoPath;
@@ -27,6 +34,24 @@ public class CapacitorVideoPlayer extends Plugin {
     private String fsPlayerId;
     private String mode;
     private FullscreenExoPlayerFragment fsFragment;
+    private PickerVideoFragment pkFragment;
+    private boolean isPermissionGranted = false;
+
+    public void load() {
+        Log.v(TAG, "*** in load " + isPermissionGranted + " ***");
+        if (hasRequiredPermissions()) {
+            isPermissionGranted = true;
+        } else {
+            pluginRequestPermissions(
+                new String[] { Manifest.permission.INTERNET, Manifest.permission.READ_EXTERNAL_STORAGE },
+                REQUEST_VIDEO_PERMISSION
+            );
+            isPermissionGranted = true;
+        }
+
+        // Get context
+        context = getContext();
+    }
 
     @PluginMethod
     public void echo(PluginCall call) {
@@ -40,14 +65,18 @@ public class CapacitorVideoPlayer extends Plugin {
     @PluginMethod
     public void initPlayer(final PluginCall call) {
         saveCall(call);
-        context = getContext();
         final JSObject ret = new JSObject();
         ret.put("method", "initPlayer");
         ret.put("result", false);
         // Check if running on a TV Device
         isTV = isDeviceTV(context);
         Log.d(TAG, "**** isTV " + isTV + " ****");
-
+        Log.v(TAG, "*** in initPlayer " + isPermissionGranted + " ***");
+        if (!isPermissionGranted) {
+            ret.put("message", "initPlayer command failed: Permissions not granted");
+            call.success(ret);
+            return;
+        }
         String _mode = call.getString("mode");
         if (_mode == null) {
             ret.put("message", "Must provide a Mode (fullscreen/embedded)");
@@ -69,28 +98,80 @@ public class CapacitorVideoPlayer extends Plugin {
                 call.success(ret);
                 return;
             }
+            AddObserversToNotificationCenter();
             Log.v(TAG, "display url: " + url);
             String http = url.substring(0, 4);
             if (http.equals("http")) {
                 videoPath = url;
+                createFullScreenFragment(call, videoPath, isTV, playerId, false, null);
             } else {
-                videoPath = "android.resource://" + context.getPackageName() + "/" + url; // works
-                //            url = "content://"+appPath+ "/" + url ;
-                Log.v(TAG, "calculated url: " + url);
+                if (url.equals("internal")) {
+                    createPickerVideoFragment(call);
+                } else {
+                    videoPath = "android.resource://" + context.getPackageName() + "/" + url; // works
+                    Log.v(TAG, "calculated url: " + url);
+                    createFullScreenFragment(call, videoPath, isTV, playerId, false, null);
+                }
             }
         } else if (mode == "embedded") {
             ret.put("message", "Embedded Mode not implemented");
             call.success(ret);
             return;
         }
-        Log.v(TAG, "videoPath: " + videoPath);
-        AddObserversToNotificationCenter();
+    }
 
+    private void createPickerVideoFragment(final PluginCall call) {
+        pkFragment = new PickerVideoFragment();
+
+        bridge
+            .getActivity()
+            .runOnUiThread(
+                new Runnable() {
+
+                    @Override
+                    public void run() {
+                        JSObject ret = new JSObject();
+                        ret.put("method", "initPlayer");
+                        FrameLayout pickerLayoutView = getBridge().getActivity().findViewById(pickerLayoutViewId);
+                        if (pickerLayoutView != null) {
+                            ret.put("result", false);
+                            ret.put("message", "FrameLayout for VideoPicker already exists");
+                        } else {
+                            // Initialize a new FrameLayout as container for fragment
+                            pickerLayoutView = new FrameLayout(getActivity().getApplicationContext());
+                            pickerLayoutView.setId(pickerLayoutViewId);
+                            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.MATCH_PARENT
+                            );
+                            // Apply the Layout Parameters to frameLayout
+                            pickerLayoutView.setLayoutParams(lp);
+
+                            ((ViewGroup) getBridge().getWebView().getParent()).addView(pickerLayoutView);
+                            loadFragment(pkFragment, pickerLayoutViewId);
+                            ret.put("result", true);
+                        }
+                        call.success(ret);
+                    }
+                }
+            );
+    }
+
+    private void createFullScreenFragment(
+        final PluginCall call,
+        String videoPath,
+        Boolean isTV,
+        String playerId,
+        Boolean isInternal,
+        Long videoId
+    ) {
         fsFragment = new FullscreenExoPlayerFragment();
 
         fsFragment.videoPath = videoPath;
-        fsFragment.isTV = false;
+        fsFragment.isTV = isTV;
         fsFragment.playerId = playerId;
+        fsFragment.isInternal = isInternal;
+        fsFragment.videoId = videoId;
 
         bridge
             .getActivity()
@@ -546,7 +627,7 @@ public class CapacitorVideoPlayer extends Plugin {
         return false;
     }
 
-    private void loadFragment(/*VideoPlayerFragment*/FullscreenExoPlayerFragment vpFragment, int frameLayoutId) {
+    private void loadFragment(/*VideoPlayerFragmentFullscreenExoPlayer*/Fragment vpFragment, int frameLayoutId) {
         // create a FragmentManager
         FragmentManager fm = getBridge().getActivity().getFragmentManager();
         // create a FragmentTransaction to begin the transaction and replace the Fragment
@@ -556,7 +637,7 @@ public class CapacitorVideoPlayer extends Plugin {
         fragmentTransaction.commit(); // save the changes
     }
 
-    private void removeFragment(/*VideoPlayerFragment*/FullscreenExoPlayerFragment vpFragment) {
+    private void removeFragment(/*VideoPlayerFragmentFullscreenExoPlayer*/Fragment vpFragment) {
         FragmentManager fm = getBridge().getActivity().getFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         fragmentTransaction.remove(vpFragment);
@@ -655,7 +736,7 @@ public class CapacitorVideoPlayer extends Plugin {
                     public void run() {
                         boolean ret = false;
                         final JSObject data = new JSObject();
-                        if (Integer.valueOf(this.getInfo().get("dismiss")) == 1) ret = true;
+                        if (Integer.valueOf((String) this.getInfo().get("dismiss")) == 1) ret = true;
                         data.put("dismiss", ret);
                         bridge
                             .getActivity()
@@ -676,6 +757,27 @@ public class CapacitorVideoPlayer extends Plugin {
                                     }
                                 }
                             );
+                    }
+                }
+            );
+        NotificationCenter
+            .defaultCenter()
+            .addMethodForNotification(
+                "videoPathInternalReady",
+                new MyRunnable() {
+
+                    @Override
+                    public void run() {
+                        long videoId = (Long) this.getInfo().get("videoId");
+                        // Get the previously saved call
+                        PluginCall savedCall = getSavedCall();
+                        FrameLayout pickerLayoutView = getBridge().getActivity().findViewById(pickerLayoutViewId);
+                        if (pickerLayoutView != null) {
+                            ((ViewGroup) getBridge().getWebView().getParent()).removeView(pickerLayoutView);
+                            removeFragment(pkFragment);
+                        }
+                        pkFragment = null;
+                        createFullScreenFragment(savedCall, videoPath, isTV, fsPlayerId, true, videoId);
                     }
                 }
             );

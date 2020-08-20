@@ -86,6 +86,7 @@ attr alertDialogButtonGroupStyle
 attr alertDialogCenterButtons
 attr alertDialogStyle
 attr alertDialogTheme
+attr alignmentMode
 attr allowStacking
 attr alpha
 attr alphabeticModifiers
@@ -232,6 +233,8 @@ attr colorSecondary
 attr colorSecondaryVariant
 attr colorSurface
 attr colorSwitchThumbNormal
+attr columnCount
+attr columnOrderPreserved
 attr commitIcon
 attr constraintSet
 attr constraint_referenced_ids
@@ -428,6 +431,9 @@ attr layout_anchorGravity
 attr layout_behavior
 attr layout_collapseMode
 attr layout_collapseParallaxMultiplier
+attr layout_column
+attr layout_columnSpan
+attr layout_columnWeight
 attr layout_constrainedHeight
 attr layout_constrainedWidth
 attr layout_constraintBaseline_creator
@@ -478,9 +484,13 @@ attr layout_goneMarginLeft
 attr layout_goneMarginRight
 attr layout_goneMarginStart
 attr layout_goneMarginTop
+attr layout_gravity
 attr layout_insetEdge
 attr layout_keyline
 attr layout_optimizationLevel
+attr layout_row
+attr layout_rowSpan
+attr layout_rowWeight
 attr layout_scrollFlags
 attr layout_scrollInterpolator
 attr liftOnScroll
@@ -538,6 +548,7 @@ attr navigationMode
 attr navigationViewStyle
 attr number
 attr numericModifiers
+attr orientation
 attr overlapAnchor
 attr paddingBottomNoButtons
 attr paddingEnd
@@ -575,6 +586,8 @@ attr resize_mode
 attr reverseLayout
 attr rewind_increment
 attr rippleColor
+attr rowCount
+attr rowOrderPreserved
 attr scopeUris
 attr scrimAnimationDuration
 attr scrimBackground
@@ -737,6 +750,7 @@ attr trackTintMode
 attr ttcIndex
 attr unplayed_color
 attr useCompatPadding
+attr useDefaultMargins
 attr useMaterialThemeColors
 attr use_artwork
 attr use_controller
@@ -790,6 +804,7 @@ color background_floating_material_dark
 color background_floating_material_light
 color background_material_dark
 color background_material_light
+color black
 color bright_foreground_disabled_material_dark
 color bright_foreground_disabled_material_light
 color bright_foreground_inverse_material_dark
@@ -869,6 +884,7 @@ color exo_edit_mode_background_color
 color exo_error_message_background_color
 color foreground_material_dark
 color foreground_material_light
+color grey
 color highlighted_text_material_dark
 color highlighted_text_material_light
 color material_blue_grey_800
@@ -971,6 +987,7 @@ color test_mtrl_calendar_day
 color test_mtrl_calendar_day_selected
 color tooltip_background_dark
 color tooltip_background_light
+color white
 dimen abc_action_bar_content_inset_material
 dimen abc_action_bar_content_inset_with_nav
 dimen abc_action_bar_default_height_material
@@ -1064,6 +1081,7 @@ dimen compat_control_corner_material
 dimen compat_notification_large_icon_max_height
 dimen compat_notification_large_icon_max_width
 dimen default_dimension
+dimen default_gap
 dimen design_appbar_elevation
 dimen design_bottom_navigation_active_item_max_width
 dimen design_bottom_navigation_active_item_min_width
@@ -1470,6 +1488,9 @@ drawable googleg_standard_color_18
 drawable ic_calendar_black_24dp
 drawable ic_clear_black_24dp
 drawable ic_edit_black_24dp
+drawable ic_image_background
+drawable ic_img_16_9_background
+drawable ic_img_9_16_background
 drawable ic_keyboard_arrow_left_black_24dp
 drawable ic_keyboard_arrow_right_black_24dp
 drawable ic_menu_arrow_down_black_24dp
@@ -1565,6 +1586,8 @@ id add
 id adjust_height
 id adjust_width
 id alertTitle
+id alignBounds
+id alignMargins
 id always
 id async
 id auto
@@ -1578,6 +1601,7 @@ id browser_actions_menu_view
 id buttonPanel
 id cancel_action
 id cancel_button
+id cardView
 id center
 id checkbox
 id checked
@@ -1648,6 +1672,7 @@ id ghost_view_holder
 id gone
 id group_divider
 id home
+id horizontal
 id icon
 id icon_group
 id icon_only
@@ -1717,6 +1742,7 @@ id pin
 id progress_circular
 id progress_horizontal
 id radio
+id recyclerView_videos
 id right
 id right_icon
 id right_side
@@ -1794,10 +1820,14 @@ id transition_layout_save
 id transition_position
 id transition_scene_layoutid_cache
 id transition_transform
+id tv_duration
+id tv_thumbnail
+id tv_title
 id unchecked
 id uniform
 id unlabeled
 id up
+id vertical
 id videoViewId
 id video_decoder_gl_surface_view
 id view_offset_helper
@@ -1898,6 +1928,7 @@ layout exo_simple_player_view
 layout exo_track_selection_dialog
 layout fragment_bridge
 layout fragment_fs_exoplayer
+layout fragment_picker_video
 layout mtrl_alert_dialog
 layout mtrl_alert_dialog_actions
 layout mtrl_alert_dialog_title
@@ -1941,6 +1972,7 @@ layout notification_template_media
 layout notification_template_media_custom
 layout notification_template_part_chronometer
 layout notification_template_part_time
+layout row_video
 layout select_dialog_item_material
 layout select_dialog_multichoice_material
 layout select_dialog_singlechoice_material
@@ -2841,6 +2873,8 @@ styleable FontFamilyFont android_font android_fontStyle android_fontVariationSet
 styleable ForegroundLinearLayout android_foreground android_foregroundGravity foregroundInsidePadding
 styleable GradientColor android_centerColor android_centerX android_centerY android_endColor android_endX android_endY android_gradientRadius android_startColor android_startX android_startY android_tileMode android_type
 styleable GradientColorItem android_color android_offset
+styleable GridLayout alignmentMode columnCount columnOrderPreserved orientation rowCount rowOrderPreserved useDefaultMargins
+styleable GridLayout_Layout android_layout_height android_layout_margin android_layout_marginBottom android_layout_marginLeft android_layout_marginRight android_layout_marginTop android_layout_width layout_column layout_columnSpan layout_columnWeight layout_gravity layout_row layout_rowSpan layout_rowWeight
 styleable LinearConstraintLayout android_orientation
 styleable LinearLayoutCompat android_baselineAligned android_baselineAlignedChildIndex android_gravity android_orientation android_weightSum divider dividerPadding measureWithLargestChild showDividers
 styleable LinearLayoutCompat_Layout android_layout_gravity android_layout_height android_layout_weight android_layout_width
