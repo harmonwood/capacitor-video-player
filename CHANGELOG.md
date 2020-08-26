@@ -1,3 +1,10 @@
+## 2.3.0 (2020-08-26)
+
+### Added Features
+
+- add read video from internal application folder on iOS
+- add read video from internal application folder on Android
+
 ## 2.3.0-beta.4 (202-08-20)
 
 ### Bug Fixes

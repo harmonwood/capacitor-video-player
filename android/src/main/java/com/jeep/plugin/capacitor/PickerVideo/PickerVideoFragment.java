@@ -15,9 +15,12 @@ import android.view.ViewGroup;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.jeep.plugin.capacitor.NotificationCenter;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.R;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class PickerVideoFragment extends Fragment {
     private static final String TAG = PickerVideoFragment.class.getName();
@@ -36,17 +39,31 @@ public class PickerVideoFragment extends Fragment {
      * @param savedInstanceState
      * @return View
      */
+    @SuppressWarnings("serial")
     @RequiresApi(api = Build.VERSION_CODES.M)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = container.getContext();
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_picker_video, container, false);
         loadVideos();
-        recyclerView = view.findViewById(R.id.recyclerView_videos);
-        recyclerViewLayoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(recyclerViewLayoutManager);
-        adapterVideoList = new AdapterVideoList(context, this, videosList);
-        recyclerView.setAdapter(adapterVideoList);
+        Log.v(TAG, "*** videosList.size() " + videosList.size());
+        if (videosList.size() > 0) {
+            recyclerView = view.findViewById(R.id.recyclerView_videos);
+            recyclerViewLayoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
+            recyclerView.setLayoutManager(recyclerViewLayoutManager);
+            adapterVideoList = new AdapterVideoList(context, this, videosList);
+            recyclerView.setAdapter(adapterVideoList);
+        } else {
+            Map<String, Object> info = new HashMap<String, Object>() {
+
+                {
+                    long videoId = -1;
+                    put("videoId", videoId);
+                }
+            };
+            Log.v(TAG, "*** info " + info.toString());
+            NotificationCenter.defaultCenter().postNotification("videoPathInternalReady", info);
+        }
         return view;
     }
 

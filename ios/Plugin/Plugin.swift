@@ -28,6 +28,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
     var backgroundObserver: Any?
     var foregroundObserver: Any?
     var vpInternalObserver: Any?
+    var docPath: String = ""
 
     override public func load() {
         self.addObserversToNotificationCenter()
@@ -67,21 +68,9 @@ public class CapacitorVideoPlayer: CAPPlugin {
         }
         self.fsPlayerId = playerId
         self.mode = mode
-        // add audio session
-        self.audioSession = AVAudioSession.sharedInstance()
-        do {
-            // Set the audio session category, mode, and options.
-            try self.audioSession?.setCategory(.playback, mode: .moviePlayback,
-                                               options: [.mixWithOthers, .allowAirPlay])
-        } catch {
-            let error: String = "Failed to set audio session category."
-            print(error)
-            call.success([ "result": false, "method": "initPlayer", "message": error])
-            return
-        }
-
+        self.docPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
         if mode == "fullscreen" {
-            guard let videoPath = call.options["url"] as? String else {
+            guard var videoPath = call.options["url"] as? String else {
                 let error: String = "Must provide a video url"
                 print(error)
                 call.success([ "result": false, "method": "initPlayer", "message": error])
@@ -90,9 +79,23 @@ public class CapacitorVideoPlayer: CAPPlugin {
             if videoPath == "internal" {
                 self.pickVideoFromInternal()
             } else {
-                if videoPath.count > 0 {
-                    if let url = URL(string: videoPath) {
-                        createVideoPlayerFullScreenView(call: call, videoUrl: url)
+                if String(videoPath.prefix(11)) == "application" {
+                    let path: String = String(videoPath.dropFirst(12))
+                    videoPath = docPath.appendingFormat("/\(path)")
+                    if !isFileExists(filePath: videoPath) {
+                        print("*** video file does not exist at path \n \(videoPath) \n***")
+                        let info: [String: Any] = ["dismiss": true]
+                        self.notifyListeners("jeepCapVideoPlayerExit", data: info, retainUntilConsumed: true)
+                        call.success([ "result": false, "method": "initPlayer", "message": "video file does not exist"])
+                        return
+                    }
+                    let url = URL(fileURLWithPath: videoPath)
+                    createVideoPlayerFullScreenView(call: call, videoUrl: url)
+                } else {
+                    if videoPath.count > 0 {
+                        if let url = URL(string: videoPath) {
+                            createVideoPlayerFullScreenView(call: call, videoUrl: url)
+                        }
                     }
                 }
             }
@@ -119,17 +122,15 @@ public class CapacitorVideoPlayer: CAPPlugin {
             }
             // Present the Player View Controller
             self.bridge.viewController.present(videoPlayer, animated: true, completion: {
-                do {
-                    // Activate the audio session.
-                    try self.audioSession?.setActive(true)
-                    call.success([ "result": true, "method": "createVideoPlayerFullScreenView", "value": true])
-                    return
-                } catch {
-                    let error: String = "Failed to set audio session category"
-                    print(error)
-                    call.success([ "result": false, "method": "createVideoPlayerFullScreenView", "message": error])
-                    return
-                }
+                // add audio session
+                self.audioSession = AVAudioSession.sharedInstance()
+                // Set the audio session category, mode, and options.
+                try? self.audioSession?.setCategory(.playback, mode: .moviePlayback,
+                                                   options: [.mixWithOthers, .allowAirPlay])
+                // Activate the audio session.
+                try? self.audioSession?.setActive(true)
+                call.success([ "result": true, "method": "createVideoPlayerFullScreenView", "value": true])
+                return
             })
         }
     }
@@ -192,21 +193,21 @@ public class CapacitorVideoPlayer: CAPPlugin {
         }
         if self.mode == "fullscreen" && self.fsPlayerId == playerId {
 
-             if self.videoPlayerFullScreenView != nil {
-                 if let playerView = self.videoPlayerFullScreenView {
+            if self.videoPlayerFullScreenView != nil {
+                if let playerView = self.videoPlayerFullScreenView {
                      DispatchQueue.main.async {
                         let isPlaying: Bool = playerView.isPlaying
                         call.success([ "result": true, "method": "isPlaying", "value": isPlaying])
                         return
                      }
-                 } else {
+                } else {
                     let error: String = "Fullscreen player not found"
                     print(error)
                     call.success([ "result": false, "method": "isPlaying", "message": error])
                     return
                 }
 
-             } else {
+            } else {
                 let error: String = "No videoPlayerFullScreenView"
                 print(error)
                 call.success([ "result": false, "method": "isPlaying", "message": error])
@@ -569,7 +570,6 @@ public class CapacitorVideoPlayer: CAPPlugin {
                 }
             } else {
                let error: String = "No videoPlayerFullScreenView"
-               print(error)
                call.success([ "result": false, "method": "stopAllPlayers", "message": error])
                return
 
@@ -644,14 +644,29 @@ public class CapacitorVideoPlayer: CAPPlugin {
         return
     }
     func videoPathInternalReady(notification: Notification) {
-        guard let info = notification.userInfo as? [String: Any] else { return }
-        guard let videoUrl = info["videoUrl"] as? URL else { return}
-        guard let call = self.call else { return }
         self.bridge.viewController.dismiss(animated: true, completion: {
         })
+        guard let info = notification.userInfo as? [String: Any] else { return }
+        guard let videoUrl = info["videoUrl"] as? URL else {
+            NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
+            return
+        }
+        guard let call = self.call else { return }
         self.createVideoPlayerFullScreenView(call: call, videoUrl: videoUrl)
         return
     }
+
+    // MARK: - isFileExists
+
+    func isFileExists(filePath: String) -> Bool {
+        var ret: Bool = false
+        let fileManager = FileManager.default
+        if fileManager.fileExists(atPath: filePath) {
+            ret = true
+        }
+        return ret
+    }
+
 }
 // swiftlint:enable type_body_length
 // swiftlint:enable file_length

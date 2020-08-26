@@ -14,7 +14,6 @@ Initialize the Video Player
   initialize the player for a video given by an url
 
   the `url` parameter can be :
-  . "internal" for video from gallery for iOS and Android plugin only
   . "https:/..../video.mp4" for files from the web
   . if not "https"
   . for IOS "public/assets/video/video.mp4"
@@ -24,6 +23,12 @@ Initialize the Video Player
   the `playerId` is the id of a div element used as container for the player
 
   the `componentTag` is the component tag or component selector from where the video player is called
+
+- available for IOS, Android Plugins
+
+  the `url` parameter can be :
+  . "application/files/video.mp4" for video from the application folder (iOS, Android)
+  . "internal" pick a video from gallery for iOS and Android plugin only
 
 * available for Web Plugin only
 
@@ -139,3 +144,13 @@ The listeners are attached to the plugin not anymore to the DOM document element
 | `jeepCapVideoPlayerPause` | Emitted when the video is paused        | `data:{fromPlayerId:string,currentTime:number}` |
 | `jeepCapVideoPlayerEnded` | Emitted when the video has ended        | `data:{fromPlayerId:string,currentTime:number}` |
 | `jeepCapVideoPlayerExit`  | Emitted when the Exit button is clicked | `data:{dismiss:boolean}`                        |
+
+## Application Folder
+
+- iOS Plugin
+  . "application/files/video.mp4" is :
+  `/data/Containers/Data/Applications/YOUR_APPLICATION/Documents/files`
+
+- Android Plugin
+  . "application/files/video.mp4" is :
+  `/data/user/0/YOUR_APPLICATION_PACKAGE/files/`

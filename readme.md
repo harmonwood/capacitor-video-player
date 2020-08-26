@@ -83,22 +83,23 @@ No configuration required for this plugin
 
 ## Supported methods
 
-| Name                         | Android | iOS | Electron | Web |
-| :--------------------------- | :------ | :-- | :------- | :-- |
-| initPlayer (mode fullscreen) | ✅      | ✅  | ✅       | ✅  |
-| initPlayer (mode embedded)   | ❌      | ❌  | ✅       | ✅  |
-| initPlayer (url internal)    | ✅      | ✅  | ❌       | ❌  |
-| isPlaying                    | ✅      | ✅  | ✅       | ✅  |
-| play                         | ✅      | ✅  | ✅       | ✅  |
-| pause                        | ✅      | ✅  | ✅       | ✅  |
-| getCurrentTime               | ✅      | ✅  | ✅       | ✅  |
-| setCurrentTime               | ✅      | ✅  | ✅       | ✅  |
-| getDuration                  | ✅      | ✅  | ✅       | ✅  |
-| getMuted                     | ✅      | ✅  | ✅       | ✅  |
-| setMuted                     | ✅      | ✅  | ✅       | ✅  |
-| getVolume                    | ✅      | ✅  | ✅       | ✅  |
-| setVolume                    | ✅      | ✅  | ✅       | ✅  |
-| stopAllPlayers               | ✅      | ✅  | ✅       | ✅  |
+| Name                               | Android | iOS | Electron | Web |
+| :--------------------------------- | :------ | :-- | :------- | :-- |
+| initPlayer (mode fullscreen)       | ✅      | ✅  | ✅       | ✅  |
+| initPlayer (mode embedded)         | ❌      | ❌  | ✅       | ✅  |
+| initPlayer (url internal)          | ✅      | ✅  | ❌       | ❌  |
+| initPlayer (url application/files) | ✅      | ✅  | ❌       | ❌  |
+| isPlaying                          | ✅      | ✅  | ✅       | ✅  |
+| play                               | ✅      | ✅  | ✅       | ✅  |
+| pause                              | ✅      | ✅  | ✅       | ✅  |
+| getCurrentTime                     | ✅      | ✅  | ✅       | ✅  |
+| setCurrentTime                     | ✅      | ✅  | ✅       | ✅  |
+| getDuration                        | ✅      | ✅  | ✅       | ✅  |
+| getMuted                           | ✅      | ✅  | ✅       | ✅  |
+| setMuted                           | ✅      | ✅  | ✅       | ✅  |
+| getVolume                          | ✅      | ✅  | ✅       | ✅  |
+| setVolume                          | ✅      | ✅  | ✅       | ✅  |
+| stopAllPlayers                     | ✅      | ✅  | ✅       | ✅  |
 
 ## Supported listeners
 

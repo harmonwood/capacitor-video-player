@@ -47,7 +47,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                         message: 'Must provide a Video Url',
                     });
                 }
-                if (url == "internal") {
+                if (url == 'internal') {
                     return Promise.resolve({
                         result: false,
                         method: 'initPlayer',
@@ -410,7 +410,11 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
     }
     _initializeVideoPlayer(url, playerId, mode, componentTag, playerSize) {
         return __awaiter(this, void 0, void 0, function* () {
-            const videoURL = url ? url.indexOf("%2F") == -1 ? encodeURI(url) : url : null;
+            const videoURL = url
+                ? url.indexOf('%2F') == -1
+                    ? encodeURI(url)
+                    : url
+                : null;
             if (videoURL === null)
                 return Promise.resolve(false);
             const videoContainer = yield this._getContainerElement(playerId, componentTag);

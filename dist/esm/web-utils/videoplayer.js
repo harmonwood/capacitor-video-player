@@ -219,12 +219,12 @@ export class VideoPlayer {
                 }
                 this.videoEl.addEventListener('enterpictureinpicture', (event) => {
                     this.pipWindow = event.pictureInPictureWindow;
-                    console.log(" Enter PiP Mode ", this.pipWindow);
+                    console.log(' Enter PiP Mode ', this.pipWindow);
                     this.pipMode = true;
                     this._closeFullscreen();
                 });
                 this.videoEl.addEventListener('leavepictureinpicture', () => {
-                    console.log(" Exit PiP Mode ");
+                    console.log(' Exit PiP Mode ');
                     this.pipMode = false;
                     if (!this._isEnded) {
                         this._goFullscreen();

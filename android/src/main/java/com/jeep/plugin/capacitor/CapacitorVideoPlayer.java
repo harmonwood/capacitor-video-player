@@ -11,12 +11,18 @@ import android.os.Build;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.jeep.plugin.capacitor.PickerVideo.PickerVideoFragment;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 @NativePlugin(
     permissions = { Manifest.permission.INTERNET, Manifest.permission.READ_EXTERNAL_STORAGE },
@@ -107,8 +113,25 @@ public class CapacitorVideoPlayer extends Plugin {
             } else {
                 if (url.equals("internal")) {
                     createPickerVideoFragment(call);
+                } else if (url.substring(0, 11).equals("application")) {
+                    String filesDir = context.getFilesDir() + "/";
+                    videoPath = filesDir + url.substring(url.lastIndexOf('/') + 1);
+                    File file = new File(videoPath);
+                    if (!file.exists()) {
+                        Map<String, Object> info = new HashMap<String, Object>() {
+
+                            {
+                                put("dismiss", "1");
+                            }
+                        };
+                        NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
+                        ret.put("message", "initPlayer command failed: Video file not found");
+                        call.success(ret);
+                        return;
+                    }
+                    createFullScreenFragment(call, videoPath, isTV, playerId, false, null);
                 } else {
-                    videoPath = "android.resource://" + context.getPackageName() + "/" + url; // works
+                    videoPath = "android.resource://" + context.getPackageName() + "/" + url;
                     Log.v(TAG, "calculated url: " + url);
                     createFullScreenFragment(call, videoPath, isTV, playerId, false, null);
                 }
@@ -627,7 +650,7 @@ public class CapacitorVideoPlayer extends Plugin {
         return false;
     }
 
-    private void loadFragment(/*VideoPlayerFragmentFullscreenExoPlayer*/Fragment vpFragment, int frameLayoutId) {
+    private void loadFragment(Fragment vpFragment, int frameLayoutId) {
         // create a FragmentManager
         FragmentManager fm = getBridge().getActivity().getFragmentManager();
         // create a FragmentTransaction to begin the transaction and replace the Fragment
@@ -777,7 +800,18 @@ public class CapacitorVideoPlayer extends Plugin {
                             removeFragment(pkFragment);
                         }
                         pkFragment = null;
-                        createFullScreenFragment(savedCall, videoPath, isTV, fsPlayerId, true, videoId);
+                        if (videoId != -1) {
+                            createFullScreenFragment(savedCall, videoPath, isTV, fsPlayerId, true, videoId);
+                        } else {
+                            Toast.makeText(context, "No Video files found ", Toast.LENGTH_SHORT).show();
+                            Map<String, Object> info = new HashMap<String, Object>() {
+
+                                {
+                                    put("dismiss", "1");
+                                }
+                            };
+                            NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
+                        }
                     }
                 }
             );

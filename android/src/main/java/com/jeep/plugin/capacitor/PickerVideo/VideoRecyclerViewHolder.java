@@ -47,13 +47,14 @@ public class VideoRecyclerViewHolder extends RecyclerView.ViewHolder {
         parent.setOnClickListener(
             new View.OnClickListener() {
 
+                @SuppressWarnings("serial")
                 @Override
                 public void onClick(View v) {
-                    final long videoId = modelVideo.getId();
-                    Log.v(TAG, "**** in onBindViewHolder videoId: " + videoId + " ****");
-                    final Map<String, Object> info = new HashMap<String, Object>() {
+                    Map<String, Object> info = new HashMap<String, Object>() {
 
                         {
+                            long videoId = modelVideo.getId();
+                            Log.v(TAG, "**** in onBindViewHolder videoId: " + videoId + " ****");
                             put("videoId", videoId);
                         }
                     };
