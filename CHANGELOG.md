@@ -1,3 +1,9 @@
+## 2.3.0-1 (2020-08-26)
+
+### Bug Fixes
+
+- fix issue#18 check for videoPlayFullScreenView nil
+
 ## 2.3.0 (2020-08-26)
 
 ### Added Features
@@ -5,7 +11,7 @@
 - add read video from internal application folder on iOS
 - add read video from internal application folder on Android
 
-## 2.3.0-beta.4 (202-08-20)
+## 2.3.0-beta.4 (2020-08-20)
 
 ### Bug Fixes
 

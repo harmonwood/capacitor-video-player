@@ -170,12 +170,14 @@ public class CapacitorVideoPlayer: CAPPlugin {
         backgroundObserver =
             NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil,
                                                    queue: nil) { (_) in
-            self.videoPlayerFullScreenView?.videoPlayer.player = nil
+                    if self.videoPlayerFullScreenView != nil {
+                        self.videoPlayerFullScreenView?.videoPlayer.player = nil
+                    }
         }
         foregroundObserver =
             NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil,
                                                    queue: OperationQueue.main) { (_) in
-            if self.bgPlayer != nil {
+            if self.bgPlayer != nil && self.videoPlayerFullScreenView != nil {
                 self.videoPlayerFullScreenView?.videoPlayer.player = self.bgPlayer
             }
         }
