@@ -9,20 +9,34 @@
 import UIKit
 
 class VideoModel: NSObject {
-    var videos:[Video] = []
-    
-    func addVideo(video:Video) {
+    var videos: [Video] = []
+
+    func addVideo(video: Video) {
         videos.append(video)
     }
-    
+
     func getVideos() -> [Video] {
         return videos
     }
-    
+
     func printVideos() {
         for video in self.videos {
-            print("Video \(video.urlPath!) \n \(video.title!) \n \(video.content!) \n \(video.width!) \(video.height!)")
+            guard let urlPath: String = video.urlPath else {
+                continue
+            }
+            guard let title: String = video.title else {
+                continue
+            }
+            guard let content: String = video.content else {
+                continue
+            }
+            guard let width: Int = video.width else {
+                continue
+            }
+            guard let height: Int = video.height else {
+                continue
+            }
+            print("Video \(urlPath) \n \(title) \n \(content) \n \(width) \(height)")
         }
-
     }
 }

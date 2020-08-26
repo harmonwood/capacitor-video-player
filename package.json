@@ -1,29 +1,52 @@
 {
   "name": "capacitor-video-player",
-  "version": "2.1.0",
+  "version": "2.3.0-beta.4",
   "description": "Capacitor Video Player Plugin",
+  "homepage": "https://github.com/jepiqueau/capacitor-video-player",
   "main": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "scripts": {
-    "build": "npm run clean && tsc && npm run copy:hls",
-    "copy:hls": "cp -r src/web-utils/hls dist/esm/web-utils",
-    "clean": "rm -rf ./dist",
+    "lint": "npm run prettier -- --check && npm run swiftlint -- lint",
+    "prettier": "prettier \"**/*.{css,html,ts,js,java}\"",
+    "fmt": "npm run prettier -- --write && npm run swiftlint -- autocorrect",
+    "swiftlint": "node-swiftlint",
+    "build": "npm run clean && tsc && rollup -c rollup.config.js",
+    "clean": "rimraf ./dist",
     "watch": "tsc --watch",
-    "prepublishOnly": "npm run build",
-    "deploy": "npm publish"
+    "prepublishOnly": "npm run build"
   },
   "author": "Jean Pierre Quéau",
   "license": "MIT",
   "dependencies": {
-    "@capacitor/core": "^2.1.0",
-    "@types/hls.js": "^0.12.6",
-    "hls.js": "^0.13.2"
+    "@types/hls.js": "^0.13.0",
+    "hls.js": "^0.14.7"
   },
   "devDependencies": {
-    "@capacitor/android": "^2.1.0",
-    "@capacitor/ios": "^2.1.0",
+    "@capacitor/android": "^2.3.0",
+    "@capacitor/core": "^2.3.0",
+    "@capacitor/ios": "^2.3.0",
+    "@ionic/prettier-config": "^1.0.0",
+    "@ionic/swiftlint-config": "^1.1.1",
+    "@rollup/plugin-node-resolve": "^8.4.0",
+    "@types/node": "^13.13.2",
+    "@types/sqlite3": "^3.1.6",
+    "husky": "^4.2.5",
+    "np": "^6.4.0",
+    "prettier": "^2.0.5",
+    "prettier-plugin-java": "^0.8.0",
+    "pretty-quick": "^2.0.1",
     "rimraf": "^3.0.0",
-    "typescript": "^3.2.4"
+    "rollup": "^2.21.0",
+    "swiftlint": "^1.0.1",
+    "typescript": "^3.9.6"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "peerDependencies": {
+    "@capacitor/core": "^2.3.0"
   },
   "files": [
     "dist/",
@@ -46,6 +69,8 @@
       "src": "android"
     }
   },
+  "prettier": "@ionic/prettier-config",
+  "swiftlint": "@ionic/swiftlint-config",
   "repository": {
     "type": "git",
     "url": "https://github.com/jepiqueau/capacitor-video-player.git"

@@ -4,6 +4,7 @@
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/exoplayer-ui-2.11.4.aar/050a43b985d857d3a99df9d3ce8a6639/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/exoplayer-ui-2.11.4.aar/050a43b985d857d3a99df9d3ce8a6639/AndroidManifest.xml" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/exoplayer-ui-2.11.4.aar/050a43b985d857d3a99df9d3ce8a6639/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/exoplayer-ui-2.11.4.aar/050a43b985d857d3a99df9d3ce8a6639/res" />
     </CLASSES>

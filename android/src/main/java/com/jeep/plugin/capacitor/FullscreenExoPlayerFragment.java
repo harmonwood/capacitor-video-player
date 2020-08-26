@@ -3,12 +3,14 @@ package com.jeep.plugin.capacitor;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Fragment;
+import android.content.ContentUris;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -17,10 +19,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
-
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.LoadControl;
@@ -45,22 +45,23 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.R;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class FullscreenExoPlayerFragment extends Fragment {
     public String videoPath;
     public String playerId;
     public Boolean isTV;
+    public Boolean isInternal;
+    public Long videoId;
 
     private static final String TAG = FullscreenExoPlayerFragment.class.getName();
     public static final long UNKNOWN_TIME = -1L;
     private List<String> supportedFormat = Arrays.asList(
-            new String[]{"mp4","webm","ogv","3gp","flv","dash","mpd","m3u8","ism","ytube",""});
+        new String[] { "mp4", "webm", "ogv", "3gp", "flv", "dash", "mpd", "m3u8", "ism", "ytube", "" }
+    );
     private FullscreenExoPlayerFragment.PlaybackStateListener playbackStateListener;
     private PlayerView playerView;
     private String vType = null;
@@ -79,7 +80,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private ConstraintLayout constLayout;
     private Context context;
     private boolean isMuted = false;
-    private float curVolume = (float)0.5;
+    private float curVolume = (float) 0.5;
 
     // Current playback position (in milliseconds).
     private int mCurrentPosition = 0;
@@ -97,8 +98,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * @return View
      */
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = container.getContext();
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_fs_exoplayer, container, false);
@@ -107,69 +107,76 @@ public class FullscreenExoPlayerFragment extends Fragment {
         Pbar = view.findViewById(R.id.indeterminateBar);
         // Listening for events
         playbackStateListener = new FullscreenExoPlayerFragment.PlaybackStateListener();
-        if(isTV) {
+        if (isTV) {
             Toast.makeText(context, "Device is a TV ", Toast.LENGTH_SHORT).show();
         }
 
-        uri = Uri.parse(videoPath);
-        Log.v(TAG,"display url: "+uri);
-        Log.v(TAG,"display isTV: "+isTV);
-        // get video type
-        vType = getVideoType(uri);
-        if (uri != null) {
+        if (!isInternal) {
+            uri = Uri.parse(videoPath);
+            Log.v(TAG, "display url: " + uri);
+            Log.v(TAG, "display isTV: " + isTV);
+            // get video type
+            vType = getVideoType(uri);
+        }
+        if (uri != null || isInternal) {
             // go fullscreen
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             if (savedInstanceState != null) {
                 mCurrentPosition = savedInstanceState.getInt(PLAYBACK_TIME);
             }
 
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    // Set the onKey listener
-                    view.setFocusableInTouchMode(true);
-                    view.requestFocus();
-                    view.setOnKeyListener(new View.OnKeyListener() {
+            getActivity()
+                .runOnUiThread(
+                    new Runnable() {
+
                         @Override
-                        public boolean onKey(View v, int keyCode, KeyEvent event) {
-                            if (event.getAction() == KeyEvent.ACTION_UP) {
-                                long videoPosition = player.getCurrentPosition();
-                                if(keyCode == KeyEvent.KEYCODE_BACK ) {
-                                    backPressed();
-                                } else if(isTV) {
-                                    switch (keyCode) {
-                                        case KeyEvent.KEYCODE_DPAD_RIGHT:
-                                            fastForward(videoPosition, 1);
-                                            break;
-                                        case KeyEvent.KEYCODE_DPAD_LEFT:
-                                            rewind(videoPosition, 1);
-                                            break;
-                                        case KeyEvent.KEYCODE_DPAD_CENTER:
-                                            play_pause();
-                                            break;
-                                        case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
-                                            fastForward(videoPosition, 2);
-                                            break;
-                                        case KeyEvent.KEYCODE_MEDIA_REWIND:
-                                            rewind(videoPosition, 2);
-                                            break;
+                        public void run() {
+                            // Set the onKey listener
+                            view.setFocusableInTouchMode(true);
+                            view.requestFocus();
+                            view.setOnKeyListener(
+                                new View.OnKeyListener() {
+
+                                    @Override
+                                    public boolean onKey(View v, int keyCode, KeyEvent event) {
+                                        if (event.getAction() == KeyEvent.ACTION_UP) {
+                                            long videoPosition = player.getCurrentPosition();
+                                            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                                backPressed();
+                                            } else if (isTV) {
+                                                switch (keyCode) {
+                                                    case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                                        fastForward(videoPosition, 1);
+                                                        break;
+                                                    case KeyEvent.KEYCODE_DPAD_LEFT:
+                                                        rewind(videoPosition, 1);
+                                                        break;
+                                                    case KeyEvent.KEYCODE_DPAD_CENTER:
+                                                        play_pause();
+                                                        break;
+                                                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                                                        fastForward(videoPosition, 2);
+                                                        break;
+                                                    case KeyEvent.KEYCODE_MEDIA_REWIND:
+                                                        rewind(videoPosition, 2);
+                                                        break;
+                                                }
+                                            }
+                                            return true;
+                                        } else {
+                                            return false;
+                                        }
                                     }
                                 }
-                                return true;
-                            } else {
-                                return false;
-                            }
+                            );
+                            // initialize the player
+                            initializePlayer();
                         }
-                    });
-                    // initialize the player
-                    initializePlayer();
-                }
-            });
-
+                    }
+                );
         } else {
-                Log.d(TAG, "Video path wrong or type not supported");
-                Toast.makeText(context, "Video path wrong or type not supported",
-                        Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Video path wrong or type not supported");
+            Toast.makeText(context, "Video path wrong or type not supported", Toast.LENGTH_SHORT).show();
         }
         return view;
     }
@@ -178,14 +185,16 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * Perform backPressed Action
      */
     private void backPressed() {
-        Map<String, String> info = new HashMap<String, String>() {{
-            put("dismiss", "1");
-        }};
+        Map<String, Object> info = new HashMap<String, Object>() {
+
+            {
+                put("dismiss", "1");
+            }
+        };
         player.seekTo(0);
         player.setVolume(curVolume);
         releasePlayer();
-        NotificationCenter.defaultCenter()
-                .postNotification("playerFullscreenDismiss",info);
+        NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
     }
 
     /**
@@ -206,12 +215,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public void onStop() {
         super.onStop();
         boolean isAppBackground = isApplicationSentToBackground(context);
-        if (!isAppBackground){
+        if (!isAppBackground) {
             if (Util.SDK_INT >= 24) {
                 releasePlayer();
             }
         }
-
     }
 
     /**
@@ -220,7 +228,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if(player != null) player.setPlayWhenReady(false);
+        if (player != null) player.setPlayWhenReady(false);
         if (Util.SDK_INT < 24) {
             releasePlayer();
         }
@@ -237,6 +245,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
             player.removeListener(playbackStateListener);
             player.release();
             player = null;
+            showSystemUI();
             resetVariables();
         }
     }
@@ -258,12 +267,22 @@ public class FullscreenExoPlayerFragment extends Fragment {
      */
     @SuppressLint("InlinedApi")
     private void hideSystemUi() {
-        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        playerView.setSystemUiVisibility(
+            View.SYSTEM_UI_FLAG_LOW_PROFILE |
+            View.SYSTEM_UI_FLAG_FULLSCREEN |
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        );
+    }
+
+    /**
+     * Leave the fullsreen mode and reset the status bar to visible
+     */
+    private void showSystemUI() {
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getActivity().getWindow().getDecorView().setSystemUiVisibility(View.VISIBLE);
     }
 
     /**
@@ -271,64 +290,80 @@ public class FullscreenExoPlayerFragment extends Fragment {
      */
     private void initializePlayer() {
         if (player == null) {
-            DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter.Builder(context)
-                    .build();
-            TrackSelection.Factory videoTrackSelectionFactory =
-                    new AdaptiveTrackSelection.Factory();
-            TrackSelector trackSelector = new
-                    DefaultTrackSelector(context, videoTrackSelectionFactory);
+            DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter.Builder(context).build();
+            TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory();
+            TrackSelector trackSelector = new DefaultTrackSelector(context, videoTrackSelectionFactory);
             LoadControl loadControl = new DefaultLoadControl();
-            player = new SimpleExoPlayer.Builder(context)
+            player =
+                new SimpleExoPlayer.Builder(context)
                     .setTrackSelector(trackSelector)
                     .setLoadControl(loadControl)
-                    .setBandwidthMeter(bandwidthMeter).build();
+                    .setBandwidthMeter(bandwidthMeter)
+                    .build();
         }
         playerView.setPlayer(player);
-        MediaSource mediaSource = buildMediaSource();
+        MediaSource mediaSource;
+        if (!isInternal) {
+            mediaSource = buildHttpMediaSource();
+        } else {
+            Uri videoUri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, videoId);
+            mediaSource = buildInternalMediaSource(videoUri);
+        }
 
-        if(mediaSource != null) {
+        if (mediaSource != null) {
             player.setAudioAttributes(AudioAttributes.DEFAULT, true);
             player.addListener(playbackStateListener);
             player.prepare(mediaSource, false, false);
         }
-        Map<String, String> info = new HashMap<String, String>() {{
-            put("fromPlayerId", playerId);
-        }};
-        NotificationCenter.defaultCenter()
-                .postNotification("initializePlayer", info);
+        Map<String, Object> info = new HashMap<String, Object>() {
+
+            {
+                put("fromPlayerId", playerId);
+            }
+        };
+        NotificationCenter.defaultCenter().postNotification("initializePlayer", info);
     }
 
     /**
-     * Build the MediaSource
+     * Build the Internal MediaSource
+     */
+    private MediaSource buildInternalMediaSource(Uri uri) {
+        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, "jeep-exoplayer-plugin");
+        return new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+    }
+
+    /**
+     * Build the Http MediaSource
      * @return MediaSource
      */
-    private MediaSource buildMediaSource() {
+    private MediaSource buildHttpMediaSource() {
         MediaSource mediaSource = null;
-        HttpDataSource.Factory  httpDataSourceFactory = new
-                DefaultHttpDataSourceFactory( "jeep-exoplayer-plugin",
-                DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-                1800000,
-                true);
+        HttpDataSource.Factory httpDataSourceFactory = new DefaultHttpDataSourceFactory(
+            "jeep-exoplayer-plugin",
+            DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+            1800000,
+            true
+        );
 
+        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, httpDataSourceFactory);
 
-        DataSource.Factory dataSourceFactory =
-                new DefaultDataSourceFactory(context, httpDataSourceFactory);
-
-        if (vType.equals("mp4") || vType.equals("webm") || vType.equals("ogv")
-                || vType.equals("3gp") || vType.equals("flv") || vType.equals("")) {
-            mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(uri);
-        } else if (vType.equals("dash") || vType.equals("mpd") ) {
+        if (
+            vType.equals("mp4") ||
+            vType.equals("webm") ||
+            vType.equals("ogv") ||
+            vType.equals("3gp") ||
+            vType.equals("flv") ||
+            vType.equals("")
+        ) {
+            mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+        } else if (vType.equals("dash") || vType.equals("mpd")) {
             /* adaptive streaming Dash stream */
-            DashMediaSource.Factory mediaSourceFactory =
-                    new DashMediaSource.Factory(dataSourceFactory);
+            DashMediaSource.Factory mediaSourceFactory = new DashMediaSource.Factory(dataSourceFactory);
             mediaSource = mediaSourceFactory.createMediaSource(uri);
-        } else if(vType.equals("m3u8")) {
-            mediaSource = new HlsMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(uri);
-        } else if(vType.equals("ism")) {
-            mediaSource = new SsMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(uri);
+        } else if (vType.equals("m3u8")) {
+            mediaSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+        } else if (vType.equals("ism")) {
+            mediaSource = new SsMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
         }
         return mediaSource;
     }
@@ -348,9 +383,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
     /**
      * Fast Forward TV
      */
-    private void fastForward(long position,int times) {
-        if(position < mDuration - videoStep ) {
-            if(player.isPlaying()) {
+    private void fastForward(long position, int times) {
+        if (position < mDuration - videoStep) {
+            if (player.isPlaying()) {
                 player.setPlayWhenReady(false);
             }
             player.seekTo(position + (long) times * videoStep);
@@ -361,9 +396,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
     /**
      * Rewind TV
      */
-    private void rewind(long position,int times) {
-        if(position > videoStep ) {
-            if(player.isPlaying()) {
+    private void rewind(long position, int times) {
+        if (position > videoStep) {
+            if (player.isPlaying()) {
                 player.setPlayWhenReady(false);
             }
             player.seekTo(position - (long) times * videoStep);
@@ -375,7 +410,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * Play Pause TV
      */
     private void play_pause() {
-        if(player.isPlaying()) {
+        if (player.isPlaying()) {
             player.setPlayWhenReady(false);
         } else {
             player.setPlayWhenReady(true);
@@ -411,8 +446,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * @return int in seconds
      */
     public int getDuration() {
-        return player.getDuration() == UNKNOWN_TIME ? 0
-                : (int) (player.getDuration() / 1000);
+        return player.getDuration() == UNKNOWN_TIME ? 0 : (int) (player.getDuration() / 1000);
     }
 
     /**
@@ -420,8 +454,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * @return int in seconds
      */
     public int getCurrentTime() {
-        return player.getCurrentPosition() == UNKNOWN_TIME ? 0
-                : (int) (player.getCurrentPosition() / 1000);
+        return player.getCurrentPosition() == UNKNOWN_TIME ? 0 : (int) (player.getCurrentPosition() / 1000);
     }
 
     /**
@@ -429,8 +462,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * @param timeSecond int
      */
     public void setCurrentTime(int timeSecond) {
-        long seekPosition = player.getCurrentPosition() == UNKNOWN_TIME ? 0
-                : Math.min(Math.max(0, timeSecond * 1000), player.getDuration());
+        long seekPosition = player.getCurrentPosition() == UNKNOWN_TIME
+            ? 0
+            : Math.min(Math.max(0, timeSecond * 1000), player.getDuration());
         player.seekTo(seekPosition);
     }
 
@@ -457,7 +491,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      */
     public void setMuted(boolean _isMuted) {
         isMuted = _isMuted;
-        if(isMuted) {
+        if (isMuted) {
             curVolume = player.getVolume();
             player.setVolume(0L);
         } else {
@@ -476,17 +510,18 @@ public class FullscreenExoPlayerFragment extends Fragment {
     /**
      * Player Event Listener
      */
-    private class PlaybackStateListener implements Player.EventListener{
+    private class PlaybackStateListener implements Player.EventListener {
 
         @Override
-        public void onPlayerStateChanged(boolean playWhenReady,
-                                         int playbackState) {
-
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             String stateString;
-            Map<String, String> info = new HashMap<String, String>() {{
-                put("fromPlayerId", playerId);
-                put("currentTime", String.valueOf(player.getCurrentPosition()/1000));
-            }};
+            Map<String, Object> info = new HashMap<String, Object>() {
+
+                {
+                    put("fromPlayerId", playerId);
+                    put("currentTime", String.valueOf(player.getCurrentPosition() / 1000));
+                }
+            };
             switch (playbackState) {
                 case ExoPlayer.STATE_IDLE:
                     stateString = "ExoPlayer.STATE_IDLE      -";
@@ -498,23 +533,20 @@ public class FullscreenExoPlayerFragment extends Fragment {
                 case ExoPlayer.STATE_READY:
                     stateString = "ExoPlayer.STATE_READY     -";
                     Pbar.setVisibility(View.GONE);
-                    if(firstReadyToPlay) {
+                    if (firstReadyToPlay) {
                         firstReadyToPlay = false;
-                        NotificationCenter.defaultCenter()
-                                .postNotification("playerItemReady", info);
+                        NotificationCenter.defaultCenter().postNotification("playerItemReady", info);
                         player.setPlayWhenReady(true);
                         player.seekTo(currentWindow, playbackPosition);
                     } else {
-                        if(player.isPlaying()) {
-                            if(wasPaused) {
-                                NotificationCenter.defaultCenter()
-                                        .postNotification("playerItemPlay", info);
+                        if (player.isPlaying()) {
+                            if (wasPaused) {
+                                NotificationCenter.defaultCenter().postNotification("playerItemPlay", info);
                                 wasPaused = false;
                             }
                         } else {
-                            if(!wasPaused) {
-                                NotificationCenter.defaultCenter()
-                                        .postNotification("playerItemPause", info);
+                            if (!wasPaused) {
+                                NotificationCenter.defaultCenter().postNotification("playerItemPause", info);
                                 wasPaused = true;
                             }
                         }
@@ -525,8 +557,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
                     player.seekTo(0);
                     player.setVolume(curVolume);
                     releasePlayer();
-                    NotificationCenter.defaultCenter()
-                            .postNotification("playerItemEnd",info);
+                    NotificationCenter.defaultCenter().postNotification("playerItemEnd", info);
                     break;
                 default:
                     stateString = "UNKNOWN_STATE             -";
@@ -544,18 +575,18 @@ public class FullscreenExoPlayerFragment extends Fragment {
         String ret = null;
         String lastSegment = uri.getLastPathSegment();
         for (String type : supportedFormat) {
-            if(ret != null) break;
-            if(lastSegment.contains(type)) ret = type;
+            if (ret != null) break;
+            if (lastSegment.contains(type)) ret = type;
             if (ret == null) {
                 List<String> segments = uri.getPathSegments();
                 String segment;
-                if( segments.get(segments.size() - 1).equals("manifest")) {
+                if (segments.get(segments.size() - 1).equals("manifest")) {
                     segment = segments.get(segments.size() - 2);
                 } else {
                     segment = segments.get(segments.size() - 1);
                 }
                 for (String sType : supportedFormat) {
-                    if(segment.contains(sType)) {
+                    if (segment.contains(sType)) {
                         ret = sType;
                         break;
                     }
@@ -579,7 +610,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
         playbackPosition = 0;
         uri = null;
         isMuted = false;
-        curVolume = (float)0.5;
+        curVolume = (float) 0.5;
         mCurrentPosition = 0;
     }
 
@@ -591,14 +622,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public boolean isApplicationSentToBackground(final Context context) {
         int pid = android.os.Process.myPid();
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningAppProcessInfo appProcess : am
-                .getRunningAppProcesses()) {
-
+        for (ActivityManager.RunningAppProcessInfo appProcess : am.getRunningAppProcesses()) {
             if (appProcess.pid == pid) {
                 return true;
             }
         }
         return false;
     }
-
 }

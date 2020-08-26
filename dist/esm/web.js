@@ -13,14 +13,14 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
     constructor() {
         super({
             name: 'CapacitorVideoPlayer',
-            platforms: ['web']
+            platforms: ['web'],
         });
         this._players = [];
     }
     echo(options) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('ECHO', options);
-            return Promise.resolve({ "result": true, "method": "echo", "value": options });
+            return Promise.resolve({ result: true, method: 'echo', value: options });
         });
     }
     /**
@@ -32,30 +32,57 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         return __awaiter(this, void 0, void 0, function* () {
             let mode = options.mode;
             if (mode == null || mode.length === 0) {
-                return Promise.resolve({ "result": false, "method": "initPlayer", "message": "Must provide a Mode (fullscreen/embedded)" });
+                return Promise.resolve({
+                    result: false,
+                    method: 'initPlayer',
+                    message: 'Must provide a Mode (fullscreen/embedded)',
+                });
             }
-            if (mode === "fullscreen" || mode === "embedded") {
+            if (mode === 'fullscreen' || mode === 'embedded') {
                 let url = options.url;
                 if (url == null || url.length === 0) {
-                    return Promise.resolve({ "result": false, "method": "initPlayer", "message": "Must provide a Video Url" });
+                    return Promise.resolve({
+                        result: false,
+                        method: 'initPlayer',
+                        message: 'Must provide a Video Url',
+                    });
+                }
+                if (url == 'internal') {
+                    return Promise.resolve({
+                        result: false,
+                        method: 'initPlayer',
+                        message: 'Internal Videos not supported on Web Platform',
+                    });
                 }
                 let playerId = options.playerId;
                 if (playerId == null || playerId.length === 0) {
-                    return Promise.resolve({ "result": false, "method": "initPlayer", "message": "Must provide a Player Id" });
+                    return Promise.resolve({
+                        result: false,
+                        method: 'initPlayer',
+                        message: 'Must provide a Player Id',
+                    });
                 }
                 let componentTag = options.componentTag;
                 if (componentTag == null || componentTag.length === 0) {
-                    return Promise.resolve({ "result": false, "method": "initPlayer", "message": "Must provide a Component Tag" });
+                    return Promise.resolve({
+                        result: false,
+                        method: 'initPlayer',
+                        message: 'Must provide a Component Tag',
+                    });
                 }
                 let playerSize = null;
-                if (mode === "embedded") {
+                if (mode === 'embedded') {
                     playerSize = this.checkSize(options);
                 }
                 const result = yield this._initializeVideoPlayer(url, playerId, mode, componentTag, playerSize);
                 return Promise.resolve({ result: result });
             }
             else {
-                return Promise.resolve({ "result": false, "method": "initPlayer", "message": "Must provide a Mode either fullscreen or embedded)" });
+                return Promise.resolve({
+                    result: false,
+                    method: 'initPlayer',
+                    message: 'Must provide a Mode either fullscreen or embedded)',
+                });
             }
         });
     }
@@ -68,16 +95,24 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         return __awaiter(this, void 0, void 0, function* () {
             let playerId = options.playerId;
             if (playerId == null || playerId.length === 0) {
-                playerId = "fullscreen";
+                playerId = 'fullscreen';
             }
             if (this._players[playerId]) {
                 let playing = false;
                 if (!this._players[playerId].videoEl.paused)
                     playing = true;
-                return Promise.resolve({ method: "isPlaying", result: true, value: playing });
+                return Promise.resolve({
+                    method: 'isPlaying',
+                    result: true,
+                    value: playing,
+                });
             }
             else {
-                return Promise.resolve({ method: "isPlaying", result: false, message: "Given PlayerId does not exist)" });
+                return Promise.resolve({
+                    method: 'isPlaying',
+                    result: false,
+                    message: 'Given PlayerId does not exist)',
+                });
             }
         });
     }
@@ -90,14 +125,18 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         return __awaiter(this, void 0, void 0, function* () {
             let playerId = options.playerId;
             if (playerId == null || playerId.length === 0) {
-                playerId = "fullscreen";
+                playerId = 'fullscreen';
             }
             if (this._players[playerId]) {
                 yield this._players[playerId].videoEl.play();
-                return Promise.resolve({ method: "play", result: true, value: true });
+                return Promise.resolve({ method: 'play', result: true, value: true });
             }
             else {
-                return Promise.resolve({ method: "play", result: false, message: "Given PlayerId does not exist)" });
+                return Promise.resolve({
+                    method: 'play',
+                    result: false,
+                    message: 'Given PlayerId does not exist)',
+                });
             }
         });
     }
@@ -110,15 +149,19 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         return __awaiter(this, void 0, void 0, function* () {
             let playerId = options.playerId;
             if (playerId == null || playerId.length === 0) {
-                playerId = "fullscreen";
+                playerId = 'fullscreen';
             }
             if (this._players[playerId]) {
                 if (!this._players[playerId].videoEl.pause)
                     yield this._players[playerId].videoEl.pause();
-                return Promise.resolve({ method: "pause", result: true });
+                return Promise.resolve({ method: 'pause', result: true });
             }
             else {
-                return Promise.resolve({ method: "pause", result: false, message: "Given PlayerId does not exist)" });
+                return Promise.resolve({
+                    method: 'pause',
+                    result: false,
+                    message: 'Given PlayerId does not exist)',
+                });
             }
         });
     }
@@ -131,14 +174,22 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         return __awaiter(this, void 0, void 0, function* () {
             let playerId = options.playerId;
             if (playerId == null || playerId.length === 0) {
-                playerId = "fullscreen";
+                playerId = 'fullscreen';
             }
             if (this._players[playerId]) {
                 let duration = this._players[playerId].videoEl.duration;
-                return Promise.resolve({ method: "getDuration", result: true, value: duration });
+                return Promise.resolve({
+                    method: 'getDuration',
+                    result: true,
+                    value: duration,
+                });
             }
             else {
-                return Promise.resolve({ method: "getDuration", result: false, message: "Given PlayerId does not exist)" });
+                return Promise.resolve({
+                    method: 'getDuration',
+                    result: false,
+                    message: 'Given PlayerId does not exist)',
+                });
             }
         });
     }
@@ -151,15 +202,23 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         return __awaiter(this, void 0, void 0, function* () {
             let playerId = options.playerId;
             if (playerId == null || playerId.length === 0) {
-                playerId = "fullscreen";
+                playerId = 'fullscreen';
             }
             let volume = options.volume ? options.volume : 0.5;
             if (this._players[playerId]) {
                 this._players[playerId].videoEl.volume = volume;
-                return Promise.resolve({ method: "setVolume", result: true, value: volume });
+                return Promise.resolve({
+                    method: 'setVolume',
+                    result: true,
+                    value: volume,
+                });
             }
             else {
-                return Promise.resolve({ method: "setVolume", result: false, message: "Given PlayerId does not exist)" });
+                return Promise.resolve({
+                    method: 'setVolume',
+                    result: false,
+                    message: 'Given PlayerId does not exist)',
+                });
             }
         });
     }
@@ -172,14 +231,22 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         return __awaiter(this, void 0, void 0, function* () {
             let playerId = options.playerId;
             if (playerId == null || playerId.length === 0) {
-                playerId = "fullscreen";
+                playerId = 'fullscreen';
             }
             if (this._players[playerId]) {
                 let volume = this._players[playerId].videoEl.volume;
-                return Promise.resolve({ method: "getVolume", result: true, value: volume });
+                return Promise.resolve({
+                    method: 'getVolume',
+                    result: true,
+                    value: volume,
+                });
             }
             else {
-                return Promise.resolve({ method: "getVolume", result: false, message: "Given PlayerId does not exist)" });
+                return Promise.resolve({
+                    method: 'getVolume',
+                    result: false,
+                    message: 'Given PlayerId does not exist)',
+                });
             }
         });
     }
@@ -192,16 +259,24 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         return __awaiter(this, void 0, void 0, function* () {
             let playerId = options.playerId;
             if (playerId == null || playerId.length === 0) {
-                playerId = "fullscreen";
+                playerId = 'fullscreen';
             }
             let muted = options.muted ? options.muted : false;
             if (this._players[playerId]) {
                 this._players[playerId].videoEl.muted = muted;
-                console.log("in setMuted videoEL ", this._players[playerId].videoEl.outerHTML);
-                return Promise.resolve({ method: "setMuted", result: true, value: muted });
+                console.log('in setMuted videoEL ', this._players[playerId].videoEl.outerHTML);
+                return Promise.resolve({
+                    method: 'setMuted',
+                    result: true,
+                    value: muted,
+                });
             }
             else {
-                return Promise.resolve({ method: "setMuted", result: false, message: "Given PlayerId does not exist)" });
+                return Promise.resolve({
+                    method: 'setMuted',
+                    result: false,
+                    message: 'Given PlayerId does not exist)',
+                });
             }
         });
     }
@@ -214,15 +289,23 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         return __awaiter(this, void 0, void 0, function* () {
             let playerId = options.playerId;
             if (playerId == null || playerId.length === 0) {
-                playerId = "fullscreen";
+                playerId = 'fullscreen';
             }
             if (this._players[playerId]) {
-                console.log("in getMuted videoEL ", this._players[playerId].videoEl.outerHTML);
+                console.log('in getMuted videoEL ', this._players[playerId].videoEl.outerHTML);
                 let muted = this._players[playerId].videoEl.muted;
-                return Promise.resolve({ method: "getMuted", result: true, value: muted });
+                return Promise.resolve({
+                    method: 'getMuted',
+                    result: true,
+                    value: muted,
+                });
             }
             else {
-                return Promise.resolve({ method: "getMuted", result: false, message: "Given PlayerId does not exist)" });
+                return Promise.resolve({
+                    method: 'getMuted',
+                    result: false,
+                    message: 'Given PlayerId does not exist)',
+                });
             }
         });
     }
@@ -235,17 +318,26 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         return __awaiter(this, void 0, void 0, function* () {
             let playerId = options.playerId;
             if (playerId == null || playerId.length === 0) {
-                playerId = "fullscreen";
+                playerId = 'fullscreen';
             }
             let seekTime = options.seektime ? options.seektime : 0;
             if (this._players[playerId]) {
                 const duration = this._players[playerId].videoEl.duration;
-                seekTime = seekTime <= duration && seekTime >= 0 ? seekTime : duration / 2;
+                seekTime =
+                    seekTime <= duration && seekTime >= 0 ? seekTime : duration / 2;
                 this._players[playerId].videoEl.currentTime = seekTime;
-                return Promise.resolve({ method: "setCurrentTime", result: true, value: seekTime });
+                return Promise.resolve({
+                    method: 'setCurrentTime',
+                    result: true,
+                    value: seekTime,
+                });
             }
             else {
-                return Promise.resolve({ method: "setCurrentTime", result: false, message: "Given PlayerId does not exist)" });
+                return Promise.resolve({
+                    method: 'setCurrentTime',
+                    result: false,
+                    message: 'Given PlayerId does not exist)',
+                });
             }
         });
     }
@@ -258,14 +350,22 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         return __awaiter(this, void 0, void 0, function* () {
             let playerId = options.playerId;
             if (playerId == null || playerId.length === 0) {
-                playerId = "fullscreen";
+                playerId = 'fullscreen';
             }
             if (this._players[playerId]) {
                 const seekTime = this._players[playerId].videoEl.currentTime;
-                return Promise.resolve({ method: "getCurrentTime", result: true, value: seekTime });
+                return Promise.resolve({
+                    method: 'getCurrentTime',
+                    result: true,
+                    value: seekTime,
+                });
             }
             else {
-                return Promise.resolve({ method: "getCurrentTime", result: false, message: "Given PlayerId does not exist)" });
+                return Promise.resolve({
+                    method: 'getCurrentTime',
+                    result: false,
+                    message: 'Given PlayerId does not exist)',
+                });
             }
         });
     }
@@ -276,17 +376,26 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
     stopAllPlayers() {
         return __awaiter(this, void 0, void 0, function* () {
             for (let i in this._players) {
+                if (this._players[i].pipMode) {
+                    var doc = document;
+                    if (doc.pictureInPictureElement) {
+                        yield doc.exitPictureInPicture();
+                    }
+                }
                 if (!this._players[i].videoEl.paused)
                     this._players[i].videoEl.pause();
             }
-            ;
-            return Promise.resolve({ method: "stopAllPlayers", result: true, value: true });
+            return Promise.resolve({
+                method: 'stopAllPlayers',
+                result: true,
+                value: true,
+            });
         });
     }
     checkSize(options) {
         let playerSize = {
             width: options.width ? options.width : 320,
-            height: options.height ? options.height : 180
+            height: options.height ? options.height : 180,
         };
         let ratio = playerSize.height / playerSize.width;
         if (playerSize.width > window.innerWidth) {
@@ -301,46 +410,54 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
     }
     _initializeVideoPlayer(url, playerId, mode, componentTag, playerSize) {
         return __awaiter(this, void 0, void 0, function* () {
-            const videoURL = url ? encodeURI(url) : null;
+            const videoURL = url
+                ? url.indexOf('%2F') == -1
+                    ? encodeURI(url)
+                    : url
+                : null;
             if (videoURL === null)
                 return Promise.resolve(false);
             const videoContainer = yield this._getContainerElement(playerId, componentTag);
             if (videoContainer === null)
                 return Promise.resolve(false);
-            if (mode === "embedded" && playerSize == null)
+            if (mode === 'embedded' && playerSize == null)
                 return Promise.resolve(false);
-            // add listeners 
-            videoContainer.addEventListener("videoPlayerPlay", (ev) => {
+            // add listeners
+            videoContainer.addEventListener('videoPlayerPlay', (ev) => {
                 this.handlePlayerPlay(ev.detail);
             });
-            videoContainer.addEventListener("videoPlayerPause", (ev) => {
+            videoContainer.addEventListener('videoPlayerPause', (ev) => {
                 this.handlePlayerPause(ev.detail);
             });
-            videoContainer.addEventListener("videoPlayerEnded", (ev) => {
-                if (mode === "fullscreen") {
+            videoContainer.addEventListener('videoPlayerEnded', (ev) => {
+                if (mode === 'fullscreen') {
                     videoContainer.remove();
                 }
                 this.handlePlayerEnded(ev.detail);
             });
-            videoContainer.addEventListener("videoPlayerReady", (ev) => {
+            videoContainer.addEventListener('videoPlayerReady', (ev) => {
                 this.handlePlayerReady(ev.detail);
             });
-            videoContainer.addEventListener("videoPlayerExit", (ev) => {
-                if (mode === "fullscreen") {
+            videoContainer.addEventListener('videoPlayerExit', (ev) => {
+                if (mode === 'fullscreen') {
                     videoContainer.remove();
                 }
                 this.handlePlayerExit(ev.detail);
             });
-            if (mode === "embedded") {
-                this._players[playerId] = new VideoPlayer("embedded", videoURL, playerId, videoContainer, 2, playerSize.width, playerSize.height);
+            if (mode === 'embedded') {
+                this._players[playerId] = new VideoPlayer('embedded', videoURL, playerId, videoContainer, 2, playerSize.width, playerSize.height);
             }
-            else if (mode === "fullscreen") {
-                this._players["fullscreen"] = new VideoPlayer("fullscreen", videoURL, "fullscreen", videoContainer, 99995);
+            else if (mode === 'fullscreen') {
+                this._players['fullscreen'] = new VideoPlayer('fullscreen', videoURL, 'fullscreen', videoContainer, 99995);
             }
             else {
-                return Promise.resolve({ method: "initPlayer", result: false, message: "mode not supported" });
+                return Promise.resolve({
+                    method: 'initPlayer',
+                    result: false,
+                    message: 'mode not supported',
+                });
             }
-            return Promise.resolve({ method: "initPlayer", result: true, value: true });
+            return Promise.resolve({ method: 'initPlayer', result: true, value: true });
         });
     }
     _getContainerElement(playerId, componentTag) {
@@ -362,19 +479,19 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         });
     }
     handlePlayerPlay(data) {
-        this.notifyListeners("jeepCapVideoPlayerPlay", data);
+        this.notifyListeners('jeepCapVideoPlayerPlay', data);
     }
     handlePlayerPause(data) {
-        this.notifyListeners("jeepCapVideoPlayerPause", data);
+        this.notifyListeners('jeepCapVideoPlayerPause', data);
     }
     handlePlayerEnded(data) {
-        this.notifyListeners("jeepCapVideoPlayerEnded", data);
+        this.notifyListeners('jeepCapVideoPlayerEnded', data);
     }
     handlePlayerExit(data) {
-        this.notifyListeners("jeepCapVideoPlayerExit", data);
+        this.notifyListeners('jeepCapVideoPlayerExit', data);
     }
     handlePlayerReady(data) {
-        this.notifyListeners("jeepCapVideoPlayerReady", data);
+        this.notifyListeners('jeepCapVideoPlayerReady', data);
     }
 }
 const CapacitorVideoPlayer = new CapacitorVideoPlayerWeb();

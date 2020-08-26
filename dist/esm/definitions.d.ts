@@ -1,4 +1,4 @@
-declare module "@capacitor/core" {
+declare module '@capacitor/core' {
     interface PluginRegistry {
         CapacitorVideoPlayer: CapacitorVideoPlayerPlugin;
     }

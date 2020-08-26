@@ -1,5 +1,7 @@
 package com.jeep.plugin.capacitor;
 
+import android.Manifest;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.UiModeManager;
@@ -7,26 +9,57 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.util.Log;
-
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.Toast;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
-import com.jeep.plugin.capacitor.capacitorvideoplayer.R;
+import com.jeep.plugin.capacitor.PickerVideo.PickerVideoFragment;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
-
-@NativePlugin(requestCodes = {CapacitorVideoPlayer.RequestCodes.Video})
+@NativePlugin(
+    permissions = { Manifest.permission.INTERNET, Manifest.permission.READ_EXTERNAL_STORAGE },
+    requestCodes = { CapacitorVideoPlayer.REQUEST_VIDEO_PERMISSION }
+)
 public class CapacitorVideoPlayer extends Plugin {
+    static final int REQUEST_VIDEO_PERMISSION = 9539;
     private static final String TAG = "CapacitorVideoPlayer";
+    private int frameLayoutViewId = 256;
+    private int pickerLayoutViewId = 257;
+
     private Context context;
     private String videoPath;
     private Boolean isTV;
     private String fsPlayerId;
     private String mode;
     private FullscreenExoPlayerFragment fsFragment;
+    private PickerVideoFragment pkFragment;
+    private boolean isPermissionGranted = false;
 
-    @PluginMethod()
+    public void load() {
+        Log.v(TAG, "*** in load " + isPermissionGranted + " ***");
+        if (hasRequiredPermissions()) {
+            isPermissionGranted = true;
+        } else {
+            pluginRequestPermissions(
+                new String[] { Manifest.permission.INTERNET, Manifest.permission.READ_EXTERNAL_STORAGE },
+                REQUEST_VIDEO_PERMISSION
+            );
+            isPermissionGranted = true;
+        }
+
+        // Get context
+        context = getContext();
+    }
+
+    @PluginMethod
     public void echo(PluginCall call) {
         String value = call.getString("value");
 
@@ -34,72 +67,170 @@ public class CapacitorVideoPlayer extends Plugin {
         ret.put("value", value);
         call.success(ret);
     }
-    @PluginMethod()
-    public void initPlayer(PluginCall call) {
+
+    @PluginMethod
+    public void initPlayer(final PluginCall call) {
         saveCall(call);
-        context = getContext();
-        JSObject ret = new JSObject();
-        ret.put("method","initPlayer");
-        ret.put("result",false);
+        final JSObject ret = new JSObject();
+        ret.put("method", "initPlayer");
+        ret.put("result", false);
         // Check if running on a TV Device
         isTV = isDeviceTV(context);
-        Log.d(TAG,"**** isTV "+isTV+ " ****");
-
+        Log.d(TAG, "**** isTV " + isTV + " ****");
+        Log.v(TAG, "*** in initPlayer " + isPermissionGranted + " ***");
+        if (!isPermissionGranted) {
+            ret.put("message", "initPlayer command failed: Permissions not granted");
+            call.success(ret);
+            return;
+        }
         String _mode = call.getString("mode");
-        if(_mode == null) {
-            ret.put("message","Must provide a Mode (fullscreen/embedded)");
+        if (_mode == null) {
+            ret.put("message", "Must provide a Mode (fullscreen/embedded)");
             call.success(ret);
             return;
         }
         mode = _mode;
         String playerId = call.getString("playerId");
-        if(playerId == null) {
-            ret.put("message","Must provide a PlayerId");
+        if (playerId == null) {
+            ret.put("message", "Must provide a PlayerId");
             call.success(ret);
             return;
         }
-        if(mode.equals("fullscreen")) {
+        if (mode.equals("fullscreen")) {
             fsPlayerId = playerId;
             String url = call.getString("url");
             if (url == null) {
-                ret.put("message","Must provide an url");
+                ret.put("message", "Must provide an url");
                 call.success(ret);
                 return;
             }
-            Log.v(TAG,"display url: "+url);
-            String http = url.substring(0,4);
+            AddObserversToNotificationCenter();
+            Log.v(TAG, "display url: " + url);
+            String http = url.substring(0, 4);
             if (http.equals("http")) {
                 videoPath = url;
+                createFullScreenFragment(call, videoPath, isTV, playerId, false, null);
             } else {
-                videoPath = "android.resource://" + context.getPackageName() + "/" + url; // works
-                //            url = "content://"+appPath+ "/" + url ;
-                Log.v(TAG,"calculated url: "+url);
-            }
+                if (url.equals("internal")) {
+                    createPickerVideoFragment(call);
+                } else if (url.substring(0, 11).equals("application")) {
+                    String filesDir = context.getFilesDir() + "/";
+                    videoPath = filesDir + url.substring(url.lastIndexOf('/') + 1);
+                    File file = new File(videoPath);
+                    if (!file.exists()) {
+                        Map<String, Object> info = new HashMap<String, Object>() {
 
+                            {
+                                put("dismiss", "1");
+                            }
+                        };
+                        NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
+                        ret.put("message", "initPlayer command failed: Video file not found");
+                        call.success(ret);
+                        return;
+                    }
+                    createFullScreenFragment(call, videoPath, isTV, playerId, false, null);
+                } else {
+                    videoPath = "android.resource://" + context.getPackageName() + "/" + url;
+                    Log.v(TAG, "calculated url: " + url);
+                    createFullScreenFragment(call, videoPath, isTV, playerId, false, null);
+                }
+            }
         } else if (mode == "embedded") {
-            ret.put("message","Embedded Mode not implemented");
+            ret.put("message", "Embedded Mode not implemented");
             call.success(ret);
             return;
         }
-        Log.v(TAG,"videoPath: "+ videoPath);
-        AddObserversToNotificationCenter();
+    }
+
+    private void createPickerVideoFragment(final PluginCall call) {
+        pkFragment = new PickerVideoFragment();
+
+        bridge
+            .getActivity()
+            .runOnUiThread(
+                new Runnable() {
+
+                    @Override
+                    public void run() {
+                        JSObject ret = new JSObject();
+                        ret.put("method", "initPlayer");
+                        FrameLayout pickerLayoutView = getBridge().getActivity().findViewById(pickerLayoutViewId);
+                        if (pickerLayoutView != null) {
+                            ret.put("result", false);
+                            ret.put("message", "FrameLayout for VideoPicker already exists");
+                        } else {
+                            // Initialize a new FrameLayout as container for fragment
+                            pickerLayoutView = new FrameLayout(getActivity().getApplicationContext());
+                            pickerLayoutView.setId(pickerLayoutViewId);
+                            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.MATCH_PARENT
+                            );
+                            // Apply the Layout Parameters to frameLayout
+                            pickerLayoutView.setLayoutParams(lp);
+
+                            ((ViewGroup) getBridge().getWebView().getParent()).addView(pickerLayoutView);
+                            loadFragment(pkFragment, pickerLayoutViewId);
+                            ret.put("result", true);
+                        }
+                        call.success(ret);
+                    }
+                }
+            );
+    }
+
+    private void createFullScreenFragment(
+        final PluginCall call,
+        String videoPath,
+        Boolean isTV,
+        String playerId,
+        Boolean isInternal,
+        Long videoId
+    ) {
         fsFragment = new FullscreenExoPlayerFragment();
 
         fsFragment.videoPath = videoPath;
-        fsFragment.isTV = false;
+        fsFragment.isTV = isTV;
         fsFragment.playerId = playerId;
+        fsFragment.isInternal = isInternal;
+        fsFragment.videoId = videoId;
 
+        bridge
+            .getActivity()
+            .runOnUiThread(
+                new Runnable() {
 
-        bridge.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                loadFragment(fsFragment);
-            }
-        });
+                    @Override
+                    public void run() {
+                        JSObject ret = new JSObject();
+                        ret.put("method", "initPlayer");
+                        FrameLayout frameLayoutView = getBridge().getActivity().findViewById(frameLayoutViewId);
+                        if (frameLayoutView != null) {
+                            ret.put("result", false);
+                            ret.put("message", "FrameLayout for ExoPlayer already exists");
+                        } else {
+                            // Initialize a new FrameLayout as container for fragment
+                            frameLayoutView = new FrameLayout(getActivity().getApplicationContext());
+                            frameLayoutView.setId(frameLayoutViewId);
+                            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.MATCH_PARENT
+                            );
+                            // Apply the Layout Parameters to frameLayout
+                            frameLayoutView.setLayoutParams(lp);
 
+                            ((ViewGroup) getBridge().getWebView().getParent()).addView(frameLayoutView);
+                            loadFragment(fsFragment, frameLayoutViewId);
+                            ret.put("result", true);
+                        }
+                        call.success(ret);
+                    }
+                }
+            );
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void isPlaying(final PluginCall call) {
         saveCall(call);
         JSObject ret = new JSObject();
@@ -112,226 +243,268 @@ public class CapacitorVideoPlayer extends Plugin {
             return;
         }
         if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
-            bridge.getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    boolean playing = fsFragment.isPlaying();
-                    JSObject data = new JSObject();
-                    data.put("result", true);
-                    data.put("method", "isPlaying");
-                    data.put("value", playing);
-                    call.success(data);
-                }
-            });
+            bridge
+                .getActivity()
+                .runOnUiThread(
+                    new Runnable() {
+
+                        @Override
+                        public void run() {
+                            boolean playing = fsFragment.isPlaying();
+                            JSObject data = new JSObject();
+                            data.put("result", true);
+                            data.put("method", "isPlaying");
+                            data.put("value", playing);
+                            call.success(data);
+                        }
+                    }
+                );
         } else {
             ret.put("result", false);
             ret.put("message", "player is not defined");
             call.success(ret);
         }
     }
-    @PluginMethod()
+
+    @PluginMethod
     public void play(final PluginCall call) {
         saveCall(call);
         JSObject ret = new JSObject();
-        ret.put("method","play");
+        ret.put("method", "play");
         String playerId = call.getString("playerId");
-        if(playerId == null) {
-            ret.put("result",false);
-            ret.put("message","Must provide a PlayerId");
+        if (playerId == null) {
+            ret.put("result", false);
+            ret.put("message", "Must provide a PlayerId");
             call.success(ret);
             return;
         }
         if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
-            bridge.getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    fsFragment.play();
-                    boolean playing = fsFragment.isPlaying();
-                    JSObject data = new JSObject();
-                    data.put("result", true);
-                    data.put("method", "play");
-                    data.put("value", true);
-                    call.success(data);
-                }
-            });
+            bridge
+                .getActivity()
+                .runOnUiThread(
+                    new Runnable() {
+
+                        @Override
+                        public void run() {
+                            fsFragment.play();
+                            boolean playing = fsFragment.isPlaying();
+                            JSObject data = new JSObject();
+                            data.put("result", true);
+                            data.put("method", "play");
+                            data.put("value", true);
+                            call.success(data);
+                        }
+                    }
+                );
         } else {
-            ret.put("result",false);
-            ret.put("message","player is not defined");
+            ret.put("result", false);
+            ret.put("message", "player is not defined");
             call.success(ret);
         }
     }
-    @PluginMethod()
+
+    @PluginMethod
     public void pause(final PluginCall call) {
         saveCall(call);
         JSObject ret = new JSObject();
-        ret.put("method","pause");
+        ret.put("method", "pause");
         String playerId = call.getString("playerId");
-        if(playerId == null) {
-            ret.put("result",false);
-            ret.put("message","Must provide a PlayerId");
+        if (playerId == null) {
+            ret.put("result", false);
+            ret.put("message", "Must provide a PlayerId");
             call.success(ret);
             return;
         }
         if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
-            bridge.getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    fsFragment.pause();
-                    JSObject data = new JSObject();
-                    data.put("result", true);
-                    data.put("method", "pause");
-                    data.put("value", true);
-                    call.success(data);
-                }
-            });
+            bridge
+                .getActivity()
+                .runOnUiThread(
+                    new Runnable() {
+
+                        @Override
+                        public void run() {
+                            fsFragment.pause();
+                            JSObject data = new JSObject();
+                            data.put("result", true);
+                            data.put("method", "pause");
+                            data.put("value", true);
+                            call.success(data);
+                        }
+                    }
+                );
         } else {
-            ret.put("result",false);
-            ret.put("message","player is not defined");
+            ret.put("result", false);
+            ret.put("message", "player is not defined");
             call.success(ret);
         }
     }
-    @PluginMethod()
+
+    @PluginMethod
     public void getDuration(final PluginCall call) {
         saveCall(call);
         JSObject ret = new JSObject();
-        ret.put("method","getDuration");
+        ret.put("method", "getDuration");
         String playerId = call.getString("playerId");
-        if(playerId == null) {
-            ret.put("result",false);
-            ret.put("message","Must provide a PlayerId");
+        if (playerId == null) {
+            ret.put("result", false);
+            ret.put("message", "Must provide a PlayerId");
             call.success(ret);
             return;
         }
         if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
-            bridge.getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSObject ret = new JSObject();
-                    ret.put("method", "getDuration");
-                    int duration = fsFragment.getDuration();
-                    ret.put("result", true);
-                    ret.put("value", duration);
-                    call.success(ret);
-                }
-            });
+            bridge
+                .getActivity()
+                .runOnUiThread(
+                    new Runnable() {
+
+                        @Override
+                        public void run() {
+                            JSObject ret = new JSObject();
+                            ret.put("method", "getDuration");
+                            int duration = fsFragment.getDuration();
+                            ret.put("result", true);
+                            ret.put("value", duration);
+                            call.success(ret);
+                        }
+                    }
+                );
         } else {
-            ret.put("result",false);
-            ret.put("message","player is not defined");
+            ret.put("result", false);
+            ret.put("message", "player is not defined");
             call.success(ret);
         }
     }
-    @PluginMethod()
+
+    @PluginMethod
     public void getCurrentTime(final PluginCall call) {
         saveCall(call);
         JSObject ret = new JSObject();
-        ret.put("method","getCurrentTime");
+        ret.put("method", "getCurrentTime");
         String playerId = call.getString("playerId");
-        if(playerId == null) {
-            ret.put("result",false);
-            ret.put("message","Must provide a PlayerId");
+        if (playerId == null) {
+            ret.put("result", false);
+            ret.put("message", "Must provide a PlayerId");
             call.success(ret);
             return;
         }
         if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
-            bridge.getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSObject ret = new JSObject();
-                    ret.put("method", "getCurrentTime");
-                    int curTime = fsFragment.getCurrentTime();
-                    ret.put("result", true);
-                    ret.put("value", curTime);
-                    call.success(ret);
-                }
-            });
+            bridge
+                .getActivity()
+                .runOnUiThread(
+                    new Runnable() {
+
+                        @Override
+                        public void run() {
+                            JSObject ret = new JSObject();
+                            ret.put("method", "getCurrentTime");
+                            int curTime = fsFragment.getCurrentTime();
+                            ret.put("result", true);
+                            ret.put("value", curTime);
+                            call.success(ret);
+                        }
+                    }
+                );
         } else {
-            ret.put("result",false);
-            ret.put("message","player is not defined");
+            ret.put("result", false);
+            ret.put("message", "player is not defined");
             call.success(ret);
         }
     }
-    @PluginMethod()
+
+    @PluginMethod
     public void setCurrentTime(final PluginCall call) {
         saveCall(call);
         JSObject ret = new JSObject();
-        ret.put("method","setCurrentTime");
+        ret.put("method", "setCurrentTime");
         String playerId = call.getString("playerId");
-        if(playerId == null) {
-            ret.put("result",false);
-            ret.put("message","Must provide a PlayerId");
+        if (playerId == null) {
+            ret.put("result", false);
+            ret.put("message", "Must provide a PlayerId");
             call.success(ret);
             return;
         }
         Double value = call.getDouble("seektime");
-        if(value == null) {
-            ret.put("result",false);
-            ret.put("message","Must provide a time in second");
+        if (value == null) {
+            ret.put("result", false);
+            ret.put("message", "Must provide a time in second");
             call.success(ret);
             return;
         }
-        final int cTime = (int)Math.round(value);
+        final int cTime = (int) Math.round(value);
         if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
-            bridge.getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    fsFragment.setCurrentTime(cTime);
-                    JSObject ret = new JSObject();
-                    ret.put("result", true);
-                    ret.put("method", "setCurrentTime");
-                    ret.put("value", cTime);
-                    call.success(ret);
-                }
-            });
+            bridge
+                .getActivity()
+                .runOnUiThread(
+                    new Runnable() {
+
+                        @Override
+                        public void run() {
+                            fsFragment.setCurrentTime(cTime);
+                            JSObject ret = new JSObject();
+                            ret.put("result", true);
+                            ret.put("method", "setCurrentTime");
+                            ret.put("value", cTime);
+                            call.success(ret);
+                        }
+                    }
+                );
         } else {
-            ret.put("result",false);
-            ret.put("message","player is not defined");
+            ret.put("result", false);
+            ret.put("message", "player is not defined");
             call.success(ret);
         }
     }
-    @PluginMethod()
+
+    @PluginMethod
     public void getVolume(final PluginCall call) {
         saveCall(call);
         JSObject ret = new JSObject();
-        ret.put("method","getVolume");
+        ret.put("method", "getVolume");
         String playerId = call.getString("playerId");
-        if(playerId == null) {
-            ret.put("result",false);
-            ret.put("message","Must provide a PlayerId");
+        if (playerId == null) {
+            ret.put("result", false);
+            ret.put("message", "Must provide a PlayerId");
             call.success(ret);
             return;
         }
         if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
-            bridge.getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Float volume = fsFragment.getVolume();
-                    JSObject ret = new JSObject();
-                    ret.put("result", true);
-                    ret.put("method", "getVolume");
-                    ret.put("value", volume);
-                    call.success(ret);
-                }
-            });
+            bridge
+                .getActivity()
+                .runOnUiThread(
+                    new Runnable() {
+
+                        @Override
+                        public void run() {
+                            Float volume = fsFragment.getVolume();
+                            JSObject ret = new JSObject();
+                            ret.put("result", true);
+                            ret.put("method", "getVolume");
+                            ret.put("value", volume);
+                            call.success(ret);
+                        }
+                    }
+                );
         } else {
-            ret.put("result",false);
-            ret.put("message","player is not defined");
+            ret.put("result", false);
+            ret.put("message", "player is not defined");
             call.success(ret);
         }
     }
-    @PluginMethod()
+
+    @PluginMethod
     public void setVolume(final PluginCall call) {
         saveCall(call);
         JSObject ret = new JSObject();
-        ret.put("method","setVolume");
+        ret.put("method", "setVolume");
         String playerId = call.getString("playerId");
-        if(playerId == null) {
-            ret.put("result",false);
-            ret.put("message","Must provide a PlayerId");
+        if (playerId == null) {
+            ret.put("result", false);
+            ret.put("message", "Must provide a PlayerId");
             call.success(ret);
             return;
         }
         String value = call.getString("volume");
-        if(value == null) {
+        if (value == null) {
             ret.put("result", false);
             ret.put("method", "setVolume");
             ret.put("message", "Must provide a volume value");
@@ -340,106 +513,130 @@ public class CapacitorVideoPlayer extends Plugin {
         }
         final Float volume = Float.valueOf(value.trim());
         if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
-            bridge.getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    fsFragment.setVolume(volume);
-                    JSObject ret = new JSObject();
-                    ret.put("result", true);
-                    ret.put("method", "setVolume");
-                    ret.put("value", volume);
-                    call.success(ret);
-                }
-            });
+            bridge
+                .getActivity()
+                .runOnUiThread(
+                    new Runnable() {
+
+                        @Override
+                        public void run() {
+                            fsFragment.setVolume(volume);
+                            JSObject ret = new JSObject();
+                            ret.put("result", true);
+                            ret.put("method", "setVolume");
+                            ret.put("value", volume);
+                            call.success(ret);
+                        }
+                    }
+                );
         } else {
-            ret.put("result",false);
-            ret.put("message","player is not defined");
+            ret.put("result", false);
+            ret.put("message", "player is not defined");
             call.success(ret);
         }
     }
-    @PluginMethod()
+
+    @PluginMethod
     public void getMuted(final PluginCall call) {
         saveCall(call);
         JSObject ret = new JSObject();
-        ret.put("method","getMuted");
+        ret.put("method", "getMuted");
         String playerId = call.getString("playerId");
-        if(playerId == null) {
-            ret.put("result",false);
-            ret.put("message","Must provide a PlayerId");
+        if (playerId == null) {
+            ret.put("result", false);
+            ret.put("message", "Must provide a PlayerId");
             call.success(ret);
             return;
         }
         if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
-            bridge.getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    boolean value = fsFragment.getMuted();
-                    JSObject ret = new JSObject();
-                    ret.put("result", true);
-                    ret.put("method", "getMuted");
-                    ret.put("value", value);
-                    call.success(ret);
-                }
-            });
+            bridge
+                .getActivity()
+                .runOnUiThread(
+                    new Runnable() {
+
+                        @Override
+                        public void run() {
+                            boolean value = fsFragment.getMuted();
+                            JSObject ret = new JSObject();
+                            ret.put("result", true);
+                            ret.put("method", "getMuted");
+                            ret.put("value", value);
+                            call.success(ret);
+                        }
+                    }
+                );
         } else {
-            ret.put("result",false);
-            ret.put("message","player is not defined");
+            ret.put("result", false);
+            ret.put("message", "player is not defined");
             call.success(ret);
         }
     }
-    @PluginMethod()
+
+    @PluginMethod
     public void setMuted(final PluginCall call) {
         saveCall(call);
         JSObject ret = new JSObject();
-        ret.put("method","setMuted");
+        ret.put("method", "setMuted");
         String playerId = call.getString("playerId");
-        if(playerId == null) {
-            ret.put("result",false);
-            ret.put("message","Must provide a PlayerId");
+        if (playerId == null) {
+            ret.put("result", false);
+            ret.put("message", "Must provide a PlayerId");
             call.success(ret);
             return;
         }
         Boolean value = call.getBoolean("muted");
-        if(value == null) {
+        if (value == null) {
             ret.put("result", true);
-            ret.put("message","Must provide a boolean true/false");
+            ret.put("message", "Must provide a boolean true/false");
             call.success(ret);
             return;
         }
         final boolean bValue = value;
         if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
-            bridge.getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    fsFragment.setMuted(bValue);
-                    JSObject ret = new JSObject();
-                    ret.put("result", true);
-                    ret.put("method", "setMuted");
-                    ret.put("value", bValue);
-                    call.success(ret);
-                }
-            });
+            bridge
+                .getActivity()
+                .runOnUiThread(
+                    new Runnable() {
+
+                        @Override
+                        public void run() {
+                            fsFragment.setMuted(bValue);
+                            JSObject ret = new JSObject();
+                            ret.put("result", true);
+                            ret.put("method", "setMuted");
+                            ret.put("value", bValue);
+                            call.success(ret);
+                        }
+                    }
+                );
         } else {
-            ret.put("result",false);
-            ret.put("message","player is not defined");
+            ret.put("result", false);
+            ret.put("message", "player is not defined");
             call.success(ret);
         }
     }
-    @PluginMethod()
+
+    @PluginMethod
     public void stopAllPlayers(final PluginCall call) {
         saveCall(call);
-        bridge.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(fsFragment != null) fsFragment.pause();
-                JSObject ret = new JSObject();
-                ret.put("result", true);
-                ret.put("method", "stopAllPlayers");
-                ret.put("value", true);
-                call.success(ret);
-            }
-        });
+        bridge
+            .getActivity()
+            .runOnUiThread(
+                new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (fsFragment != null) fsFragment.pause();
+                        JSObject ret = new JSObject();
+                        ret.put("result", true);
+                        ret.put("method", "stopAllPlayers");
+                        ret.put("value", true);
+                        call.success(ret);
+                    }
+                }
+            );
     }
+
     public interface RequestCodes {
         int Video = 10001;
     }
@@ -452,17 +649,18 @@ public class CapacitorVideoPlayer extends Plugin {
         }
         return false;
     }
-    private void loadFragment(/*VideoPlayerFragment*/FullscreenExoPlayerFragment vpFragment) {
+
+    private void loadFragment(Fragment vpFragment, int frameLayoutId) {
         // create a FragmentManager
         FragmentManager fm = getBridge().getActivity().getFragmentManager();
         // create a FragmentTransaction to begin the transaction and replace the Fragment
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         // replace the FrameLayout with new Fragment
-        fragmentTransaction.replace(R.id.frameLayout, vpFragment);
+        fragmentTransaction.replace(frameLayoutId, vpFragment);
         fragmentTransaction.commit(); // save the changes
     }
 
-    private void removeFragment(/*VideoPlayerFragment*/FullscreenExoPlayerFragment vpFragment) {
+    private void removeFragment(/*VideoPlayerFragmentFullscreenExoPlayer*/Fragment vpFragment) {
         FragmentManager fm = getBridge().getActivity().getFragmentManager();
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         fragmentTransaction.remove(vpFragment);
@@ -470,8 +668,12 @@ public class CapacitorVideoPlayer extends Plugin {
     }
 
     private void AddObserversToNotificationCenter() {
-        NotificationCenter.defaultCenter().addMethodForNotification(
-                "playerItemPlay", new MyRunnable() {
+        NotificationCenter
+            .defaultCenter()
+            .addMethodForNotification(
+                "playerItemPlay",
+                new MyRunnable() {
+
                     @Override
                     public void run() {
                         JSObject data = new JSObject();
@@ -480,9 +682,14 @@ public class CapacitorVideoPlayer extends Plugin {
                         notifyListeners("jeepCapVideoPlayerPlay", data);
                         return;
                     }
-                });
-        NotificationCenter.defaultCenter().addMethodForNotification(
-                "playerItemPause", new MyRunnable() {
+                }
+            );
+        NotificationCenter
+            .defaultCenter()
+            .addMethodForNotification(
+                "playerItemPause",
+                new MyRunnable() {
+
                     @Override
                     public void run() {
                         JSObject data = new JSObject();
@@ -490,11 +697,15 @@ public class CapacitorVideoPlayer extends Plugin {
                         data.put("currentTime", this.getInfo().get("currentTime"));
                         notifyListeners("jeepCapVideoPlayerPause", data);
                         return;
-
                     }
-                });
-        NotificationCenter.defaultCenter().addMethodForNotification(
-                "playerItemReady", new MyRunnable() {
+                }
+            );
+        NotificationCenter
+            .defaultCenter()
+            .addMethodForNotification(
+                "playerItemReady",
+                new MyRunnable() {
+
                     @Override
                     public void run() {
                         JSObject data = new JSObject();
@@ -503,46 +714,106 @@ public class CapacitorVideoPlayer extends Plugin {
                         notifyListeners("jeepCapVideoPlayerReady", data);
                         return;
                     }
-                });
-        NotificationCenter.defaultCenter().addMethodForNotification(
-                "playerItemEnd", new MyRunnable() {
+                }
+            );
+        NotificationCenter
+            .defaultCenter()
+            .addMethodForNotification(
+                "playerItemEnd",
+                new MyRunnable() {
+
                     @Override
                     public void run() {
                         final JSObject data = new JSObject();
                         data.put("playerId", this.getInfo().get("playerId"));
                         data.put("currentTime", this.getInfo().get("currentTime"));
-                        bridge.getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                removeFragment(fsFragment);
-                                fsFragment = null;
-                                NotificationCenter.defaultCenter().removeAllNotifications();
-                                notifyListeners("jeepCapVideoPlayerEnded", data);
-                            }
-                        });
+                        bridge
+                            .getActivity()
+                            .runOnUiThread(
+                                new Runnable() {
 
+                                    @Override
+                                    public void run() {
+                                        FrameLayout frameLayoutView = getBridge().getActivity().findViewById(frameLayoutViewId);
+
+                                        if (frameLayoutView != null) {
+                                            ((ViewGroup) getBridge().getWebView().getParent()).removeView(frameLayoutView);
+                                            removeFragment(fsFragment);
+                                        }
+                                        fsFragment = null;
+                                        NotificationCenter.defaultCenter().removeAllNotifications();
+                                        notifyListeners("jeepCapVideoPlayerEnded", data);
+                                    }
+                                }
+                            );
                     }
-                });
-        NotificationCenter.defaultCenter().addMethodForNotification(
-                "playerFullscreenDismiss", new MyRunnable() {
+                }
+            );
+        NotificationCenter
+            .defaultCenter()
+            .addMethodForNotification(
+                "playerFullscreenDismiss",
+                new MyRunnable() {
+
                     @Override
                     public void run() {
                         boolean ret = false;
                         final JSObject data = new JSObject();
-                        if(Integer.valueOf(this.getInfo().get("dismiss")) == 1) ret = true;
+                        if (Integer.valueOf((String) this.getInfo().get("dismiss")) == 1) ret = true;
                         data.put("dismiss", ret);
-                        bridge.getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                removeFragment(fsFragment);
-                                fsFragment = null;
-                                NotificationCenter.defaultCenter().removeAllNotifications();
-                                notifyListeners("jeepCapVideoPlayerExit",data);
-                            }
-                        });
+                        bridge
+                            .getActivity()
+                            .runOnUiThread(
+                                new Runnable() {
 
+                                    @Override
+                                    public void run() {
+                                        FrameLayout frameLayoutView = getBridge().getActivity().findViewById(frameLayoutViewId);
+
+                                        if (frameLayoutView != null) {
+                                            ((ViewGroup) getBridge().getWebView().getParent()).removeView(frameLayoutView);
+                                            removeFragment(fsFragment);
+                                        }
+                                        fsFragment = null;
+                                        NotificationCenter.defaultCenter().removeAllNotifications();
+                                        notifyListeners("jeepCapVideoPlayerExit", data);
+                                    }
+                                }
+                            );
                     }
-                });
-    }
+                }
+            );
+        NotificationCenter
+            .defaultCenter()
+            .addMethodForNotification(
+                "videoPathInternalReady",
+                new MyRunnable() {
 
+                    @Override
+                    public void run() {
+                        long videoId = (Long) this.getInfo().get("videoId");
+                        // Get the previously saved call
+                        PluginCall savedCall = getSavedCall();
+                        FrameLayout pickerLayoutView = getBridge().getActivity().findViewById(pickerLayoutViewId);
+                        if (pickerLayoutView != null) {
+                            ((ViewGroup) getBridge().getWebView().getParent()).removeView(pickerLayoutView);
+                            removeFragment(pkFragment);
+                        }
+                        pkFragment = null;
+                        if (videoId != -1) {
+                            createFullScreenFragment(savedCall, videoPath, isTV, fsPlayerId, true, videoId);
+                        } else {
+                            Toast.makeText(context, "No Video files found ", Toast.LENGTH_SHORT).show();
+                            Map<String, Object> info = new HashMap<String, Object>() {
+
+                                {
+                                    put("dismiss", "1");
+                                }
+                            };
+                            NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
+                        }
+                    }
+                }
+            );
+    }
 }

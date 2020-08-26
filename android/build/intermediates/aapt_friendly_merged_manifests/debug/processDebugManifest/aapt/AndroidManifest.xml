@@ -8,14 +8,4 @@
         android:minSdkVersion="21"
         android:targetSdkVersion="29" />
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
-    <application>
-        <activity
-            android:name="com.jeep.plugin.capacitor.FullscreenExoPlayerFragment"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|navigation" >
-        </activity>
-    </application>
-
 </manifest>
