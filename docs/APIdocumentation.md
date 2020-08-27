@@ -14,11 +14,11 @@ Initialize the Video Player
   initialize the player for a video given by an url
 
   the `url` parameter can be :
-  . "https:/..../video.mp4" for files from the web
+  . `"https:/..../video.mp4" for files from the web`
   . if not "https"
-  . for IOS "public/assets/video/video.mp4"
-  . for Android "/raw/video" without the type. You have to create manually a raw folder under the res folder of your app and copy the video file in it
-  . for Web "assets/video/video.mp4"
+  . for IOS `"public/assets/video/video.mp4"`
+  . for Android `"public/assets/video/video.mp4"` not anymore the `resource/raw folder`  
+  . for Web `"assets/video/video.mp4"`
 
   the `playerId` is the id of a div element used as container for the player
 

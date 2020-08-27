@@ -70,7 +70,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
         self.mode = mode
         self.docPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
         if mode == "fullscreen" {
-            guard var videoPath = call.options["url"] as? String else {
+            guard let videoPath = call.options["url"] as? String else {
                 let error: String = "Must provide a video url"
                 print(error)
                 call.success([ "result": false, "method": "initPlayer", "message": error])
@@ -79,30 +79,72 @@ public class CapacitorVideoPlayer: CAPPlugin {
             if videoPath == "internal" {
                 self.pickVideoFromInternal()
             } else {
-                if String(videoPath.prefix(11)) == "application" {
-                    let path: String = String(videoPath.dropFirst(12))
-                    videoPath = docPath.appendingFormat("/\(path)")
-                    if !isFileExists(filePath: videoPath) {
-                        print("*** video file does not exist at path \n \(videoPath) \n***")
-                        let info: [String: Any] = ["dismiss": true]
-                        self.notifyListeners("jeepCapVideoPlayerExit", data: info, retainUntilConsumed: true)
-                        call.success([ "result": false, "method": "initPlayer", "message": "video file does not exist"])
+                let dict: [String: Any] =
+                            getURLFromVideoPath(videoPath: videoPath)
+                if let message = dict["message"] as? String {
+                    if message.count > 0 {
+                        call.success([ "result": false, "method": "initPlayer",
+                                       "message": message])
                         return
-                    }
-                    let url = URL(fileURLWithPath: videoPath)
-                    createVideoPlayerFullScreenView(call: call, videoUrl: url)
-                } else {
-                    if videoPath.count > 0 {
-                        if let url = URL(string: videoPath) {
-                            createVideoPlayerFullScreenView(call: call, videoUrl: url)
+                    } else {
+                        if let url = dict["url"] as? URL {
+                            createVideoPlayerFullScreenView(call: call,
+                                                            videoUrl: url)
+
+                        } else {
+                            call.success([ "result": false, "method": "initPlayer",
+                                           "message": "url not defined"])
+                            return
                         }
                     }
                 }
             }
         } else if mode == "embedded" {
-            call.success([ "result": false, "method": "initPlayer", "message": "Not implemented"])
+            call.success([ "result": false, "method": "initPlayer",
+                           "message": "Not implemented"])
         }
 
+    }
+
+    // MARK: - getURLFromVideoPath
+
+    func getURLFromVideoPath(videoPath: String) -> [String: Any] {
+        var dict: [String: Any] = [:]
+        dict["message"] = ""
+
+        if String(videoPath.prefix(11)) == "application" {
+            let path: String = String(videoPath.dropFirst(12))
+            let vPath: String = docPath.appendingFormat("/\(path)")
+            if !isFileExists(filePath: vPath) {
+                print("*** video file does not exist at path \n \(vPath) \n***")
+                let info: [String: Any] = ["dismiss": true]
+                self.notifyListeners("jeepCapVideoPlayerExit", data: info, retainUntilConsumed: true)
+                dict["message"] = "video file does not exist"
+                return dict
+            }
+            dict["url"] = URL(fileURLWithPath: vPath)
+            return dict
+        }
+        if String(videoPath.prefix(4)) == "http" {
+            if let url = URL(string: videoPath) {
+                dict["url"] = url
+                return dict
+            } else {
+                dict["message"] = "cannot convert videoPath in URL"
+                return dict
+            }
+        }
+        if String(videoPath.prefix(13)) == "public/assets" {
+            if let appFolder = Bundle.main.resourceURL {
+                dict["url"] = appFolder.appendingPathComponent(videoPath)
+                return dict
+            } else {
+                dict["message"] = "did not find appFolder"
+                return dict
+            }
+        }
+        dict["message"] = "videoPath not implemented"
+        return dict
     }
 
     // MARK: - createVideoPlayerFullScreenView
@@ -126,7 +168,8 @@ public class CapacitorVideoPlayer: CAPPlugin {
                 self.audioSession = AVAudioSession.sharedInstance()
                 // Set the audio session category, mode, and options.
                 try? self.audioSession?.setCategory(.playback, mode: .moviePlayback,
-                                                   options: [.mixWithOthers, .allowAirPlay])
+                                                   options: [.mixWithOthers,
+                                                             .allowAirPlay])
                 // Activate the audio session.
                 try? self.audioSession?.setActive(true)
                 call.success([ "result": true, "method": "createVideoPlayerFullScreenView", "value": true])
@@ -170,9 +213,9 @@ public class CapacitorVideoPlayer: CAPPlugin {
         backgroundObserver =
             NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil,
                                                    queue: nil) { (_) in
-                    if self.videoPlayerFullScreenView != nil {
-                        self.videoPlayerFullScreenView?.videoPlayer.player = nil
-                    }
+            if self.videoPlayerFullScreenView != nil {
+                self.videoPlayerFullScreenView?.videoPlayer.player = nil
+            }
         }
         foregroundObserver =
             NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil,

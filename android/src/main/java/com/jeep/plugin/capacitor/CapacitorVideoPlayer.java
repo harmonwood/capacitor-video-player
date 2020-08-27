@@ -131,8 +131,8 @@ public class CapacitorVideoPlayer extends Plugin {
                     }
                     createFullScreenFragment(call, videoPath, isTV, playerId, false, null);
                 } else {
-                    videoPath = "android.resource://" + context.getPackageName() + "/" + url;
-                    Log.v(TAG, "calculated url: " + url);
+                    videoPath = "file:///android_asset/" + url;
+                    Log.v(TAG, "*** calculated videoPath: " + videoPath);
                     createFullScreenFragment(call, videoPath, isTV, playerId, false, null);
                 }
             }

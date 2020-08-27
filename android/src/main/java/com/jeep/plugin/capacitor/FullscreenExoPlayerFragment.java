@@ -27,6 +27,7 @@ import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
@@ -113,10 +114,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
         if (!isInternal) {
             uri = Uri.parse(videoPath);
-            Log.v(TAG, "display url: " + uri);
-            Log.v(TAG, "display isTV: " + isTV);
             // get video type
             vType = getVideoType(uri);
+            Log.v(TAG, "display url: " + uri);
+            Log.v(TAG, "display isTV: " + isTV);
+            Log.v(TAG, "display vType: " + vType);
         }
         if (uri != null || isInternal) {
             // go fullscreen
@@ -304,7 +306,12 @@ public class FullscreenExoPlayerFragment extends Fragment {
         playerView.setPlayer(player);
         MediaSource mediaSource;
         if (!isInternal) {
-            mediaSource = buildHttpMediaSource();
+            Log.v(TAG, "****** videoPath " + videoPath);
+            if (videoPath.substring(0, 21).equals("file:///android_asset")) {
+                mediaSource = buildAssetMediaSource(uri);
+            } else {
+                mediaSource = buildHttpMediaSource();
+            }
         } else {
             Uri videoUri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, videoId);
             mediaSource = buildInternalMediaSource(videoUri);
@@ -322,6 +329,14 @@ public class FullscreenExoPlayerFragment extends Fragment {
             }
         };
         NotificationCenter.defaultCenter().postNotification("initializePlayer", info);
+    }
+
+    /**
+     * Build the Asset MediaSource
+     */
+    private MediaSource buildAssetMediaSource(Uri uri) {
+        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, "jeep-exoplayer-plugin");
+        return new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
     }
 
     /**
