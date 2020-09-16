@@ -2,6 +2,7 @@ export declare class VideoPlayer {
     videoEl: HTMLVideoElement;
     pipMode: boolean;
     pipWindow: Window;
+    isPlaying: boolean;
     private _url;
     private _playerId;
     private _container;
@@ -12,11 +13,10 @@ export declare class VideoPlayer {
     private _initial;
     private _videoType;
     private _videoContainer;
-    private _isSupported;
     private _firstReadyToPlay;
     private _isEnded;
     constructor(mode: string, url: string, playerId: string, container: any, zIndex: number, width?: number, height?: number);
-    private initialize;
+    initialize(): Promise<void>;
     private createVideoElement;
     private _goFullscreen;
     private _setPlayer;

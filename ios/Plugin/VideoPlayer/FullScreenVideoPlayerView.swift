@@ -19,6 +19,7 @@ class FullScreenVideoPlayerView: UIView {
     private var _isBufferEmpty: [String: Bool] = [:]
     private var _isEnded: Bool = false
     private var _exitOnEnd: Bool = true
+    private var _firstReadyToPlay: Bool = true
 
     var player: AVPlayer
     var videoPlayer: AVPlayerViewController
@@ -60,13 +61,16 @@ class FullScreenVideoPlayerView: UIView {
             switch playerItem.status {
             case .readyToPlay:
             // Player item is ready to play.
-                self._isLoaded.updateValue(true, forKey: self._videoId)
-                self._isReadyToPlay = true
-                self._isEnded = false
-                self._currentTime = CMTimeGetSeconds(self.playerItem.currentTime())
+                if self._firstReadyToPlay {
+                    self._isLoaded.updateValue(true, forKey: self._videoId)
+                    self._isReadyToPlay = true
+                    self._isEnded = false
+                    self._currentTime = CMTimeGetSeconds(self.playerItem.currentTime())
 
-                let vId: [String: Any] = ["fromPlayerId": self._videoId, "currentTime": self._currentTime ]
-                NotificationCenter.default.post(name: .playerItemReady, object: nil, userInfo: vId)
+                    let vId: [String: Any] = ["fromPlayerId": self._videoId, "currentTime": self._currentTime ]
+                    NotificationCenter.default.post(name: .playerItemReady, object: nil, userInfo: vId)
+                    self._firstReadyToPlay = false
+                }
             case .failed:
                 print("failing to load")
                 self._isLoaded.updateValue(false, forKey: self._videoId)

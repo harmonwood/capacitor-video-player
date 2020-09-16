@@ -677,7 +677,7 @@ public class CapacitorVideoPlayer extends Plugin {
                     @Override
                     public void run() {
                         JSObject data = new JSObject();
-                        data.put("playerId", this.getInfo().get("playerId"));
+                        data.put("fromPlayerId", this.getInfo().get("fromPlayerId"));
                         data.put("currentTime", this.getInfo().get("currentTime"));
                         notifyListeners("jeepCapVideoPlayerPlay", data);
                         return;
@@ -693,7 +693,7 @@ public class CapacitorVideoPlayer extends Plugin {
                     @Override
                     public void run() {
                         JSObject data = new JSObject();
-                        data.put("playerId", this.getInfo().get("playerId"));
+                        data.put("fromPlayerId", this.getInfo().get("fromPlayerId"));
                         data.put("currentTime", this.getInfo().get("currentTime"));
                         notifyListeners("jeepCapVideoPlayerPause", data);
                         return;
@@ -709,7 +709,7 @@ public class CapacitorVideoPlayer extends Plugin {
                     @Override
                     public void run() {
                         JSObject data = new JSObject();
-                        data.put("playerId", this.getInfo().get("playerId"));
+                        data.put("fromPlayerId", this.getInfo().get("fromPlayerId"));
                         data.put("currentTime", this.getInfo().get("currentTime"));
                         notifyListeners("jeepCapVideoPlayerReady", data);
                         return;
@@ -725,7 +725,7 @@ public class CapacitorVideoPlayer extends Plugin {
                     @Override
                     public void run() {
                         final JSObject data = new JSObject();
-                        data.put("playerId", this.getInfo().get("playerId"));
+                        data.put("fromPlayerId", this.getInfo().get("fromPlayerId"));
                         data.put("currentTime", this.getInfo().get("currentTime"));
                         bridge
                             .getActivity()

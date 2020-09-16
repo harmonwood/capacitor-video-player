@@ -1,24 +1,21 @@
 import Hls from 'hls.js';
-//import Hls from "./hls/hls.js";
-import { isSupported } from './hls-utils';
 
 export class VideoPlayer {
   public videoEl: HTMLVideoElement;
   public pipMode: boolean = false;
   public pipWindow: Window;
+  public isPlaying: boolean;
 
   private _url: string;
   private _playerId: string;
-  private _container: HTMLDivElement;
+  private _container: any;
   private _mode: string;
   private _width: number;
   private _height: number;
   private _zIndex: number;
   private _initial: any;
   private _videoType: string = null;
-  //private _videoClass: string = null;
   private _videoContainer: any = null;
-  private _isSupported: boolean = false;
   private _firstReadyToPlay: boolean = true;
   private _isEnded: boolean = false;
 
@@ -39,11 +36,9 @@ export class VideoPlayer {
     this._mode = mode;
     this._zIndex = zIndex ? zIndex : 1;
     this._playerId = playerId;
-    this.initialize();
   }
 
-  private async initialize() {
-    if (isSupported()) this._isSupported = true;
+  public async initialize() {
     // get the video type
     const retB: boolean = this._getVideoType();
     if (retB) {
@@ -65,14 +60,14 @@ export class VideoPlayer {
       this._container.style.justifyContent = 'center';
       this._container.style.backgroundColor = '#000000';
       this._container.style.zIndex = this._zIndex.toString();
-
       const width: number =
-        this._mode === 'fullscreen' ? this._container.offsetWidth : this._width;
+        this._mode === 'fullscreen'
+          ? window.innerWidth /*this._container.offsetWidth*/
+          : this._width;
       const height: number =
         this._mode === 'fullscreen'
-          ? this._container.offsetHeight
+          ? window.innerHeight /*this._container.offsetHeight*/
           : this._height;
-
       const xmlns = 'http://www.w3.org/2000/svg';
 
       const svg = document.createElementNS(xmlns, 'svg');
@@ -99,7 +94,6 @@ export class VideoPlayer {
       this._videoContainer.style.zIndex = (this._zIndex + 2).toString();
       this._container.appendChild(this._videoContainer);
       /*   Create Video Element */
-
       const isCreated = await this.createVideoElement(width, heightVideo);
       if (!isCreated) {
         this._createEvent(
@@ -140,18 +134,19 @@ export class VideoPlayer {
         if (this._firstReadyToPlay) {
           this._createEvent('Ready', this._playerId);
           this.videoEl.muted = false;
-          console.log('in onCanPlay videoEL ', this.videoEl.outerHTML);
           if (this._mode === 'fullscreen') await this.videoEl.play();
           this._firstReadyToPlay = false;
         }
       };
       this.videoEl.onplay = () => {
+        this.isPlaying = true;
         this._createEvent('Play', this._playerId);
       };
       this.videoEl.onplaying = () => {
         this._createEvent('Playing', this._playerId);
       };
       this.videoEl.onpause = () => {
+        this.isPlaying = false;
         this._createEvent('Pause', this._playerId);
       };
       if (this._mode === 'fullscreen') {
@@ -196,34 +191,33 @@ export class VideoPlayer {
     }
     return isSet;
   }
-  private _goFullscreen() {
-    if (this._videoContainer.requestFullscreen) {
-      this._videoContainer.requestFullscreen();
-    } else if (this._videoContainer.mozRequestFullScreen) {
+
+  private async _goFullscreen(): Promise<void> {
+    if (this._container.mozRequestFullScreen) {
       /* Firefox */
-      this._videoContainer.mozRequestFullScreen();
-    } else if (this._videoContainer.webkitRequestFullscreen) {
+      this._container.mozRequestFullScreen();
+    } else if (this._container.webkitRequestFullscreen) {
       /* Chrome, Safari & Opera */
-      this._videoContainer.webkitRequestFullscreen();
-    } else if (this._videoContainer.msRequestFullscreen) {
+      this._container.webkitRequestFullscreen();
+    } else if (this._container.msRequestFullscreen) {
       /* IE/Edge */
-      this._videoContainer.msRequestFullscreen();
+      this._container.msRequestFullscreen();
+    } else if (this._container.requestFullscreen) {
+      this._container.requestFullscreen();
     }
+    return;
   }
+
   private async _setPlayer(): Promise<boolean> {
     return new Promise(async resolve => {
-      if (this._isSupported && this._videoType === 'application/x-mpegURL') {
-        //                const { Hls } = await import('./hls/hls.js');
-        // HLS
+      if (Hls.isSupported && this._videoType === 'application/x-mpegURL') {
         var hls = new Hls();
+        hls.loadSource(this._url);
         hls.attachMedia(this.videoEl);
-        hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-          hls.loadSource(this._url);
-          hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            this.videoEl.muted = true;
-            this.videoEl.crossOrigin = 'anonymous';
-            resolve(true);
-          });
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          this.videoEl.muted = true;
+          this.videoEl.crossOrigin = 'anonymous';
+          resolve(true);
         });
       } else if (this._videoType === 'video/mp4') {
         // CMAF (fMP4) && MP4
@@ -241,7 +235,7 @@ export class VideoPlayer {
         resolve(true);
       } else {
         // Not Supported
-        return false;
+        resolve(false);
       }
       this.videoEl.addEventListener('enterpictureinpicture', (event: any) => {
         this.pipWindow = event.pictureInPictureWindow;
@@ -258,7 +252,6 @@ export class VideoPlayer {
           this.videoEl.play();
         }
       });
-      console.log('in setPlayer videoEL ', this.videoEl.outerHTML);
     });
   }
 
@@ -283,31 +276,26 @@ export class VideoPlayer {
         case 'cmfv':
         case 'cmfa': {
           this._videoType = 'video/mp4';
-          //                this._videoClass = "video-js";
           break;
         }
         case 'm3u8': {
           this._videoType = 'application/x-mpegURL';
-          //                this._videoClass = "vjs-default-skin";
           break;
         }
         /*
                 case "mpd" : {
                 this._videoType = "application/dash+xml";
-                this._videoClass = "video-js";
                 break;
                 }
-                */
+        */
         /*
                 case "youtube" : {
                 this._videoType = "video/youtube";
-                this._videoClass = "video-js vjs-default-skin";
                 break;
                 }
-                */
+        */
         default: {
           this._videoType = null;
-          //                this._videoClass = null;
           break;
         }
       }
@@ -341,6 +329,7 @@ export class VideoPlayer {
     }
     this._container.dispatchEvent(event);
   }
+
   private _closeFullscreen() {
     const mydoc: any = document;
     const isInFullScreen: boolean =
@@ -350,14 +339,14 @@ export class VideoPlayer {
       (mydoc.mozFullScreenElement && mydoc.mozFullScreenElement !== null) ||
       (mydoc.msFullscreenElement && mydoc.msFullscreenElement !== null);
     if (isInFullScreen) {
-      if (mydoc.exitFullscreen) {
-        mydoc.exitFullscreen();
-      } else if (mydoc.mozCancelFullScreen) {
+      if (mydoc.mozCancelFullScreen) {
         mydoc.mozCancelFullScreen();
       } else if (mydoc.webkitExitFullscreen) {
         mydoc.webkitExitFullscreen();
       } else if (mydoc.msExitFullscreen) {
         mydoc.msExitFullscreen();
+      } else if (mydoc.exitFullscreen) {
+        mydoc.exitFullscreen();
       }
     }
   }

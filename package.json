@@ -18,8 +18,8 @@
   "author": "Jean Pierre Quéau",
   "license": "MIT",
   "dependencies": {
-    "@types/hls.js": "^0.13.0",
-    "hls.js": "^0.14.7"
+    "@types/hls.js": "^0.13.1",
+    "hls.js": "^0.14.11"
   },
   "devDependencies": {
     "@capacitor/android": "2.3.0",
@@ -33,7 +33,7 @@
     "husky": "^4.2.5",
     "np": "^6.4.0",
     "prettier": "^2.0.5",
-    "prettier-plugin-java": "^0.8.0",
+    "prettier-plugin-java": "^0.8.2",
     "pretty-quick": "^2.0.1",
     "rimraf": "^3.0.0",
     "rollup": "^2.21.0",

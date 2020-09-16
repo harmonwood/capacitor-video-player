@@ -67,11 +67,24 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
         });
       }
       let componentTag: string = options.componentTag;
+      /*
       if (componentTag == null || componentTag.length === 0) {
         return Promise.resolve({
           result: false,
           method: 'initPlayer',
           message: 'Must provide a Component Tag',
+        });
+      }
+      */
+      let divContainerElement: any = options.divContainerElement;
+      if (
+        divContainerElement == null &&
+        (componentTag == null || componentTag.length === 0)
+      ) {
+        return Promise.resolve({
+          result: false,
+          method: 'initPlayer',
+          message: 'Must provide a divContainerElement or ComponentTag',
         });
       }
       let playerSize: IPlayerSize = null;
@@ -83,6 +96,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
         playerId,
         mode,
         componentTag,
+        divContainerElement,
         playerSize,
       );
       return Promise.resolve({ result: result });
@@ -107,8 +121,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
       playerId = 'fullscreen';
     }
     if (this._players[playerId]) {
-      let playing: boolean = false;
-      if (!this._players[playerId].videoEl.paused) playing = true;
+      let playing: boolean = this._players[playerId].isPlaying;
       return Promise.resolve({
         method: 'isPlaying',
         result: true,
@@ -155,9 +168,9 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
       playerId = 'fullscreen';
     }
     if (this._players[playerId]) {
-      if (!this._players[playerId].videoEl.pause)
+      if (this._players[playerId].isPlaying)
         await this._players[playerId].videoEl.pause();
-      return Promise.resolve({ method: 'pause', result: true });
+      return Promise.resolve({ method: 'pause', result: true, value: true });
     } else {
       return Promise.resolve({
         method: 'pause',
@@ -263,10 +276,6 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
     let muted: boolean = options.muted ? options.muted : false;
     if (this._players[playerId]) {
       this._players[playerId].videoEl.muted = muted;
-      console.log(
-        'in setMuted videoEL ',
-        this._players[playerId].videoEl.outerHTML,
-      );
       return Promise.resolve({
         method: 'setMuted',
         result: true,
@@ -293,10 +302,6 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
       playerId = 'fullscreen';
     }
     if (this._players[playerId]) {
-      console.log(
-        'in getMuted videoEL ',
-        this._players[playerId].videoEl.outerHTML,
-      );
       let muted: boolean = this._players[playerId].videoEl.muted;
       return Promise.resolve({
         method: 'getMuted',
@@ -410,6 +415,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
     playerId: string,
     mode: string,
     componentTag: string,
+    divContainerElement: any,
     playerSize: IPlayerSize,
   ): Promise<any> {
     const videoURL: string = url
@@ -421,10 +427,21 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
     const videoContainer: HTMLDivElement = await this._getContainerElement(
       playerId,
       componentTag,
+      divContainerElement,
     );
-    if (videoContainer === null) return Promise.resolve(false);
+    if (videoContainer === null)
+      return Promise.resolve({
+        method: 'initPlayer',
+        result: false,
+        message: 'componentTag or divContainerElement must be provided',
+      });
     if (mode === 'embedded' && playerSize == null)
-      return Promise.resolve(false);
+      return Promise.resolve({
+        method: 'initPlayer',
+        result: false,
+        message: 'playerSize must be defined in embedded mode',
+      });
+
     // add listeners
     videoContainer.addEventListener('videoPlayerPlay', (ev: CustomEvent) => {
       this.handlePlayerPlay(ev.detail);
@@ -458,6 +475,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
         playerSize.width,
         playerSize.height,
       );
+      await this._players[playerId].initialize();
     } else if (mode === 'fullscreen') {
       this._players['fullscreen'] = new VideoPlayer(
         'fullscreen',
@@ -466,6 +484,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
         videoContainer,
         99995,
       );
+      await this._players['fullscreen'].initialize();
     } else {
       return Promise.resolve({
         method: 'initPlayer',
@@ -478,19 +497,28 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
   private async _getContainerElement(
     playerId: string,
     componentTag: string,
+    divContainerElement: any,
   ): Promise<HTMLDivElement> {
-    let cmpTagEl: HTMLElement = null;
-    cmpTagEl = document.querySelector(`${componentTag}`);
-    if (cmpTagEl === null) return Promise.resolve(null);
-    let container: HTMLDivElement = null;
-    try {
-      container = cmpTagEl.shadowRoot.querySelector(`#${playerId}`);
-    } catch {
-      container = cmpTagEl.querySelector(`#${playerId}`);
-    }
     const videoContainer: HTMLDivElement = document.createElement('div');
-    container.appendChild(videoContainer);
-    return Promise.resolve(videoContainer);
+    videoContainer.id = `vc_${playerId}`;
+    if (componentTag != null && componentTag.length > 0) {
+      let cmpTagEl: HTMLElement = null;
+      cmpTagEl = document.querySelector(`${componentTag}`);
+      if (cmpTagEl === null) return Promise.resolve(null);
+      let container: HTMLDivElement = null;
+      try {
+        container = cmpTagEl.shadowRoot.querySelector(`#${playerId}`);
+      } catch {
+        container = cmpTagEl.querySelector(`#${playerId}`);
+      }
+      container.appendChild(videoContainer);
+      return Promise.resolve(videoContainer);
+    } else if (divContainerElement != null) {
+      divContainerElement.appendChild(videoContainer);
+      return Promise.resolve(videoContainer);
+    } else {
+      return Promise.resolve(null);
+    }
   }
   private handlePlayerPlay(data: any) {
     this.notifyListeners('jeepCapVideoPlayerPlay', data);

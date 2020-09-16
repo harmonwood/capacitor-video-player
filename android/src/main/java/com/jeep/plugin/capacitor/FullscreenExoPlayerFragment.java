@@ -444,8 +444,19 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * Start the player
      */
     public void play() {
-        player.setPlayWhenReady(true);
-        wasPaused = false;
+        if (!isPlaying()) {
+            Map<String, Object> info = new HashMap<String, Object>() {
+
+                {
+                    put("fromPlayerId", playerId);
+                    put("currentTime", String.valueOf(player.getCurrentPosition() / 1000));
+                }
+            };
+            player.setPlayWhenReady(true);
+            Log.v(TAG, "going to send playerItemPlay");
+            NotificationCenter.defaultCenter().postNotification("playerItemPlay", info);
+            wasPaused = false;
+        }
     }
 
     /**

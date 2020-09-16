@@ -125,7 +125,9 @@ No configuration required for this plugin
 
 - [pwa-video-player-app-starter](https://github.com/jepiqueau/pwa-video-player-app-starter)
 
-- [angular-video-player-starter](https://github.com/jepiqueau/angular-videoplayer-app-starter)
+- [angular-video-player-app-starter](https://github.com/jepiqueau/angular-videoplayer-app-starter)
+
+- [react-video-player-app-starter](https://github.com/jepiqueau/react-video-player-app-starter)
 
 ## Usage
 

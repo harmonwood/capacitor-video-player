@@ -94,10 +94,11 @@ export interface capVideoPlayerOptions {
     /**
      * The url of the video to play
      */
-    mode: string;
-    url: string;
-    playerId: string;
-    componentTag: string;
+    mode?: string;
+    url?: string;
+    playerId?: string;
+    componentTag?: string;
+    divContainerElement?: any;
     width?: number;
     height?: number;
     volume?: number;
@@ -113,4 +114,5 @@ export interface capVideoPlayerResult {
     result?: boolean;
     method?: string;
     value?: any;
+    message?: string;
 }

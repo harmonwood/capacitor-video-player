@@ -1,3 +1,13 @@
+## 2.3.1-2 (2020-09-16)
+
+### Added Features
+
+- add a link to a Ionic/React app starter
+
+### Bug Fixes
+
+- fix bugs to make it compatible with Ionic/React
+
 ## 2.3.1-1 (2020-08-27)
 
 ### Bug Fixes
