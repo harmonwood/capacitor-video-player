@@ -1,3 +1,12 @@
+## 2.3.1-3 (2020-09-22)
+
+### Bug Fixes
+
+- fix CapacitorVideoPlayer.podspec
+- fix return data in handlePlayerExit (Web)
+- remove the wasPaused variable (Android)
+- nullify the player in playerFullscreenExit (iOS)
+
 ## 2.3.1-2 (2020-09-16)
 
 ### Added Features

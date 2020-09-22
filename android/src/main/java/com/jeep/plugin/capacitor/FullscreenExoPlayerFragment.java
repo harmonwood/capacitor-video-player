@@ -70,7 +70,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private boolean playWhenReady = true;
     private boolean firstReadyToPlay = true;
     private boolean isEnded = false;
-    private static boolean wasPaused = true;
     private int currentWindow = 0;
     private long playbackPosition = 0;
     private Uri uri = null;
@@ -444,19 +443,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * Start the player
      */
     public void play() {
-        if (!isPlaying()) {
-            Map<String, Object> info = new HashMap<String, Object>() {
-
-                {
-                    put("fromPlayerId", playerId);
-                    put("currentTime", String.valueOf(player.getCurrentPosition() / 1000));
-                }
-            };
-            player.setPlayWhenReady(true);
-            Log.v(TAG, "going to send playerItemPlay");
-            NotificationCenter.defaultCenter().postNotification("playerItemPlay", info);
-            wasPaused = false;
-        }
+        player.setPlayWhenReady(true);
     }
 
     /**
@@ -464,7 +451,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
      */
     public void pause() {
         player.setPlayWhenReady(false);
-        wasPaused = true;
     }
 
     /**
@@ -559,22 +545,22 @@ public class FullscreenExoPlayerFragment extends Fragment {
                 case ExoPlayer.STATE_READY:
                     stateString = "ExoPlayer.STATE_READY     -";
                     Pbar.setVisibility(View.GONE);
+                    Log.v(TAG, "**** in ExoPlayer.STATE_READY firstReadyToPlay " + firstReadyToPlay);
+
                     if (firstReadyToPlay) {
                         firstReadyToPlay = false;
                         NotificationCenter.defaultCenter().postNotification("playerItemReady", info);
                         player.setPlayWhenReady(true);
+                        Log.v(TAG, "**** in ExoPlayer.STATE_READY firstReadyToPlay player.isPlaying" + player.isPlaying());
                         player.seekTo(currentWindow, playbackPosition);
                     } else {
+                        Log.v(TAG, "**** in ExoPlayer.STATE_READY isPlaying " + player.isPlaying());
                         if (player.isPlaying()) {
-                            if (wasPaused) {
-                                NotificationCenter.defaultCenter().postNotification("playerItemPlay", info);
-                                wasPaused = false;
-                            }
+                            Log.v(TAG, "**** in ExoPlayer.STATE_READY going to notify playerItemPlay ");
+                            NotificationCenter.defaultCenter().postNotification("playerItemPlay", info);
                         } else {
-                            if (!wasPaused) {
-                                NotificationCenter.defaultCenter().postNotification("playerItemPause", info);
-                                wasPaused = true;
-                            }
+                            Log.v(TAG, "**** in ExoPlayer.STATE_READY going to notify playerItemPause ");
+                            NotificationCenter.defaultCenter().postNotification("playerItemPause", info);
                         }
                     }
                     break;
@@ -631,7 +617,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
         playWhenReady = true;
         firstReadyToPlay = true;
         isEnded = false;
-        wasPaused = true;
         currentWindow = 0;
         playbackPosition = 0;
         uri = null;

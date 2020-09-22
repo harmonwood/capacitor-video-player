@@ -12,7 +12,7 @@ import UIKit
 // swiftlint:disable file_length
 public class CapacitorVideoPlayer: CAPPlugin {
 
-    public var player: AVPlayer?
+//    public var player: AVPlayer?
     public var call: CAPPluginCall?
     public var videoPlayer: AVPlayerViewController?
     public var bgPlayer: AVPlayer?
@@ -50,7 +50,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
     }
 
     // MARK: - Init player(s)
-
+    // swiftlint:disable function_body_length
     @objc func initPlayer(_ call: CAPPluginCall) {
         self.call = call
 
@@ -105,6 +105,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
         }
 
     }
+    // swiftlint:enable function_body_length
 
     // MARK: - getURLFromVideoPath
 
@@ -238,7 +239,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
         }
         if self.mode == "fullscreen" && self.fsPlayerId == playerId {
 
-            if self.videoPlayerFullScreenView != nil {
+//            if self.videoPlayerFullScreenView != nil {
                 if let playerView = self.videoPlayerFullScreenView {
                      DispatchQueue.main.async {
                         let isPlaying: Bool = playerView.isPlaying
@@ -251,14 +252,14 @@ public class CapacitorVideoPlayer: CAPPlugin {
                     call.success([ "result": false, "method": "isPlaying", "message": error])
                     return
                 }
-
+/*
             } else {
                 let error: String = "No videoPlayerFullScreenView"
                 print(error)
                 call.success([ "result": false, "method": "isPlaying", "message": error])
                 return
             }
-
+*/
         }
 
     }
@@ -274,7 +275,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
         }
         if self.mode == "fullscreen" && self.fsPlayerId == playerId {
 
-            if self.videoPlayerFullScreenView != nil {
+//            if self.videoPlayerFullScreenView != nil {
                 if let playerView = self.videoPlayerFullScreenView {
                     DispatchQueue.main.async {
                         playerView.play()
@@ -288,12 +289,13 @@ public class CapacitorVideoPlayer: CAPPlugin {
                    return
                }
 
-            } else {
+/*           } else {
                let error: String = "No videoPlayerFullScreenView"
                print(error)
                call.success([ "result": false, "method": "play", "message": error])
                return
            }
+ */
         }
     }
 
@@ -309,7 +311,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
             return
         }
         if self.mode == "fullscreen" && self.fsPlayerId == playerId {
-            if self.videoPlayerFullScreenView != nil {
+//            if self.videoPlayerFullScreenView != nil {
                 if let playerView = self.videoPlayerFullScreenView {
                     DispatchQueue.main.async {
                         playerView.pause()
@@ -322,13 +324,14 @@ public class CapacitorVideoPlayer: CAPPlugin {
                    call.success([ "result": false, "method": "pause", "message": error])
                    return
                 }
-            } else {
+ /*           } else {
                let error: String = "No videoPlayerFullScreenView"
                print(error)
                call.success([ "result": false, "method": "pause", "message": error])
                return
 
             }
+ */
         }
     }
 
@@ -344,7 +347,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
             return
         }
         if self.mode == "fullscreen" && self.fsPlayerId == playerId {
-            if videoPlayerFullScreenView != nil {
+//            if videoPlayerFullScreenView != nil {
                 if let playerView = self.videoPlayerFullScreenView {
                     DispatchQueue.main.async {
                         let duration: Double = playerView.getDuration()
@@ -357,13 +360,13 @@ public class CapacitorVideoPlayer: CAPPlugin {
                     call.success([ "result": false, "method": "getDuration", "message": error])
                     return
                 }
-            } else {
+/*            } else {
                 let error: String = "No videoPlayerFullScreenView"
                 print(error)
                 call.success([ "result": false, "method": "getDuration", "message": error])
                 return
             }
-
+*/
         }
     }
 
@@ -379,7 +382,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
             return
         }
         if self.mode == "fullscreen" && self.fsPlayerId == playerId {
-            if videoPlayerFullScreenView != nil {
+//            if videoPlayerFullScreenView != nil {
                 if let playerView = self.videoPlayerFullScreenView {
                     DispatchQueue.main.async {
                         let currentTime: Double = playerView.getCurrentTime()
@@ -392,12 +395,13 @@ public class CapacitorVideoPlayer: CAPPlugin {
                     call.success([ "result": false, "method": "getCurrentTime", "message": error])
                     return
                 }
-            } else {
+/*            } else {
                 let error: String = "No videoPlayerFullScreenView"
                 print(error)
                 call.success([ "result": false, "method": "getCurrentTime", "message": error])
                 return
             }
+ */
         }
     }
 
@@ -419,7 +423,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
             return
         }
         if self.mode == "fullscreen" && self.fsPlayerId == playerId {
-            if videoPlayerFullScreenView != nil {
+//            if videoPlayerFullScreenView != nil {
                 if let playerView = self.videoPlayerFullScreenView {
                     DispatchQueue.main.async {
                         playerView.setCurrentTime(time: seekTime)
@@ -432,13 +436,13 @@ public class CapacitorVideoPlayer: CAPPlugin {
                     call.success([ "result": false, "method": "setCurrentTime", "message": error])
                     return
                 }
-            } else {
+/*            } else {
                 let error: String = "No videoPlayerFullScreenView"
                 print(error)
                 call.success([ "result": false, "method": "setCurrentTime", "message": error])
                 return
             }
-
+*/
         }
     }
 
@@ -454,7 +458,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
             return
         }
         if self.mode == "fullscreen" && self.fsPlayerId == playerId {
-            if videoPlayerFullScreenView != nil {
+//            if videoPlayerFullScreenView != nil {
                 if let playerView = self.videoPlayerFullScreenView {
                     DispatchQueue.main.async {
                         let volume: Float = playerView.getVolume()
@@ -467,12 +471,13 @@ public class CapacitorVideoPlayer: CAPPlugin {
                     call.success([ "result": false, "method": "getVolume", "message": error])
                     return
                 }
-            } else {
+/*            } else {
                 let error: String = "No videoPlayerFullScreenView"
                 print(error)
                 call.success([ "result": false, "method": "getVolume", "message": error])
                 return
             }
+ */
         }
     }
 
@@ -495,7 +500,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
             return
         }
         if self.mode == "fullscreen" && self.fsPlayerId == playerId {
-           if videoPlayerFullScreenView != nil {
+//           if videoPlayerFullScreenView != nil {
                if let playerView = self.videoPlayerFullScreenView {
                    DispatchQueue.main.async {
                        playerView.setVolume(volume: volume)
@@ -508,12 +513,13 @@ public class CapacitorVideoPlayer: CAPPlugin {
                    call.success([ "result": false, "method": "setVolume", "message": error])
                    return
                }
-           } else {
+/*           } else {
                let error: String = "No videoPlayerFullScreenView"
                print(error)
                call.success([ "result": false, "method": "setVolume", "message": error])
                return
            }
+ */
        }
 
     }
@@ -530,7 +536,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
             return
         }
         if self.mode == "fullscreen" && self.fsPlayerId == playerId {
-            if videoPlayerFullScreenView != nil {
+//            if videoPlayerFullScreenView != nil {
                 if let playerView = self.videoPlayerFullScreenView {
                     DispatchQueue.main.async {
                         let muted: Bool = playerView.getMuted()
@@ -543,12 +549,13 @@ public class CapacitorVideoPlayer: CAPPlugin {
                     call.success([ "result": false, "method": "getMuted", "message": error])
                     return
                 }
-            } else {
+ /*           } else {
                 let error: String = "No videoPlayerFullScreenView"
                 print(error)
                 call.success([ "result": false, "method": "getMuted", "message": error])
                 return
             }
+ */
         }
     }
 
@@ -570,24 +577,16 @@ public class CapacitorVideoPlayer: CAPPlugin {
             return
         }
         if self.mode == "fullscreen" && self.fsPlayerId == playerId {
-            if videoPlayerFullScreenView != nil {
-                if let playerView = self.videoPlayerFullScreenView {
-                    DispatchQueue.main.async {
-                        playerView.setMuted(muted: muted)
-                        call.success([ "result": true, "method": "setMuted", "value": muted])
-                        return
-                    }
-                } else {
-                    let error: String = "Fullscreen playerId not found"
-                    print(error)
-                    call.success([ "result": false, "method": "setMuted", "message": error])
+            if let playerView = self.videoPlayerFullScreenView {
+                DispatchQueue.main.async {
+                    playerView.setMuted(muted: muted)
+                    call.success([ "result": true, "method": "setMuted", "value": muted])
                     return
                 }
             } else {
-                let error: String = "No videoPlayerFullScreenView"
+                let error: String = "Fullscreen playerId not found"
                 print(error)
                 call.success([ "result": false, "method": "setMuted", "message": error])
-
                 return
             }
         }
@@ -598,26 +597,19 @@ public class CapacitorVideoPlayer: CAPPlugin {
     @objc func stopAllPlayers(_ call: CAPPluginCall) {
         self.call = call
         if self.mode == "fullscreen" {
-            if self.videoPlayerFullScreenView != nil {
-                if let playerView = self.videoPlayerFullScreenView {
-                    DispatchQueue.main.async {
-                        if playerView.isPlaying {
-                            playerView.pause()
-                        }
-                        call.success([ "result": true, "method": "stopAllPlayers", "value": true])
-                        return
+            if let playerView = self.videoPlayerFullScreenView {
+                DispatchQueue.main.async {
+                    if playerView.isPlaying {
+                        playerView.pause()
                     }
-                } else {
-                   let error: String = "Fullscreen player not found"
-                   print(error)
-                   call.success([ "result": false, "method": "stopAllPlayers", "message": error])
-                   return
+                    call.success([ "result": true, "method": "stopAllPlayers", "value": true])
+                    return
                 }
             } else {
-               let error: String = "No videoPlayerFullScreenView"
+               let error: String = "Fullscreen player not found"
+               print(error)
                call.success([ "result": false, "method": "stopAllPlayers", "message": error])
                return
-
             }
 
         }
@@ -656,7 +648,9 @@ public class CapacitorVideoPlayer: CAPPlugin {
         DispatchQueue.main.async {
             self.notifyListeners("jeepCapVideoPlayerReady", data: info, retainUntilConsumed: true)
             if self.mode == "fullscreen" && playerId == self.fsPlayerId {
-                self.videoPlayerFullScreenView?.play()
+                if let vPFSV = self.videoPlayerFullScreenView {
+                    vPFSV.play()
+                }
             }
             return
         }
@@ -665,16 +659,23 @@ public class CapacitorVideoPlayer: CAPPlugin {
     @objc func playerFullscreenDismiss(notification: Notification) {
         let info: [String: Any] = ["dismiss": true]
         DispatchQueue.main.async {
-            self.notifyListeners("jeepCapVideoPlayerExit", data: info, retainUntilConsumed: true)
             if self.mode == "fullscreen" {
+                if let vPFSV = self.videoPlayerFullScreenView {
+                    vPFSV.pause()
+                }
                 self.playerFullscreenExit()
             }
+            self.notifyListeners("jeepCapVideoPlayerExit", data: info, retainUntilConsumed: true)
             return
         }
     }
 
     func playerFullscreenExit() {
-        self.videoPlayerFullScreenView?.removeObservers()
+        if let vPFSV = self.videoPlayerFullScreenView {
+            vPFSV.removeObservers()
+            vPFSV.videoPlayer.player = nil
+            self.videoPlayerFullScreenView = nil
+        }
         self.bridge.viewController.dismiss(animated: true, completion: {
             do {
                 // DeActivate the audio session.

@@ -453,11 +453,11 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             videoContainer.addEventListener('videoPlayerReady', (ev) => {
                 this.handlePlayerReady(ev.detail);
             });
-            videoContainer.addEventListener('videoPlayerExit', (ev) => {
+            videoContainer.addEventListener('videoPlayerExit', () => {
                 if (mode === 'fullscreen') {
                     videoContainer.remove();
                 }
-                this.handlePlayerExit(ev.detail);
+                this.handlePlayerExit();
             });
             if (mode === 'embedded') {
                 this._players[playerId] = new VideoPlayer('embedded', videoURL, playerId, videoContainer, 2, playerSize.width, playerSize.height);
@@ -514,8 +514,9 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
     handlePlayerEnded(data) {
         this.notifyListeners('jeepCapVideoPlayerEnded', data);
     }
-    handlePlayerExit(data) {
-        this.notifyListeners('jeepCapVideoPlayerExit', data);
+    handlePlayerExit() {
+        const retData = { dismiss: true };
+        this.notifyListeners('jeepCapVideoPlayerExit', retData);
     }
     handlePlayerReady(data) {
         this.notifyListeners('jeepCapVideoPlayerReady', data);

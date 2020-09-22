@@ -47,7 +47,9 @@ export class VideoPlayer {
                 this._container.style.justifyContent = 'center';
                 this._container.style.backgroundColor = '#000000';
                 this._container.style.zIndex = this._zIndex.toString();
-                const width = this._mode === 'fullscreen' ? window.innerWidth /*this._container.offsetWidth*/ : this._width;
+                const width = this._mode === 'fullscreen'
+                    ? window.innerWidth /*this._container.offsetWidth*/
+                    : this._width;
                 const height = this._mode === 'fullscreen'
                     ? window.innerHeight /*this._container.offsetHeight*/
                     : this._height;
