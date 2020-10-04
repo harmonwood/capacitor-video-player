@@ -1,3 +1,13 @@
+## 2.4.2-2 (2020-10-04)
+
+### Added Features
+
+- add docgen to generate the API documentation
+
+### Bug Fixes
+
+- cleanup divContainer element as input of initPlayer
+
 ## 2.4.2-1 (2020-09-25)
 
 ### Chores
