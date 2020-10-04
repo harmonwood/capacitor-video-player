@@ -42,11 +42,11 @@
 
 - iOS Plugin
   . `application/files/video.mp4` is corresponding to :
-  `/data/Containers/Data/Applications/YOUR_APPLICATION/Documents/files/video.mp4`
+  **/data/Containers/Data/Applications/YOUR_APPLICATION/Documents/files/video.mp4**
 
 - Android Plugin
   . `application/files/video.mp4` is corresponding to :
-  `/data/user/0/YOUR_APPLICATION_PACKAGE/files//video.mp4`
+  **/data/user/0/YOUR_APPLICATION_PACKAGE/files//video.mp4**
 
 ### from your Device Media
 
