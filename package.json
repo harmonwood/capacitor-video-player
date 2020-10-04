@@ -13,6 +13,7 @@
     "build": "npm run clean && tsc && rollup -c rollup.config.js",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
+    "docgen": "docgen --api CapacitorVideoPlayerPlugin --output-readme docs/API.md",
     "prepublishOnly": "npm run build"
   },
   "author": "Jean Pierre Quéau",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@capacitor/android": "^2.4.2",
     "@capacitor/core": "^2.4.2",
+    "@capacitor/docgen": "0.0.4",
     "@capacitor/ios": "^2.4.2",
     "@ionic/prettier-config": "^1.0.0",
     "@ionic/swiftlint-config": "^1.1.1",

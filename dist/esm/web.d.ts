@@ -1,5 +1,5 @@
 import { WebPlugin } from '@capacitor/core';
-import { CapacitorVideoPlayerPlugin, capVideoPlayerOptions, capVideoPlayerResult } from './definitions';
+import { CapacitorVideoPlayerPlugin, capVideoPlayerOptions, capVideoPlayerIdOptions, capVideoVolumeOptions, capVideoTimeOptions, capVideoMutedOptions, capVideoPlayerResult } from './definitions';
 export interface IPlayerSize {
     height?: number;
     width?: number;
@@ -21,61 +21,61 @@ export declare class CapacitorVideoPlayerWeb extends WebPlugin implements Capaci
      *
      * @param options
      */
-    isPlaying(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>;
+    isPlaying(options: capVideoPlayerIdOptions): Promise<capVideoPlayerResult>;
     /**
      * Play the current video from a given playerId
      *
      * @param options
      */
-    play(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>;
+    play(options: capVideoPlayerIdOptions): Promise<capVideoPlayerResult>;
     /**
      * Pause the current video from a given playerId
      *
      * @param options
      */
-    pause(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>;
+    pause(options: capVideoPlayerIdOptions): Promise<capVideoPlayerResult>;
     /**
      * Get the duration of the current video from a given playerId
      *
      * @param options
      */
-    getDuration(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>;
+    getDuration(options: capVideoPlayerIdOptions): Promise<capVideoPlayerResult>;
     /**
      * Set the volume of the current video from a given playerId
      *
      * @param options
      */
-    setVolume(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>;
+    setVolume(options: capVideoVolumeOptions): Promise<capVideoPlayerResult>;
     /**
      * Get the volume of the current video from a given playerId
      *
      * @param options
      */
-    getVolume(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>;
+    getVolume(options: capVideoPlayerIdOptions): Promise<capVideoPlayerResult>;
     /**
      * Set the muted property of the current video from a given playerId
      *
      * @param options
      */
-    setMuted(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>;
+    setMuted(options: capVideoMutedOptions): Promise<capVideoPlayerResult>;
     /**
      * Get the muted property of the current video from a given playerId
      *
      * @param options
      */
-    getMuted(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>;
+    getMuted(options: capVideoPlayerIdOptions): Promise<capVideoPlayerResult>;
     /**
      * Set the current time of the current video from a given playerId
      *
      * @param options
      */
-    setCurrentTime(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>;
+    setCurrentTime(options: capVideoTimeOptions): Promise<capVideoPlayerResult>;
     /**
      * Get the current time of the current video from a given playerId
      *
      * @param options
      */
-    getCurrentTime(options: capVideoPlayerOptions): Promise<capVideoPlayerResult>;
+    getCurrentTime(options: capVideoPlayerIdOptions): Promise<capVideoPlayerResult>;
     /**
      * Get the current time of the current video from a given playerId
      *

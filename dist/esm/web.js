@@ -63,29 +63,18 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                     });
                 }
                 let componentTag = options.componentTag;
-                /*
                 if (componentTag == null || componentTag.length === 0) {
-                  return Promise.resolve({
-                    result: false,
-                    method: 'initPlayer',
-                    message: 'Must provide a Component Tag',
-                  });
-                }
-                */
-                let divContainerElement = options.divContainerElement;
-                if (divContainerElement == null &&
-                    (componentTag == null || componentTag.length === 0)) {
                     return Promise.resolve({
                         result: false,
                         method: 'initPlayer',
-                        message: 'Must provide a divContainerElement or ComponentTag',
+                        message: 'Must provide a Component Tag',
                     });
                 }
                 let playerSize = null;
                 if (mode === 'embedded') {
                     playerSize = this.checkSize(options);
                 }
-                const result = yield this._initializeVideoPlayer(url, playerId, mode, componentTag, divContainerElement, playerSize);
+                const result = yield this._initializeVideoPlayer(url, playerId, mode, componentTag, playerSize);
                 return Promise.resolve({ result: result });
             }
             else {
@@ -415,7 +404,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         }
         return playerSize;
     }
-    _initializeVideoPlayer(url, playerId, mode, componentTag, divContainerElement, playerSize) {
+    _initializeVideoPlayer(url, playerId, mode, componentTag, playerSize) {
         return __awaiter(this, void 0, void 0, function* () {
             const videoURL = url
                 ? url.indexOf('%2F') == -1
@@ -424,7 +413,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 : null;
             if (videoURL === null)
                 return Promise.resolve(false);
-            const videoContainer = yield this._getContainerElement(playerId, componentTag, divContainerElement);
+            const videoContainer = yield this._getContainerElement(playerId, componentTag);
             if (videoContainer === null)
                 return Promise.resolve({
                     method: 'initPlayer',
@@ -477,7 +466,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             return Promise.resolve({ method: 'initPlayer', result: true, value: true });
         });
     }
-    _getContainerElement(playerId, componentTag, divContainerElement) {
+    _getContainerElement(playerId, componentTag) {
         return __awaiter(this, void 0, void 0, function* () {
             const videoContainer = document.createElement('div');
             videoContainer.id = `vc_${playerId}`;
@@ -494,10 +483,6 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                     container = cmpTagEl.querySelector(`#${playerId}`);
                 }
                 container.appendChild(videoContainer);
-                return Promise.resolve(videoContainer);
-            }
-            else if (divContainerElement != null) {
-                divContainerElement.appendChild(videoContainer);
                 return Promise.resolve(videoContainer);
             }
             else {

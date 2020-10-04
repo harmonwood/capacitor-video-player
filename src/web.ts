@@ -2,6 +2,10 @@ import { WebPlugin } from '@capacitor/core';
 import {
   CapacitorVideoPlayerPlugin,
   capVideoPlayerOptions,
+  capVideoPlayerIdOptions,
+  capVideoVolumeOptions,
+  capVideoTimeOptions,
+  capVideoMutedOptions,
   capVideoPlayerResult,
 } from './definitions';
 import { VideoPlayer } from './web-utils/videoplayer';
@@ -67,24 +71,11 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
         });
       }
       let componentTag: string = options.componentTag;
-      /*
       if (componentTag == null || componentTag.length === 0) {
         return Promise.resolve({
           result: false,
           method: 'initPlayer',
           message: 'Must provide a Component Tag',
-        });
-      }
-      */
-      let divContainerElement: any = options.divContainerElement;
-      if (
-        divContainerElement == null &&
-        (componentTag == null || componentTag.length === 0)
-      ) {
-        return Promise.resolve({
-          result: false,
-          method: 'initPlayer',
-          message: 'Must provide a divContainerElement or ComponentTag',
         });
       }
       let playerSize: IPlayerSize = null;
@@ -96,7 +87,6 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
         playerId,
         mode,
         componentTag,
-        divContainerElement,
         playerSize,
       );
       return Promise.resolve({ result: result });
@@ -114,7 +104,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
    * @param options
    */
   async isPlaying(
-    options: capVideoPlayerOptions,
+    options: capVideoPlayerIdOptions,
   ): Promise<capVideoPlayerResult> {
     let playerId: string = options.playerId;
     if (playerId == null || playerId.length === 0) {
@@ -141,7 +131,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
    *
    * @param options
    */
-  async play(options: capVideoPlayerOptions): Promise<capVideoPlayerResult> {
+  async play(options: capVideoPlayerIdOptions): Promise<capVideoPlayerResult> {
     let playerId: string = options.playerId;
     if (playerId == null || playerId.length === 0) {
       playerId = 'fullscreen';
@@ -162,7 +152,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
    *
    * @param options
    */
-  async pause(options: capVideoPlayerOptions): Promise<capVideoPlayerResult> {
+  async pause(options: capVideoPlayerIdOptions): Promise<capVideoPlayerResult> {
     let playerId: string = options.playerId;
     if (playerId == null || playerId.length === 0) {
       playerId = 'fullscreen';
@@ -185,7 +175,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
    * @param options
    */
   async getDuration(
-    options: capVideoPlayerOptions,
+    options: capVideoPlayerIdOptions,
   ): Promise<capVideoPlayerResult> {
     let playerId: string = options.playerId;
     if (playerId == null || playerId.length === 0) {
@@ -212,7 +202,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
    * @param options
    */
   async setVolume(
-    options: capVideoPlayerOptions,
+    options: capVideoVolumeOptions,
   ): Promise<capVideoPlayerResult> {
     let playerId: string = options.playerId;
     if (playerId == null || playerId.length === 0) {
@@ -240,7 +230,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
    * @param options
    */
   async getVolume(
-    options: capVideoPlayerOptions,
+    options: capVideoPlayerIdOptions,
   ): Promise<capVideoPlayerResult> {
     let playerId: string = options.playerId;
     if (playerId == null || playerId.length === 0) {
@@ -266,9 +256,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
    *
    * @param options
    */
-  async setMuted(
-    options: capVideoPlayerOptions,
-  ): Promise<capVideoPlayerResult> {
+  async setMuted(options: capVideoMutedOptions): Promise<capVideoPlayerResult> {
     let playerId: string = options.playerId;
     if (playerId == null || playerId.length === 0) {
       playerId = 'fullscreen';
@@ -295,7 +283,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
    * @param options
    */
   async getMuted(
-    options: capVideoPlayerOptions,
+    options: capVideoPlayerIdOptions,
   ): Promise<capVideoPlayerResult> {
     let playerId: string = options.playerId;
     if (playerId == null || playerId.length === 0) {
@@ -322,7 +310,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
    * @param options
    */
   async setCurrentTime(
-    options: capVideoPlayerOptions,
+    options: capVideoTimeOptions,
   ): Promise<capVideoPlayerResult> {
     let playerId: string = options.playerId;
     if (playerId == null || playerId.length === 0) {
@@ -353,7 +341,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
    * @param options
    */
   async getCurrentTime(
-    options: capVideoPlayerOptions,
+    options: capVideoPlayerIdOptions,
   ): Promise<capVideoPlayerResult> {
     let playerId: string = options.playerId;
     if (playerId == null || playerId.length === 0) {
@@ -415,7 +403,6 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
     playerId: string,
     mode: string,
     componentTag: string,
-    divContainerElement: any,
     playerSize: IPlayerSize,
   ): Promise<any> {
     const videoURL: string = url
@@ -427,7 +414,6 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
     const videoContainer: HTMLDivElement = await this._getContainerElement(
       playerId,
       componentTag,
-      divContainerElement,
     );
     if (videoContainer === null)
       return Promise.resolve({
@@ -497,7 +483,6 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
   private async _getContainerElement(
     playerId: string,
     componentTag: string,
-    divContainerElement: any,
   ): Promise<HTMLDivElement> {
     const videoContainer: HTMLDivElement = document.createElement('div');
     videoContainer.id = `vc_${playerId}`;
@@ -512,9 +497,6 @@ export class CapacitorVideoPlayerWeb extends WebPlugin
         container = cmpTagEl.querySelector(`#${playerId}`);
       }
       container.appendChild(videoContainer);
-      return Promise.resolve(videoContainer);
-    } else if (divContainerElement != null) {
-      divContainerElement.appendChild(videoContainer);
       return Promise.resolve(videoContainer);
     } else {
       return Promise.resolve(null);

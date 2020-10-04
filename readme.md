@@ -113,7 +113,7 @@ No configuration required for this plugin
 
 ## Documentation
 
-[API_Documentation](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/APIdocumentation.md)
+[API_Documentation](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/API.md)
 
 ## Applications demonstrating the use of the plugin
 
