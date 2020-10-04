@@ -9,7 +9,7 @@ export interface CapacitorVideoPlayerPlugin {
    * Echo
    *
    */
-  echo(options: { value: string }): Promise<capVideoPlayerResult>;
+  echo(options: capEchoOptions): Promise<capVideoPlayerResult>;
   /**
    * Initialize a video player
    *
@@ -73,6 +73,13 @@ export interface CapacitorVideoPlayerPlugin {
    */
   stopAllPlayers(): Promise<capVideoPlayerResult>;
 }
+export interface capEchoOptions {
+  /**
+   *  String to be echoed
+   */
+
+  value?: string;
+}
 export interface capVideoPlayerOptions {
   /**
    * Player mode
@@ -102,25 +109,55 @@ export interface capVideoPlayerOptions {
   height?: number;
 }
 export interface capVideoPlayerIdOptions {
+  /**
+   * Id of DIV Element parent of the player
+   */
   playerId?: string;
 }
 export interface capVideoVolumeOptions {
+  /**
+   * Id of DIV Element parent of the player
+   */
   playerId?: string;
+  /**
+   * Volume value between [0 - 1]
+   */
   volume?: number;
 }
 export interface capVideoTimeOptions {
+  /**
+   * Id of DIV Element parent of the player
+   */
   playerId?: string;
+  /**
+   * Video time value you want to seek to
+   */
   seektime?: number;
 }
 export interface capVideoMutedOptions {
+  /**
+   * Id of DIV Element parent of the player
+   */
   playerId?: string;
+  /**
+   * Muted value true or false
+   */
   muted?: boolean;
 }
 export interface capVideoListener {
+  /**
+   * Id of DIV Element parent of the player
+   */
   playerId?: string;
+  /**
+   * Video current time when listener trigerred
+   */
   currentTime?: number;
 }
 export interface capExitListener {
+  /**
+   * Dismiss value true or false
+   */
   dismiss?: boolean;
 }
 export interface capVideoPlayerResult {

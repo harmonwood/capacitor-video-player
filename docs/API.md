@@ -61,14 +61,14 @@
 ### echo
 
 ```typescript
-echo(options: { value: string; }) => Promise<capVideoPlayerResult>
+echo(options: capEchoOptions) => Promise<capVideoPlayerResult>
 ```
 
 Echo
 
-| Param       | Type               |
-| ----------- | ------------------ |
-| **options** | { value: string; } |
+| Param       | Type                              |
+| ----------- | --------------------------------- |
+| **options** | [capEchoOptions](#capechooptions) |
 
 **Returns:** Promise&lt;[capVideoPlayerResult](#capvideoplayerresult)&gt;
 
@@ -273,6 +273,12 @@ Stop all players playing
 | **value**   | any     | value returned                                |
 | **message** | string  | message string                                |
 
+#### capEchoOptions
+
+| Prop      | Type   | Description         |
+| --------- | ------ | ------------------- |
+| **value** | string | String to be echoed |
+
 #### capVideoPlayerOptions
 
 | Prop             | Type   | Description                                        |
@@ -286,41 +292,54 @@ Stop all players playing
 
 #### capVideoPlayerIdOptions
 
-| Prop         | Type   |
-| ------------ | ------ |
-| **playerId** | string |
+| Prop         | Type   | Description                            |
+| ------------ | ------ | -------------------------------------- |
+| **playerId** | string | Id of DIV Element parent of the player |
 
 #### capVideoTimeOptions
 
-| Prop         | Type   |
-| ------------ | ------ |
-| **playerId** | string |
-| **seektime** | number |
+| Prop         | Type   | Description                            |
+| ------------ | ------ | -------------------------------------- |
+| **playerId** | string | Id of DIV Element parent of the player |
+| **seektime** | number | Video time value you want to seek to   |
 
 #### capVideoVolumeOptions
 
-| Prop         | Type   |
-| ------------ | ------ |
-| **playerId** | string |
-| **volume**   | number |
+| Prop         | Type   | Description                            |
+| ------------ | ------ | -------------------------------------- |
+| **playerId** | string | Id of DIV Element parent of the player |
+| **volume**   | number | Volume value between [0 - 1]           |
 
 #### capVideoMutedOptions
 
-| Prop         | Type    |
-| ------------ | ------- |
-| **playerId** | string  |
-| **muted**    | boolean |
+| Prop         | Type    | Description                            |
+| ------------ | ------- | -------------------------------------- |
+| **playerId** | string  | Id of DIV Element parent of the player |
+| **muted**    | boolean | Muted value true or false              |
 
 <!--DOCGEN_API_END-->
 
-## Listeners
+### Listeners
 
 The listeners are attached to the plugin not anymore to the DOM document element.
 
-| Listener                    | Description                             | Type                                  |
-| --------------------------- | --------------------------------------- | ------------------------------------- |
-| **jeepCapVideoPlayerReady** | Emitted when the video start to play    | [capVideoListener](#capvideolistener) |
-| **jeepCapVideoPlayerPlay**  | Emitted when the video start to play    | [capVideoListener](#capvideolistener) |
-| **jeepCapVideoPlayerPause** | Emitted when the video is paused        | [capVideoListener](#capvideolistener) |
-| **jeepCapVideoPlayerEnded** | Emitted when the video has ended        | [capVideoListener](#capvideolistener) |
-| **jeepCapVideoPlayerExit**  | Emitted when the Exit button is clicked | [capExitListener](#capexitlistener)   |
+| Listener                    | Type                                  | Description                             |
+| --------------------------- | ------------------------------------- | --------------------------------------- |
+| **jeepCapVideoPlayerReady** | [capVideoListener](#capvideolistener) | Emitted when the video start to play    |
+| **jeepCapVideoPlayerPlay**  | [capVideoListener](#capvideolistener) | Emitted when the video start to play    |
+| **jeepCapVideoPlayerPause** | [capVideoListener](#capvideolistener) | Emitted when the video is paused        |
+| **jeepCapVideoPlayerEnded** | [capVideoListener](#capvideolistener) | Emitted when the video has ended        |
+| **jeepCapVideoPlayerExit**  | [capExitListener](#capexitlistener)   | Emitted when the Exit button is clicked |
+
+#### capVideoListener
+
+| Prop            | Type   | Description                                |
+| --------------- | ------ | ------------------------------------------ |
+| **playerId**    | string | Id of DIV Element parent of the player     |
+| **currentTime** | number | Video current time when listener trigerred |
+
+#### capExitListener
+
+| Prop        | Type    | Description                 |
+| ----------- | ------- | --------------------------- |
+| **dismiss** | boolean | Dismiss value true or false |
