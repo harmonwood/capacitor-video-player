@@ -1,3 +1,14 @@
+## 2.4.5-1 (2021-01-09)
+
+### Chores
+
+- Update to Capacitor 2.4.5
+- @capacitor-community/electron 1.3.2
+
+### Bug Fixes
+
+- fix Screen falling asleep issue#33 on Android
+
 ## 2.4.2-2 (2020-10-04)
 
 ### Added Features

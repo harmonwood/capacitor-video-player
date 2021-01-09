@@ -19,29 +19,28 @@
   "author": "Jean Pierre Quéau",
   "license": "MIT",
   "dependencies": {
-    "@capacitor/cli": "^2.4.2",
+    "@capacitor/cli": "^2.4.5",
     "@types/hls.js": "^0.13.1",
-    "hls.js": "^0.14.11"
+    "hls.js": "^0.14.17"
   },
   "devDependencies": {
-    "@capacitor/android": "^2.4.2",
-    "@capacitor/core": "^2.4.2",
-    "@capacitor/docgen": "0.0.4",
-    "@capacitor/ios": "^2.4.2",
-    "@ionic/prettier-config": "^1.0.0",
-    "@ionic/swiftlint-config": "^1.1.1",
-    "@rollup/plugin-node-resolve": "^8.4.0",
-    "@types/node": "^13.13.2",
-    "@types/sqlite3": "^3.1.6",
-    "husky": "^4.2.5",
-    "np": "^6.5.0",
-    "prettier": "^2.0.5",
-    "prettier-plugin-java": "^0.8.2",
-    "pretty-quick": "^2.0.1",
-    "rimraf": "^3.0.0",
-    "rollup": "^2.21.0",
+    "@capacitor/android": "^2.4.5",
+    "@capacitor/core": "^2.4.5",
+    "@capacitor/docgen": "0.0.14",
+    "@capacitor/ios": "^2.4.5",
+    "@ionic/prettier-config": "^1.0.1",
+    "@ionic/swiftlint-config": "^1.1.2",
+    "@rollup/plugin-node-resolve": "^11.0.1",
+    "@types/node": "^14.14.19",
+    "husky": "^4.3.6",
+    "np": "^7.2.0",
+    "prettier": "^2.2.1",
+    "prettier-plugin-java": "^1.0.1",
+    "pretty-quick": "^3.1.0",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.35.1",
     "swiftlint": "^1.0.1",
-    "typescript": "^3.9.6"
+    "typescript": "^4.0.5"
   },
   "husky": {
     "hooks": {
@@ -49,7 +48,7 @@
     }
   },
   "peerDependencies": {
-    "@capacitor/core": "2.4.2"
+    "@capacitor/core": "2.4.5"
   },
   "files": [
     "dist/",

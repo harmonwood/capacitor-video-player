@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/maintenance/yes/2020?style=flat-square" />
+  <img src="https://img.shields.io/maintenance/yes/2021?style=flat-square" />
   <a href="https://github.com/jepiqueau/capacitor-video-player/actions?query=workflow%3A%22CI%22"><img src="https://img.shields.io/github/workflow/status/jepiqueau/capacitor-video-player/CI?style=flat-square" /></a>
   <a href="https://www.npmjs.com/package/jepiqueau/capacitor-video-player"><img src="https://img.shields.io/npm/l/capacitor-video-player.svg?style=flat-square" /></a>
 <br>
@@ -27,11 +27,20 @@
 | ----------------- | ----------------------------------------- | ------ |
 | Quéau Jean Pierre | [jepiqueau](https://github.com/jepiqueau) |        |
 
+## Browser Support
+
+The plugin follows the guidelines from the `Capacitor Team`,
+
+- [Capacitor Browser Support](https://capacitorjs.com/docs/v3/web#browser-support)
+
+meaning that it will not work in IE11 without additional JavaScript transformations, e.g. with [Babel](https://babeljs.io/).
+
 ## Installation
 
 ```bash
 npm install capacitor-video-player
 npx cap sync
+npx cap sync @capacitor-community/electron
 ```
 
 - On Web and Electron, no further steps are needed.
@@ -53,7 +62,6 @@ public class MainActivity extends BridgeActivity {
     this.init(
         savedInstanceState,
         new ArrayList<Class<? extends Plugin>>() {
-
           {
             // Additional plugins you've installed go here
             // Ex: add(TotallyAwesomePlugin.class);
@@ -63,6 +71,7 @@ public class MainActivity extends BridgeActivity {
       );
   }
 }
+
 ```
 
 Then build YOUR_APPLICATION
@@ -71,9 +80,10 @@ Then build YOUR_APPLICATION
 npm run build
 npx cap copy
 npx cap copy web
+npx cap copy @capacitor-community/electron
 npx cap open android
 npx cap open ios
-npx cap open electron
+npx cap open @capacitor-community/electron
 npx cap serve
 ```
 
@@ -360,7 +370,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/jepiqueau"><img src="https://avatars3.githubusercontent.com/u/16580653?v=4" width="100px;" alt=""/><br /><sub><b>Jean Pierre Quéau</b></sub></a><br /><a href="https://github.com/capacitor-community/sqlite/commits?author=jepiqueau" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/jepiqueau"><img src="https://avatars3.githubusercontent.com/u/16580653?v=4" width="100px;" alt=""/><br /><sub><b>Jean Pierre Quéau</b></sub></a><br /><a href="https://github.com/jepiqueau/capacitor-video-player/commits?author=jepiqueau" title="Code">💻</a></td>
   </tr>
 </table>
 

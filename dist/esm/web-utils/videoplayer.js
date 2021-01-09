@@ -231,7 +231,7 @@ export class VideoPlayer {
     }
     _getVideoType() {
         let ret = false;
-        let vType = null;
+        let vType = '';
         try {
             const val = this._url
                 .substring(this._url.lastIndexOf('/'))

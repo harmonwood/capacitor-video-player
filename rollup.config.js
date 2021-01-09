@@ -8,7 +8,7 @@ export default {
     name: 'capacitorPlugin',
     globals: {
       '@capacitor/core': 'capacitorExports',
-      //      'hls.js': 'Hls',
+      'hls.js': 'Hls',
     },
     sourcemap: true,
   },

@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 public class FullscreenExoPlayerFragment extends Fragment {
+
     public String videoPath;
     public String playerId;
     public Boolean isTV;
@@ -129,7 +130,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
             getActivity()
                 .runOnUiThread(
                     new Runnable() {
-
                         @Override
                         public void run() {
                             // Set the onKey listener
@@ -137,7 +137,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
                             view.requestFocus();
                             view.setOnKeyListener(
                                 new View.OnKeyListener() {
-
                                     @Override
                                     public boolean onKey(View v, int keyCode, KeyEvent event) {
                                         if (event.getAction() == KeyEvent.ACTION_UP) {
@@ -187,7 +186,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
      */
     private void backPressed() {
         Map<String, Object> info = new HashMap<String, Object>() {
-
             {
                 put("dismiss", "1");
             }
@@ -268,7 +266,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      */
     @SuppressLint("InlinedApi")
     private void hideSystemUi() {
-        playerView.setSystemUiVisibility(
+        if (playerView != null) playerView.setSystemUiVisibility(
             View.SYSTEM_UI_FLAG_LOW_PROFILE |
             View.SYSTEM_UI_FLAG_FULLSCREEN |
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
@@ -322,7 +320,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
             player.prepare(mediaSource, false, false);
         }
         Map<String, Object> info = new HashMap<String, Object>() {
-
             {
                 put("fromPlayerId", playerId);
             }
@@ -391,7 +388,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
         // Save the current playback position (in milliseconds) to the
         // instance state bundle.
-        outState.putInt(PLAYBACK_TIME, (int) player.getCurrentPosition());
+        if (player != null) {
+            outState.putInt(PLAYBACK_TIME, (int) player.getCurrentPosition());
+        }
     }
 
     /**
@@ -528,7 +527,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             String stateString;
             Map<String, Object> info = new HashMap<String, Object>() {
-
                 {
                     put("fromPlayerId", playerId);
                     put("currentTime", String.valueOf(player.getCurrentPosition() / 1000));

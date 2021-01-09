@@ -1,8 +1,8 @@
 export declare class VideoPlayer {
-    videoEl: HTMLVideoElement;
+    videoEl: HTMLVideoElement | undefined;
     pipMode: boolean;
-    pipWindow: Window;
-    isPlaying: boolean;
+    pipWindow: Window | undefined;
+    isPlaying: boolean | undefined;
     private _url;
     private _playerId;
     private _container;

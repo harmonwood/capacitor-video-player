@@ -18,6 +18,7 @@
 - [setMuted()](#setmuted)
 - [stopAllPlayers()](#stopallplayers)
 - [Interfaces](#interfaces)
+- [Listeners](#listeners)
 <!--DOCGEN_INDEX_END-->
 
 ## Url

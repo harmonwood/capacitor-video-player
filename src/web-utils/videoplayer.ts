@@ -1,10 +1,10 @@
 import Hls from 'hls.js';
 
 export class VideoPlayer {
-  public videoEl: HTMLVideoElement;
+  public videoEl: HTMLVideoElement | undefined;
   public pipMode: boolean = false;
-  public pipWindow: Window;
-  public isPlaying: boolean;
+  public pipWindow: Window | undefined;
+  public isPlaying: boolean | undefined;
 
   private _url: string;
   private _playerId: string;
@@ -14,7 +14,7 @@ export class VideoPlayer {
   private _height: number;
   private _zIndex: number;
   private _initial: any;
-  private _videoType: string = null;
+  private _videoType: string | null = null;
   private _videoContainer: any = null;
   private _firstReadyToPlay: boolean = true;
   private _isEnded: boolean = false;
@@ -133,8 +133,8 @@ export class VideoPlayer {
       this.videoEl.oncanplay = async () => {
         if (this._firstReadyToPlay) {
           this._createEvent('Ready', this._playerId);
-          this.videoEl.muted = false;
-          if (this._mode === 'fullscreen') await this.videoEl.play();
+          this.videoEl!.muted = false;
+          if (this._mode === 'fullscreen') await this.videoEl!.play();
           this._firstReadyToPlay = false;
         }
       };
@@ -213,43 +213,43 @@ export class VideoPlayer {
       if (Hls.isSupported && this._videoType === 'application/x-mpegURL') {
         var hls = new Hls();
         hls.loadSource(this._url);
-        hls.attachMedia(this.videoEl);
+        hls.attachMedia(this.videoEl!);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          this.videoEl.muted = true;
-          this.videoEl.crossOrigin = 'anonymous';
+          this.videoEl!.muted = true;
+          this.videoEl!.crossOrigin = 'anonymous';
           resolve(true);
         });
       } else if (this._videoType === 'video/mp4') {
         // CMAF (fMP4) && MP4
-        this.videoEl.src = this._url;
+        this.videoEl!.src = this._url;
         if (
           this._url.substring(0, 5) != 'https' &&
           this._url.substring(0, 4) === 'http'
         )
-          this.videoEl.crossOrigin = 'anonymous';
+          this.videoEl!.crossOrigin = 'anonymous';
         if (
           this._url.substring(0, 5) === 'https' ||
           this._url.substring(0, 4) === 'http'
         )
-          this.videoEl.muted = true;
+          this.videoEl!.muted = true;
         resolve(true);
       } else {
         // Not Supported
         resolve(false);
       }
-      this.videoEl.addEventListener('enterpictureinpicture', (event: any) => {
+      this.videoEl!.addEventListener('enterpictureinpicture', (event: any) => {
         this.pipWindow = event.pictureInPictureWindow;
         console.log(' Enter PiP Mode ', this.pipWindow);
         this.pipMode = true;
         this._closeFullscreen();
       });
 
-      this.videoEl.addEventListener('leavepictureinpicture', () => {
+      this.videoEl!.addEventListener('leavepictureinpicture', () => {
         console.log(' Exit PiP Mode ');
         this.pipMode = false;
         if (!this._isEnded) {
           this._goFullscreen();
-          this.videoEl.play();
+          this.videoEl!.play();
         }
       });
     });
@@ -257,7 +257,7 @@ export class VideoPlayer {
 
   private _getVideoType(): boolean {
     let ret: boolean = false;
-    let vType: string = null;
+    let vType: string = '';
 
     try {
       const val = this._url
@@ -266,7 +266,7 @@ export class VideoPlayer {
       if (val == null) {
         vType = '';
       } else {
-        vType = this._url.match(/(.*)\.(.*)/)[2].split('?')[0];
+        vType = this._url.match(/(.*)\.(.*)/)![2].split('?')[0];
       }
       switch (vType) {
         case 'mp4':
@@ -322,7 +322,7 @@ export class VideoPlayer {
         detail: { fromPlayerId: playerId, message: message },
       });
     } else {
-      const currentTime: number = this.videoEl.currentTime;
+      const currentTime: number = this.videoEl!.currentTime;
       event = new CustomEvent(`videoPlayer${ev}`, {
         detail: { fromPlayerId: playerId, currentTime: currentTime },
       });

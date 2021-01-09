@@ -471,8 +471,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             const videoContainer = document.createElement('div');
             videoContainer.id = `vc_${playerId}`;
             if (componentTag != null && componentTag.length > 0) {
-                let cmpTagEl = null;
-                cmpTagEl = document.querySelector(`${componentTag}`);
+                let cmpTagEl = document.querySelector(`${componentTag}`);
                 if (cmpTagEl === null)
                     return Promise.resolve(null);
                 let container = null;
@@ -482,7 +481,8 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 catch (_a) {
                     container = cmpTagEl.querySelector(`#${playerId}`);
                 }
-                container.appendChild(videoContainer);
+                if (container != null)
+                    container.appendChild(videoContainer);
                 return Promise.resolve(videoContainer);
             }
             else {
