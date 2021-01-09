@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.annotation.RequiresApi;
@@ -78,6 +79,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private static Handler handler;
     private ProgressBar Pbar;
     private View view;
+    private ImageButton btn;
     private ConstraintLayout constLayout;
     private Context context;
     private boolean isMuted = false;
@@ -106,6 +108,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
         constLayout = view.findViewById(R.id.fsExoPlayer);
         playerView = view.findViewById(R.id.videoViewId);
         Pbar = view.findViewById(R.id.indeterminateBar);
+        btn = (ImageButton) view.findViewById(R.id.exo_close);
+
         // Listening for events
         playbackStateListener = new FullscreenExoPlayerFragment.PlaybackStateListener();
         if (isTV) {
@@ -132,6 +136,14 @@ public class FullscreenExoPlayerFragment extends Fragment {
                     new Runnable() {
                         @Override
                         public void run() {
+                            btn.setOnClickListener(
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        backPressed();
+                                    }
+                                }
+                            );
                             // Set the onKey listener
                             view.setFocusableInTouchMode(true);
                             view.requestFocus();
@@ -141,6 +153,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
                                     public boolean onKey(View v, int keyCode, KeyEvent event) {
                                         if (event.getAction() == KeyEvent.ACTION_UP) {
                                             long videoPosition = player.getCurrentPosition();
+                                            Log.v(TAG, "$$$$ onKey " + keyCode + " $$$$");
                                             if (keyCode == KeyEvent.KEYCODE_BACK) {
                                                 backPressed();
                                             } else if (isTV) {
@@ -169,6 +182,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
                                     }
                                 }
                             );
+
                             // initialize the player
                             initializePlayer();
                         }

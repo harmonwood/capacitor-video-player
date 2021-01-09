@@ -1,3 +1,9 @@
+## 2.4.5-2 (2021-01-09)
+
+### Bug Fixes
+
+- fix Add Back Button issue#35 on Android
+
 ## 2.4.5-1 (2021-01-09)
 
 ### Chores
