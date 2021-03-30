@@ -54,6 +54,34 @@
 - iOS & Android Plugin only
   . `internal`
 
+## Subtitle (Android Only)
+
+### Supported Formats
+
+- Android Plugin
+  . `WebVTT .vtt extension`
+  . `TTML/SMPTE .ttml, .dfxp, .xml extensions`
+  . `SubRip .srt extension`
+  . `SubStationAlpha .ssa, .ass extensions`
+
+### from the Web
+
+. `http:/..../video.vtt`
+. `https:/..../video.vtt`
+
+### from Asset
+
+- Android Plugin
+  . `"public/assets/video/video.srt"`
+
+### from Application Folder
+
+- Android Plugin
+  . `application/files/video.vtt` is corresponding to :
+  **/data/user/0/YOUR_APPLICATION_PACKAGE/files//video.vtt**
+
+### from Internal (Not supported)
+
 <!--DOCGEN_API_START-->
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 

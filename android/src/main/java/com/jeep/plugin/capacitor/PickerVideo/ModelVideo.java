@@ -3,6 +3,7 @@ package com.jeep.plugin.capacitor.PickerVideo;
 import android.net.Uri;
 
 public class ModelVideo {
+
     long id;
     Uri data;
     String title, duration;

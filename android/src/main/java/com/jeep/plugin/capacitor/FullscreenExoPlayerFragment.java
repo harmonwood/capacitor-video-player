@@ -22,15 +22,19 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.source.SingleSampleMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
@@ -45,8 +49,10 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
+import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.R;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +62,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
     public String videoPath;
     public String playerId;
+    public String subTitle;
+    public String language;
     public Boolean isTV;
     public Boolean isInternal;
     public Long videoId;
@@ -75,6 +83,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private int currentWindow = 0;
     private long playbackPosition = 0;
     private Uri uri = null;
+    private Uri sturi = null;
     private Looper looper;
     private static Handler handler;
     private ProgressBar Pbar;
@@ -118,9 +127,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
         if (!isInternal) {
             uri = Uri.parse(videoPath);
+            sturi = subTitle != null ? Uri.parse(subTitle) : null;
             // get video type
             vType = getVideoType(uri);
             Log.v(TAG, "display url: " + uri);
+            Log.v(TAG, "display subtitle url: " + sturi);
             Log.v(TAG, "display isTV: " + isTV);
             Log.v(TAG, "display vType: " + vType);
         }
@@ -345,8 +356,14 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * Build the Asset MediaSource
      */
     private MediaSource buildAssetMediaSource(Uri uri) {
+        MediaSource mediaSource = null;
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, "jeep-exoplayer-plugin");
-        return new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+        mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+        // Get the subtitles if any
+        if (sturi != null) {
+            mediaSource = getSubTitle(mediaSource, sturi, dataSourceFactory);
+        }
+        return mediaSource;
     }
 
     /**
@@ -390,6 +407,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
         } else if (vType.equals("ism")) {
             mediaSource = new SsMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
         }
+        // Get the subtitles if any
+        if (sturi != null) {
+            mediaSource = getSubTitle(mediaSource, sturi, dataSourceFactory);
+        }
         return mediaSource;
     }
 
@@ -405,6 +426,37 @@ public class FullscreenExoPlayerFragment extends Fragment {
         if (player != null) {
             outState.putInt(PLAYBACK_TIME, (int) player.getCurrentPosition());
         }
+    }
+
+    private MediaSource getSubTitle(MediaSource mediaSource, Uri sturi, DataSource.Factory dataSourceFactory) {
+        // Create mediaSource with subtitle
+        MediaSource[] mediaSources = new MediaSource[2];
+        mediaSources[0] = mediaSource;
+        String mimeType = getMimeType(sturi);
+        //Add subtitles
+        SingleSampleMediaSource subtitleSource = new SingleSampleMediaSource.Factory(dataSourceFactory)
+        .createMediaSource(sturi, Format.createTextSampleFormat(null, mimeType, Format.NO_VALUE, language, null), C.TIME_UNSET);
+
+        mediaSources[1] = subtitleSource;
+
+        mediaSource = new MergingMediaSource(mediaSources);
+        return mediaSource;
+    }
+
+    private String getMimeType(Uri sturi) {
+        String lastSegment = sturi.getLastPathSegment();
+        String extension = lastSegment.substring(lastSegment.lastIndexOf(".") + 1);
+        String mimeType = "";
+        if (extension.equals("vtt")) {
+            mimeType = MimeTypes.TEXT_VTT;
+        } else if (extension.equals("srt")) {
+            mimeType = MimeTypes.APPLICATION_SUBRIP;
+        } else if (extension.equals("ssa") || extension.equals("ass")) {
+            mimeType = MimeTypes.TEXT_SSA;
+        } else if (extension.equals("ttml") || extension.equals("dfxp") || extension.equals("xml")) {
+            mimeType = MimeTypes.APPLICATION_TTML;
+        }
+        return mimeType;
     }
 
     /**

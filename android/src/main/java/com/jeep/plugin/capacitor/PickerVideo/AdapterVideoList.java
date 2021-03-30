@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 //public class AdapterVideoList extends RecyclerView.Adapter<AdapterVideoList.MyViewHolder> {
 public class AdapterVideoList extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
     private static final String TAG = AdapterVideoList.class.getName();
 
     ArrayList<ModelVideo> videosList;

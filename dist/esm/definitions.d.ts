@@ -88,6 +88,15 @@ export interface capVideoPlayerOptions {
      */
     url?: string;
     /**
+     * The url of subtitle associated with the video
+     */
+    subtitle?: string;
+    /**
+     * The language of subtitle
+     * see https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers
+     */
+    language?: string;
+    /**
      * Id of DIV Element parent of the player
      */
     playerId?: string;

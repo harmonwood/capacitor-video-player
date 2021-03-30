@@ -3,6 +3,7 @@ package com.jeep.plugin.capacitor;
 import java.util.Map;
 
 public class MyRunnable implements Runnable {
+
     private Map<String, Object> info;
 
     public Map<String, Object> getInfo() {

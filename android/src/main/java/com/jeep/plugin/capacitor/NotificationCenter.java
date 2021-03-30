@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class NotificationCenter {
+
     //static reference for singleton
     private static NotificationCenter _instance;
 

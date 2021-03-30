@@ -29,6 +29,7 @@ import java.util.Map;
     requestCodes = { CapacitorVideoPlayer.REQUEST_VIDEO_PERMISSION }
 )
 public class CapacitorVideoPlayer extends Plugin {
+
     static final int REQUEST_VIDEO_PERMISSION = 9539;
     private static final String TAG = "CapacitorVideoPlayer";
     private int frameLayoutViewId = 256;
@@ -36,6 +37,7 @@ public class CapacitorVideoPlayer extends Plugin {
 
     private Context context;
     private String videoPath;
+    private String subTitlePath;
     private Boolean isTV;
     private String fsPlayerId;
     private String mode;
@@ -104,36 +106,38 @@ public class CapacitorVideoPlayer extends Plugin {
                 call.success(ret);
                 return;
             }
+            String subtitle = call.getString("subtitle");
+            String language = call.getString("language");
+
             AddObserversToNotificationCenter();
             Log.v(TAG, "display url: " + url);
-            String http = url.substring(0, 4);
-            if (http.equals("http")) {
-                videoPath = url;
-                createFullScreenFragment(call, videoPath, isTV, playerId, false, null);
+            Log.v(TAG, "display subtitle: " + subtitle);
+            Log.v(TAG, "display language: " + language);
+            if (url.equals("internal")) {
+                createPickerVideoFragment(call);
             } else {
-                if (url.equals("internal")) {
-                    createPickerVideoFragment(call);
-                } else if (url.substring(0, 11).equals("application")) {
-                    String filesDir = context.getFilesDir() + "/";
-                    videoPath = filesDir + url.substring(url.lastIndexOf('/') + 1);
-                    File file = new File(videoPath);
-                    if (!file.exists()) {
-                        Map<String, Object> info = new HashMap<String, Object>() {
-
-                            {
-                                put("dismiss", "1");
-                            }
-                        };
-                        NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
-                        ret.put("message", "initPlayer command failed: Video file not found");
-                        call.success(ret);
-                        return;
-                    }
-                    createFullScreenFragment(call, videoPath, isTV, playerId, false, null);
+                // get the videoPath
+                videoPath = getFilePath(url);
+                // get the subTitlePath if any
+                if (subtitle != null) {
+                    subTitlePath = getFilePath(subtitle);
                 } else {
-                    videoPath = "file:///android_asset/" + url;
-                    Log.v(TAG, "*** calculated videoPath: " + videoPath);
-                    createFullScreenFragment(call, videoPath, isTV, playerId, false, null);
+                    subTitlePath = null;
+                }
+                Log.v(TAG, "*** calculated videoPath: " + videoPath);
+                Log.v(TAG, "*** calculated subTitlePath: " + subTitlePath);
+                if (videoPath != null) {
+                    createFullScreenFragment(call, videoPath, subTitlePath, language, isTV, playerId, false, null);
+                } else {
+                    Map<String, Object> info = new HashMap<String, Object>() {
+                        {
+                            put("dismiss", "1");
+                        }
+                    };
+                    NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
+                    ret.put("message", "initPlayer command failed: Video file not found");
+                    call.success(ret);
+                    return;
                 }
             }
         } else if (mode == "embedded") {
@@ -143,6 +147,28 @@ public class CapacitorVideoPlayer extends Plugin {
         }
     }
 
+    private String getFilePath(String url) {
+        String path = null;
+        String http = url.substring(0, 4);
+        if (http.equals("http")) {
+            path = url;
+        } else {
+            if (url.substring(0, 11).equals("application")) {
+                String filesDir = context.getFilesDir() + "/";
+                path = filesDir + url.substring(url.lastIndexOf('/') + 1);
+                File file = new File(path);
+                if (!file.exists()) {
+                    path = null;
+                }
+            } else if (url.contains("assets")) {
+                path = "file:///android_asset/" + url;
+            } else {
+                path = null;
+            }
+        }
+        return path;
+    }
+
     private void createPickerVideoFragment(final PluginCall call) {
         pkFragment = new PickerVideoFragment();
 
@@ -150,7 +176,6 @@ public class CapacitorVideoPlayer extends Plugin {
             .getActivity()
             .runOnUiThread(
                 new Runnable() {
-
                     @Override
                     public void run() {
                         JSObject ret = new JSObject();
@@ -183,6 +208,8 @@ public class CapacitorVideoPlayer extends Plugin {
     private void createFullScreenFragment(
         final PluginCall call,
         String videoPath,
+        String subTitle,
+        String language,
         Boolean isTV,
         String playerId,
         Boolean isInternal,
@@ -191,6 +218,8 @@ public class CapacitorVideoPlayer extends Plugin {
         fsFragment = new FullscreenExoPlayerFragment();
 
         fsFragment.videoPath = videoPath;
+        fsFragment.subTitle = subTitle;
+        fsFragment.language = language;
         fsFragment.isTV = isTV;
         fsFragment.playerId = playerId;
         fsFragment.isInternal = isInternal;
@@ -200,7 +229,6 @@ public class CapacitorVideoPlayer extends Plugin {
             .getActivity()
             .runOnUiThread(
                 new Runnable() {
-
                     @Override
                     public void run() {
                         JSObject ret = new JSObject();
@@ -247,7 +275,6 @@ public class CapacitorVideoPlayer extends Plugin {
                 .getActivity()
                 .runOnUiThread(
                     new Runnable() {
-
                         @Override
                         public void run() {
                             boolean playing = fsFragment.isPlaying();
@@ -283,7 +310,6 @@ public class CapacitorVideoPlayer extends Plugin {
                 .getActivity()
                 .runOnUiThread(
                     new Runnable() {
-
                         @Override
                         public void run() {
                             fsFragment.play();
@@ -320,7 +346,6 @@ public class CapacitorVideoPlayer extends Plugin {
                 .getActivity()
                 .runOnUiThread(
                     new Runnable() {
-
                         @Override
                         public void run() {
                             fsFragment.pause();
@@ -356,7 +381,6 @@ public class CapacitorVideoPlayer extends Plugin {
                 .getActivity()
                 .runOnUiThread(
                     new Runnable() {
-
                         @Override
                         public void run() {
                             JSObject ret = new JSObject();
@@ -392,7 +416,6 @@ public class CapacitorVideoPlayer extends Plugin {
                 .getActivity()
                 .runOnUiThread(
                     new Runnable() {
-
                         @Override
                         public void run() {
                             JSObject ret = new JSObject();
@@ -436,7 +459,6 @@ public class CapacitorVideoPlayer extends Plugin {
                 .getActivity()
                 .runOnUiThread(
                     new Runnable() {
-
                         @Override
                         public void run() {
                             fsFragment.setCurrentTime(cTime);
@@ -472,7 +494,6 @@ public class CapacitorVideoPlayer extends Plugin {
                 .getActivity()
                 .runOnUiThread(
                     new Runnable() {
-
                         @Override
                         public void run() {
                             Float volume = fsFragment.getVolume();
@@ -517,7 +538,6 @@ public class CapacitorVideoPlayer extends Plugin {
                 .getActivity()
                 .runOnUiThread(
                     new Runnable() {
-
                         @Override
                         public void run() {
                             fsFragment.setVolume(volume);
@@ -553,7 +573,6 @@ public class CapacitorVideoPlayer extends Plugin {
                 .getActivity()
                 .runOnUiThread(
                     new Runnable() {
-
                         @Override
                         public void run() {
                             boolean value = fsFragment.getMuted();
@@ -597,7 +616,6 @@ public class CapacitorVideoPlayer extends Plugin {
                 .getActivity()
                 .runOnUiThread(
                     new Runnable() {
-
                         @Override
                         public void run() {
                             fsFragment.setMuted(bValue);
@@ -623,7 +641,6 @@ public class CapacitorVideoPlayer extends Plugin {
             .getActivity()
             .runOnUiThread(
                 new Runnable() {
-
                     @Override
                     public void run() {
                         if (fsFragment != null) fsFragment.pause();
@@ -673,7 +690,6 @@ public class CapacitorVideoPlayer extends Plugin {
             .addMethodForNotification(
                 "playerItemPlay",
                 new MyRunnable() {
-
                     @Override
                     public void run() {
                         JSObject data = new JSObject();
@@ -689,7 +705,6 @@ public class CapacitorVideoPlayer extends Plugin {
             .addMethodForNotification(
                 "playerItemPause",
                 new MyRunnable() {
-
                     @Override
                     public void run() {
                         JSObject data = new JSObject();
@@ -705,7 +720,6 @@ public class CapacitorVideoPlayer extends Plugin {
             .addMethodForNotification(
                 "playerItemReady",
                 new MyRunnable() {
-
                     @Override
                     public void run() {
                         JSObject data = new JSObject();
@@ -721,7 +735,6 @@ public class CapacitorVideoPlayer extends Plugin {
             .addMethodForNotification(
                 "playerItemEnd",
                 new MyRunnable() {
-
                     @Override
                     public void run() {
                         final JSObject data = new JSObject();
@@ -731,7 +744,6 @@ public class CapacitorVideoPlayer extends Plugin {
                             .getActivity()
                             .runOnUiThread(
                                 new Runnable() {
-
                                     @Override
                                     public void run() {
                                         FrameLayout frameLayoutView = getBridge().getActivity().findViewById(frameLayoutViewId);
@@ -754,7 +766,6 @@ public class CapacitorVideoPlayer extends Plugin {
             .addMethodForNotification(
                 "playerFullscreenDismiss",
                 new MyRunnable() {
-
                     @Override
                     public void run() {
                         boolean ret = false;
@@ -765,7 +776,6 @@ public class CapacitorVideoPlayer extends Plugin {
                             .getActivity()
                             .runOnUiThread(
                                 new Runnable() {
-
                                     @Override
                                     public void run() {
                                         FrameLayout frameLayoutView = getBridge().getActivity().findViewById(frameLayoutViewId);
@@ -788,7 +798,6 @@ public class CapacitorVideoPlayer extends Plugin {
             .addMethodForNotification(
                 "videoPathInternalReady",
                 new MyRunnable() {
-
                     @Override
                     public void run() {
                         long videoId = (Long) this.getInfo().get("videoId");
@@ -800,12 +809,13 @@ public class CapacitorVideoPlayer extends Plugin {
                             removeFragment(pkFragment);
                         }
                         pkFragment = null;
+                        String subtitle = null;
+                        String language = null;
                         if (videoId != -1) {
-                            createFullScreenFragment(savedCall, videoPath, isTV, fsPlayerId, true, videoId);
+                            createFullScreenFragment(savedCall, videoPath, subtitle, language, isTV, fsPlayerId, true, videoId);
                         } else {
                             Toast.makeText(context, "No Video files found ", Toast.LENGTH_SHORT).show();
                             Map<String, Object> info = new HashMap<String, Object>() {
-
                                 {
                                     put("dismiss", "1");
                                 }

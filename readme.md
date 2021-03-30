@@ -97,8 +97,10 @@ No configuration required for this plugin
 | :--------------------------------- | :------ | :-- | :------- | :-- |
 | initPlayer (mode fullscreen)       | ✅      | ✅  | ✅       | ✅  |
 | initPlayer (mode embedded)         | ❌      | ❌  | ✅       | ✅  |
+| initPlayer (url assets)            | ✅      | ✅  | ✅       | ✅  |
 | initPlayer (url internal)          | ✅      | ✅  | ❌       | ❌  |
 | initPlayer (url application/files) | ✅      | ✅  | ❌       | ❌  |
+| initPlayer (subtitles)             | ✅      | ❌  | ❌       | ❌  |
 | isPlaying                          | ✅      | ✅  | ✅       | ✅  |
 | play                               | ✅      | ✅  | ✅       | ✅  |
 | pause                              | ✅      | ✅  | ✅       | ✅  |

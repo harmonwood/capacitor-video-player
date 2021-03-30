@@ -1,3 +1,13 @@
+## 2.4.7-1 (2021-03-30)
+
+### Chores
+
+- Update to Capacitor 2.4.7
+
+### Added Features
+
+- Add SubTitle to Android platform issue#40
+
 ## 2.4.5-2 (2021-01-09)
 
 ### Bug Fixes

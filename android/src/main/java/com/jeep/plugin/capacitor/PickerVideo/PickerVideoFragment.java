@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class PickerVideoFragment extends Fragment {
+
     private static final String TAG = PickerVideoFragment.class.getName();
 
     private View view;
@@ -55,7 +56,6 @@ public class PickerVideoFragment extends Fragment {
             recyclerView.setAdapter(adapterVideoList);
         } else {
             Map<String, Object> info = new HashMap<String, Object>() {
-
                 {
                     long videoId = -1;
                     put("videoId", videoId);

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class VideoRecyclerViewHolder extends RecyclerView.ViewHolder {
+
     private static final String TAG = VideoRecyclerViewHolder.class.getName();
     ImageView tv_thumbnail;
     TextView tv_title, tv_duration;
@@ -36,7 +37,6 @@ public class VideoRecyclerViewHolder extends RecyclerView.ViewHolder {
             .getActivity()
             .runOnUiThread(
                 new Runnable() {
-
                     @Override
                     public void run() {
                         Picasso.get().load(modelVideo.getData()).placeholder(R.drawable.ic_image_background).fit().into(tv_thumbnail);
@@ -46,12 +46,10 @@ public class VideoRecyclerViewHolder extends RecyclerView.ViewHolder {
 
         parent.setOnClickListener(
             new View.OnClickListener() {
-
                 @SuppressWarnings("serial")
                 @Override
                 public void onClick(View v) {
                     Map<String, Object> info = new HashMap<String, Object>() {
-
                         {
                             long videoId = modelVideo.getId();
                             Log.v(TAG, "**** in onBindViewHolder videoId: " + videoId + " ****");
