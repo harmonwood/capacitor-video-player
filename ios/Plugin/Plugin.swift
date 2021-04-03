@@ -2,7 +2,6 @@ import Foundation
 import Capacitor
 import AVKit
 import UIKit
-
 /**
  * Please read the Capacitor iOS Plugin Development Guide
  * here: https://capacitor.ionicframework.com/docs/plugins/ios
@@ -51,6 +50,7 @@ public class CapacitorVideoPlayer: CAPPlugin {
 
     // MARK: - Init player(s)
     // swiftlint:disable function_body_length
+    // swiftlint:disable cyclomatic_complexity
     @objc func initPlayer(_ call: CAPPluginCall) {
         self.call = call
 
@@ -76,28 +76,58 @@ public class CapacitorVideoPlayer: CAPPlugin {
                 call.success([ "result": false, "method": "initPlayer", "message": error])
                 return
             }
+            var subTitlePath: String = ""
+            if let stPath = call.options["subtitle"] as? String {
+                subTitlePath = stPath
+            }
+            var subTitleLanguage: String = ""
+            if let stLanguage = call.options["language"] as? String {
+                subTitleLanguage = stLanguage
+            }
+
+            let subTitleOptions: [String: Any] = call.getObject("subtitleOptions") ?? [:]
+
             if videoPath == "internal" {
                 self.pickVideoFromInternal()
             } else {
-                let dict: [String: Any] =
-                            getURLFromVideoPath(videoPath: videoPath)
-                if let message = dict["message"] as? String {
+                let dictUrl: [String: Any] =
+                            getURLFromFilePath(filePath: videoPath)
+                if let message = dictUrl["message"] as? String {
                     if message.count > 0 {
                         call.success([ "result": false, "method": "initPlayer",
                                        "message": message])
                         return
-                    } else {
-                        if let url = dict["url"] as? URL {
-                            createVideoPlayerFullScreenView(call: call,
-                                                            videoUrl: url)
+                    }
+                }
+                guard let url = dictUrl["url"] as? URL else {
+                    call.success([ "result": false, "method": "initPlayer",
+                                   "message": "url not defined"])
+                    return
+                }
+                var subTitle: URL?
+                if subTitlePath.count > 0 {
 
-                        } else {
+                    let dictSubTitle: [String: Any] =
+                        getURLFromFilePath(filePath: subTitlePath)
+                    if let message = dictSubTitle["message"] as? String {
+                        if message.count > 0 {
                             call.success([ "result": false, "method": "initPlayer",
-                                           "message": "url not defined"])
+                                           "message": message])
                             return
                         }
                     }
+                    guard let sturl = dictSubTitle["url"] as? URL else {
+                        call.success([ "result": false, "method": "initPlayer",
+                                       "message": "subtitle url not defined"])
+                        return
+                    }
+                    subTitle = sturl
                 }
+                createVideoPlayerFullScreenView(call: call, videoUrl: url,
+                                                subTitleUrl: subTitle,
+                                                language: subTitleLanguage,
+                                                options: subTitleOptions)
+
             }
         } else if mode == "embedded" {
             call.success([ "result": false, "method": "initPlayer",
@@ -105,56 +135,61 @@ public class CapacitorVideoPlayer: CAPPlugin {
         }
 
     }
+    // swiftlint:enable cyclomatic_complexity
     // swiftlint:enable function_body_length
 
-    // MARK: - getURLFromVideoPath
+    // MARK: - getURLFromFilePath
 
-    func getURLFromVideoPath(videoPath: String) -> [String: Any] {
+    func getURLFromFilePath(filePath: String) -> [String: Any] {
         var dict: [String: Any] = [:]
         dict["message"] = ""
 
-        if String(videoPath.prefix(11)) == "application" {
-            let path: String = String(videoPath.dropFirst(12))
+        if String(filePath.prefix(11)) == "application" {
+            let path: String = String(filePath.dropFirst(12))
             let vPath: String = docPath.appendingFormat("/\(path)")
             if !isFileExists(filePath: vPath) {
-                print("*** video file does not exist at path \n \(vPath) \n***")
+                print("*** file does not exist at path \n \(vPath) \n***")
                 let info: [String: Any] = ["dismiss": true]
                 self.notifyListeners("jeepCapVideoPlayerExit", data: info, retainUntilConsumed: true)
-                dict["message"] = "video file does not exist"
+                dict["message"] = "file does not exist"
                 return dict
             }
             dict["url"] = URL(fileURLWithPath: vPath)
             return dict
         }
-        if String(videoPath.prefix(4)) == "http" {
-            if let url = URL(string: videoPath) {
+        if String(filePath.prefix(4)) == "http" {
+            if let url = URL(string: filePath) {
                 dict["url"] = url
                 return dict
             } else {
-                dict["message"] = "cannot convert videoPath in URL"
+                dict["message"] = "cannot convert filePath in URL"
                 return dict
             }
         }
-        if String(videoPath.prefix(13)) == "public/assets" {
+        if String(filePath.prefix(13)) == "public/assets" {
             if let appFolder = Bundle.main.resourceURL {
-                dict["url"] = appFolder.appendingPathComponent(videoPath)
+                dict["url"] = appFolder.appendingPathComponent(filePath)
                 return dict
             } else {
                 dict["message"] = "did not find appFolder"
                 return dict
             }
         }
-        dict["message"] = "videoPath not implemented"
+        dict["message"] = "filePath not implemented"
         return dict
     }
 
     // MARK: - createVideoPlayerFullScreenView
 
-    func createVideoPlayerFullScreenView(call: CAPPluginCall, videoUrl: URL) {
+    func createVideoPlayerFullScreenView(call: CAPPluginCall, videoUrl: URL,
+                                         subTitleUrl: URL?, language: String?,
+                                         options: [String: Any]?) {
         DispatchQueue.main.async {
 
-            self.videoPlayerFullScreenView =
-            FullScreenVideoPlayerView(url: videoUrl, playerId: self.fsPlayerId, exitOnEnd: true)
+            self.videoPlayerFullScreenView = FullScreenVideoPlayerView(
+                        url: videoUrl, stUrl: subTitleUrl, stLanguage: language,
+                        stOptions: options, playerId: self.fsPlayerId,
+                        exitOnEnd: true)
             self.bgPlayer = self.videoPlayerFullScreenView?.videoPlayer.player
             guard let videoPlayer: AVPlayerViewController =
                 self.videoPlayerFullScreenView?.videoPlayer else {
@@ -698,7 +733,8 @@ public class CapacitorVideoPlayer: CAPPlugin {
             return
         }
         guard let call = self.call else { return }
-        self.createVideoPlayerFullScreenView(call: call, videoUrl: videoUrl)
+        self.createVideoPlayerFullScreenView(call: call, videoUrl: videoUrl,
+                                             subTitleUrl: nil, language: nil, options: nil)
         return
     }
 

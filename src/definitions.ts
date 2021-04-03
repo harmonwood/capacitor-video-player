@@ -101,6 +101,10 @@ export interface capVideoPlayerOptions {
    */
   language?: string;
   /**
+   * SubTitle Options
+   */
+  subtitleOptions?: SubTitleOptions;
+  /**
    * Id of DIV Element parent of the player
    */
   playerId?: string;
@@ -186,4 +190,18 @@ export interface capVideoPlayerResult {
    * message string
    */
   message?: string;
+}
+export interface SubTitleOptions {
+  /**
+   * Foreground Color in RGBA (default rgba(255,255,255,1)
+   */
+  foregroundColor?: string;
+  /**
+   * Background Color in RGBA (default rgba(0,0,0,1)
+   */
+  backgroundColor?: string;
+  /**
+   * Font Size in pixels (default 16)
+   */
+  fontSize?: number;
 }

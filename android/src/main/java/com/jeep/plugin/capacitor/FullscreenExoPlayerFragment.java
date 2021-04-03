@@ -5,23 +5,30 @@ import android.app.ActivityManager;
 import android.app.Fragment;
 import android.content.ContentUris;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.accessibility.CaptioningManager;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import com.getcapacitor.JSObject;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -38,6 +45,8 @@ import com.google.android.exoplayer2.source.SingleSampleMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
+import com.google.android.exoplayer2.text.CaptionStyleCompat;
+import com.google.android.exoplayer2.text.CaptionStyleCompat;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
@@ -64,6 +73,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public String playerId;
     public String subTitle;
     public String language;
+    public JSObject subTitleOptions;
     public Boolean isTV;
     public Boolean isInternal;
     public Long videoId;
@@ -93,6 +103,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private Context context;
     private boolean isMuted = false;
     private float curVolume = (float) 0.5;
+    private String stForeColor = "";
+    private String stBackColor = "";
+    private Integer stFontSize = 16;
 
     // Current playback position (in milliseconds).
     private int mCurrentPosition = 0;
@@ -112,6 +125,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = container.getContext();
+
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_fs_exoplayer, container, false);
         constLayout = view.findViewById(R.id.fsExoPlayer);
@@ -128,6 +142,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
         if (!isInternal) {
             uri = Uri.parse(videoPath);
             sturi = subTitle != null ? Uri.parse(subTitle) : null;
+
+            stForeColor = subTitleOptions.has("foregroundColor") ? subTitleOptions.getString("foregroundColor") : "rgba(255,255,255,1)";
+            stBackColor = subTitleOptions.has("backgroundColor") ? subTitleOptions.getString("backgroundColor") : "rgba(0,0,0,1)";
+            stFontSize = subTitleOptions.has("fontSize") ? subTitleOptions.getInteger("fontSize") : 16;
             // get video type
             vType = getVideoType(uri);
             Log.v(TAG, "display url: " + uri);
@@ -349,6 +367,21 @@ public class FullscreenExoPlayerFragment extends Fragment {
                 put("fromPlayerId", playerId);
             }
         };
+        int foreground = Color.WHITE;
+        int background = Color.BLACK;
+        if (stForeColor.length() > 4 && stForeColor.substring(0, 4).equals("rgba")) {
+            foreground = getColorFromRGBA(stForeColor);
+        }
+        if (stBackColor.length() > 4 && stBackColor.substring(0, 4).equals("rgba")) {
+            background = getColorFromRGBA(stBackColor);
+        }
+
+        playerView
+            .getSubtitleView()
+            .setStyle(
+                new CaptionStyleCompat(foreground, background, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null)
+            );
+        playerView.getSubtitleView().setFixedTextSize(TypedValue.COMPLEX_UNIT_DIP, stFontSize);
         NotificationCenter.defaultCenter().postNotification("initializePlayer", info);
     }
 
@@ -426,6 +459,20 @@ public class FullscreenExoPlayerFragment extends Fragment {
         if (player != null) {
             outState.putInt(PLAYBACK_TIME, (int) player.getCurrentPosition());
         }
+    }
+
+    private int getColorFromRGBA(String rgbaColor) {
+        int ret = 0;
+        String color = rgbaColor.substring(rgbaColor.indexOf("(") + 1, rgbaColor.indexOf(")"));
+        List<String> colors = Arrays.asList(color.split(","));
+        if (colors.size() == 4) {
+            ret =
+                (Math.round(Float.parseFloat(colors.get(3).trim()) * 255) & 0xff) << 24 |
+                (Integer.parseInt(colors.get(0).trim()) & 0xff) << 16 |
+                (Integer.parseInt(colors.get(1).trim()) & 0xff) << 8 |
+                (Integer.parseInt(colors.get(2).trim()) & 0xff);
+        }
+        return ret;
     }
 
     private MediaSource getSubTitle(MediaSource mediaSource, Uri sturi, DataSource.Factory dataSourceFactory) {

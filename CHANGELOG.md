@@ -1,3 +1,10 @@
+## 2.4.7-2 (2021-04-03)
+
+### Added Features
+
+- Add SubTitle to iOS platform issue#40
+- Add change to foreground & background colors as well as font size
+
 ## 2.4.7-1 (2021-03-30)
 
 ### Chores

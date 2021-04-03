@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.util.Log;
 import android.view.ViewGroup;
+import android.view.accessibility.CaptioningManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import com.getcapacitor.JSObject;
@@ -106,8 +107,18 @@ public class CapacitorVideoPlayer extends Plugin {
                 call.success(ret);
                 return;
             }
-            String subtitle = call.getString("subtitle");
-            String language = call.getString("language");
+            String subtitle = "";
+            if (call.getData().has("subtitle")) {
+                subtitle = call.getString("subtitle");
+            }
+            String language = "";
+            if (call.getData().has("language")) {
+                language = call.getString("language");
+            }
+            JSObject subTitleOptions = new JSObject();
+            if (call.getData().has("subtitleOptions")) {
+                subTitleOptions = call.getObject("subtitleOptions");
+            }
 
             AddObserversToNotificationCenter();
             Log.v(TAG, "display url: " + url);
@@ -127,7 +138,7 @@ public class CapacitorVideoPlayer extends Plugin {
                 Log.v(TAG, "*** calculated videoPath: " + videoPath);
                 Log.v(TAG, "*** calculated subTitlePath: " + subTitlePath);
                 if (videoPath != null) {
-                    createFullScreenFragment(call, videoPath, subTitlePath, language, isTV, playerId, false, null);
+                    createFullScreenFragment(call, videoPath, subTitlePath, language, subTitleOptions, isTV, playerId, false, null);
                 } else {
                     Map<String, Object> info = new HashMap<String, Object>() {
                         {
@@ -210,6 +221,7 @@ public class CapacitorVideoPlayer extends Plugin {
         String videoPath,
         String subTitle,
         String language,
+        JSObject subTitleOptions,
         Boolean isTV,
         String playerId,
         Boolean isInternal,
@@ -220,6 +232,7 @@ public class CapacitorVideoPlayer extends Plugin {
         fsFragment.videoPath = videoPath;
         fsFragment.subTitle = subTitle;
         fsFragment.language = language;
+        fsFragment.subTitleOptions = subTitleOptions;
         fsFragment.isTV = isTV;
         fsFragment.playerId = playerId;
         fsFragment.isInternal = isInternal;
@@ -811,8 +824,19 @@ public class CapacitorVideoPlayer extends Plugin {
                         pkFragment = null;
                         String subtitle = null;
                         String language = null;
+                        JSObject subTitleOptions = new JSObject();
                         if (videoId != -1) {
-                            createFullScreenFragment(savedCall, videoPath, subtitle, language, isTV, fsPlayerId, true, videoId);
+                            createFullScreenFragment(
+                                savedCall,
+                                videoPath,
+                                subtitle,
+                                language,
+                                subTitleOptions,
+                                isTV,
+                                fsPlayerId,
+                                true,
+                                videoId
+                            );
                         } else {
                             Toast.makeText(context, "No Video files found ", Toast.LENGTH_SHORT).show();
                             Map<String, Object> info = new HashMap<String, Object>() {

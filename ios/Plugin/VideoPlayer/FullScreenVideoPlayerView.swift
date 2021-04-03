@@ -9,6 +9,7 @@
 import UIKit
 import AVKit
 
+// swiftlint:disable type_body_length
 class FullScreenVideoPlayerView: UIView {
     private var _url: URL
     private var _isReadyToPlay: Bool = false
@@ -20,42 +21,156 @@ class FullScreenVideoPlayerView: UIView {
     private var _isEnded: Bool = false
     private var _exitOnEnd: Bool = true
     private var _firstReadyToPlay: Bool = true
+    private var _stUrl: URL?
+    private var _stLanguage: String?
+    private var _stOptions: [String: Any]?
 
-    var player: AVPlayer
+    var player: AVPlayer?
     var videoPlayer: AVPlayerViewController
-    var asset: AVAsset
-    var playerItem: AVPlayerItem
+    var videoAsset: AVURLAsset
+    var playerItem: AVPlayerItem?
     var isPlaying: Bool
     var itemBufferObserver: NSKeyValueObservation?
     var itemStatusObserver: NSKeyValueObservation?
     var playerRateObserver: NSKeyValueObservation?
     var videoPlayerFrameObserver: NSKeyValueObservation?
 
-    init(url: URL, playerId: String, exitOnEnd: Bool) {
+    init(url: URL, stUrl: URL?, stLanguage: String?,
+         stOptions: [String: Any]?, playerId: String, exitOnEnd: Bool) {
         //self._videoPath = videoPath
         self._url = url
+        self._stUrl = stUrl
+        self._stLanguage = stLanguage
+        self._stOptions = stOptions
         self._exitOnEnd = exitOnEnd
         self._videoId = playerId
         self.videoPlayer = AVPlayerViewController()
-        self.asset = AVAsset(url: url)
-        self.playerItem = AVPlayerItem(asset: self.asset)
-        self.player = AVPlayer(playerItem: playerItem)
-        self.videoPlayer.player = self.player
-        self._isLoaded.updateValue(false, forKey: self._videoId)
+        self.videoAsset = AVURLAsset(url: url)
         self.isPlaying = false
-
         super.init(frame: .zero)
-
+        self.initialize()
         self.addObservers()
     }
 
+    // swiftlint:disable function_body_length
+    private func initialize() {
+        // Set SubTitles if any
+        if let subTitleUrl = self._stUrl {
+            var textStyle: [AVTextStyleRule] = []
+            if let opt = self._stOptions {
+                textStyle.append(contentsOf: self.setSubTitleStyle(options: opt))
+            }
+
+            let subTitleAsset = AVAsset(url: subTitleUrl)
+            let composition = AVMutableComposition()
+
+            if let videoTrack = composition.addMutableTrack(
+                    withMediaType: AVMediaType.video,
+                    preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) {
+                if let audioTrack = composition.addMutableTrack(
+                        withMediaType: AVMediaType.audio,
+                        preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) {
+                    do {
+                        try videoTrack.insertTimeRange(
+                            CMTimeRangeMake(start: CMTime.zero,
+                                            duration: self.videoAsset.duration),
+                                            of: self.videoAsset.tracks(
+                                            withMediaType: AVMediaType.video)[0],
+                                            at: CMTime.zero)
+                        // if video has an audio track
+                        if self.videoAsset.tracks.count > 0 {
+                          let clipAudioTrack = self.videoAsset.tracks(
+                            withMediaType: AVMediaType.audio)[0]
+                            try audioTrack.insertTimeRange(CMTimeRangeMake(
+                                    start: CMTime.zero,
+                                    duration: self.videoAsset.duration),
+                                    of: clipAudioTrack, at: CMTime.zero)
+                        }
+                        //Adds subtitle track
+                        if let subtitleTrack = composition.addMutableTrack(
+                                withMediaType: .text,
+                                preferredTrackID: kCMPersistentTrackID_Invalid) {
+                            do {
+                                let duration = self.videoAsset.duration
+                                try subtitleTrack.insertTimeRange(
+                                    CMTimeRangeMake(start: CMTime.zero,
+                                                    duration: duration),
+                                                    of: subTitleAsset.tracks(
+                                                        withMediaType: .text)[0],
+                                                    at: CMTime.zero)
+
+                                self.playerItem = AVPlayerItem(asset: composition)
+                                self.playerItem?.textStyleRules = textStyle
+
+                            } catch {
+                                self.playerItem = AVPlayerItem(asset: self.videoAsset)
+                            }
+                        } else {
+                            self.playerItem = AVPlayerItem(asset: self.videoAsset)
+                        }
+                    } catch {
+                        self.playerItem = AVPlayerItem(asset: self.videoAsset)
+                    }
+                } else {
+                    self.playerItem = AVPlayerItem(asset: self.videoAsset)
+                }
+            } else {
+                self.playerItem = AVPlayerItem(asset: self.videoAsset)
+            }
+        } else {
+            self.playerItem = AVPlayerItem(asset: self.videoAsset)
+        }
+        self.player = AVPlayer(playerItem: playerItem)
+        self.videoPlayer.player = self.player
+        self._isLoaded.updateValue(false, forKey: self._videoId)
+
+    }
+    // swiftlint:enable function_body_length
+
+    private func setSubTitleStyle(options: [String: Any]) -> [AVTextStyleRule] {
+        var styles: [AVTextStyleRule] = []
+        var backColor: [Float] = [1.0, 0.0, 0.0, 0.0]
+        if let bckCol = options["backgroundColor"] as? String {
+            let color = self.getColorFromRGBA(rgba: bckCol)
+            backColor = color.count > 0 ? color : backColor
+        }
+        if let textStyle: AVTextStyleRule = AVTextStyleRule(textMarkupAttributes: [
+            kCMTextMarkupAttribute_CharacterBackgroundColorARGB as String:
+            backColor
+        ]) {
+            styles.append(textStyle)
+        }
+
+        var foreColor: [Float] = [1.0, 1.0, 1.0, 1.0]
+        if let foreCol = options["foregroundColor"] as? String {
+            let color = self.getColorFromRGBA(rgba: foreCol)
+            foreColor = color.count > 0 ? color : foreColor
+        }
+        if let textStyle1: AVTextStyleRule = AVTextStyleRule(textMarkupAttributes: [
+            kCMTextMarkupAttribute_ForegroundColorARGB as String: foreColor
+        ]) {
+            styles.append(textStyle1)
+        }
+        var ftSize = 160
+        if let pixSize = options["fontSize"] as? Int {
+            ftSize = pixSize * 10
+        }
+        print("$$$ ftSize \(ftSize)")
+        if let textStyle2: AVTextStyleRule = AVTextStyleRule(textMarkupAttributes: [
+            kCMTextMarkupAttribute_RelativeFontSize as String: ftSize,
+            kCMTextMarkupAttribute_CharacterEdgeStyle as String: kCMTextMarkupCharacterEdgeStyle_None
+        ]) {
+            styles.append(textStyle2)
+        }
+        return styles
+    }
     // MARK: - Add Observers
 
     // swiftlint:disable function_body_length
     // swiftlint:disable cyclomatic_complexity
     private func addObservers() {
 
-        self.itemStatusObserver = self.playerItem.observe(\.status, options: [.new, .old],
+        self.itemStatusObserver = self.playerItem?.observe(\.status, options: [.new, .old],
                                                           changeHandler: {(playerItem, _) in
             // Switch over the status
             switch playerItem.status {
@@ -65,8 +180,9 @@ class FullScreenVideoPlayerView: UIView {
                     self._isLoaded.updateValue(true, forKey: self._videoId)
                     self._isReadyToPlay = true
                     self._isEnded = false
-                    self._currentTime = CMTimeGetSeconds(self.playerItem.currentTime())
-
+                    if let item = self.playerItem {
+                        self._currentTime = CMTimeGetSeconds(item.currentTime())
+                    }
                     let vId: [String: Any] = ["fromPlayerId": self._videoId, "currentTime": self._currentTime ]
                     NotificationCenter.default.post(name: .playerItemReady, object: nil, userInfo: vId)
                     self._firstReadyToPlay = false
@@ -79,25 +195,28 @@ class FullScreenVideoPlayerView: UIView {
                 print("playerItem not yet ready")
 
             @unknown default:
-                print("playerItem Error \(String(describing: self.playerItem.error))")
+                print("playerItem Error \(String(describing: self.playerItem?.error))")
             }
 
         })
 
-        self.itemBufferObserver = self.playerItem.observe(\.isPlaybackBufferEmpty, options: [.new, .old],
-                                                          changeHandler: {(playerItem, _) in
-            let empty: Bool = self.playerItem.isPlaybackBufferEmpty
+        self.itemBufferObserver = self.playerItem?
+            .observe(\.isPlaybackBufferEmpty,
+                   options: [.new, .old], changeHandler: {(playerItem, _) in
+                let empty: Bool = ((self.playerItem?.isPlaybackBufferEmpty) != nil)
             if empty {
                 self._isBufferEmpty.updateValue(true, forKey: self._videoId)
             } else {
                 self._isBufferEmpty.updateValue(false, forKey: self._videoId)
             }
         })
-        self.playerRateObserver = self.player.observe(\.rate, options: [.new, .old],
-                                                          changeHandler: {(player, _) in
+        self.playerRateObserver = self.player?
+            .observe(\.rate, options: [.new, .old], changeHandler: {(player, _) in
             let rate: Float = player.rate
-            self._currentTime = CMTimeGetSeconds(self.playerItem.currentTime())
-            self._duration = CMTimeGetSeconds(self.playerItem.duration)
+            if let item = self.playerItem {
+                self._currentTime = CMTimeGetSeconds(item.currentTime())
+                self._duration = CMTimeGetSeconds(item.duration)
+            }
             let vId: [String: Any] = ["fromPlayerId": self._videoId, "currentTime": self._currentTime]
             if !(self._isLoaded[self._videoId] ?? true) {
                 print("AVPlayer Rate for player \(self._videoId): Loading")
@@ -151,37 +270,72 @@ class FullScreenVideoPlayerView: UIView {
 
     @objc func play() {
         self.isPlaying = true
-        self.player.play()
+        self.player?.play()
     }
     @objc func pause() {
         self.isPlaying = false
-        self.player.pause()
+        self.player?.pause()
     }
     @objc func didFinishPlaying() -> Bool {
         return self._isEnded
     }
     @objc func getDuration() -> Double {
-        return Double(CMTimeGetSeconds(self.playerItem.duration))
+        return Double(CMTimeGetSeconds(self.videoAsset.duration))
     }
     @objc func getCurrentTime() -> Double {
         return self._currentTime
     }
     @objc func setCurrentTime(time: Double) {
         let seekTime: CMTime = CMTimeMake(value: Int64(time*1000), timescale: 1000)
-        self.player.seek(to: seekTime)
+        self.player?.seek(to: seekTime)
         self._currentTime = time
     }
     @objc func getVolume() -> Float {
-        return self.player.volume
+        if let player = self.player {
+            return player.volume
+        } else {
+            return 1.0
+        }
     }
     @objc func setVolume(volume: Float) {
-        self.player.volume = volume
+        self.player?.volume = volume
     }
     @objc func getMuted() -> Bool {
-        return self.player.isMuted
+        return ((self.player?.isMuted) != nil)
     }
     @objc func setMuted(muted: Bool) {
-        self.player.isMuted = muted
+        self.player?.isMuted = muted
     }
 
+    private func getColorFromRGBA(rgba: String) -> [Float] {
+        if let oPar = rgba.firstIndex(of: "(") {
+            if let cPar = rgba.firstIndex(of: ")") {
+                let strColor = rgba[rgba.index(after: oPar)..<cPar]
+                let array = strColor.components(separatedBy: ",")
+                if array.count == 4 {
+                    var retArray: [Float] = []
+                    retArray.append((array[3]
+                                .trimmingCharacters(in: .whitespaces) as NSString)
+                                .floatValue)
+                    retArray.append((array[0]
+                                .trimmingCharacters(in: .whitespaces) as NSString)
+                                .floatValue / 255)
+                    retArray.append((array[1]
+                                .trimmingCharacters(in: .whitespaces) as NSString)
+                                .floatValue / 255)
+                    retArray.append((array[2]
+                                .trimmingCharacters(in: .whitespaces) as NSString)
+                                .floatValue / 255)
+                    return retArray
+                } else {
+                    return []
+                }
+            } else {
+                return []
+            }
+        } else {
+            return []
+        }
+    }
 }
+// swiftlint:enable type_body_length

@@ -54,7 +54,7 @@
 - iOS & Android Plugin only
   . `internal`
 
-## Subtitle (Android Only)
+## Subtitle (Android, iOS Only)
 
 ### Supported Formats
 
@@ -63,6 +63,9 @@
   . `TTML/SMPTE .ttml, .dfxp, .xml extensions`
   . `SubRip .srt extension`
   . `SubStationAlpha .ssa, .ass extensions`
+
+- iOS Plugin
+  . `WebVTT .vtt extension`
 
 ### from the Web
 
@@ -74,11 +77,18 @@
 - Android Plugin
   . `"public/assets/video/video.srt"`
 
+- iOS Plugin
+  . `"public/assets/video/video.vtt"`
+
 ### from Application Folder
 
 - Android Plugin
   . `application/files/video.vtt` is corresponding to :
   **/data/user/0/YOUR_APPLICATION_PACKAGE/files//video.vtt**
+
+- iOS Plugin
+  . `application/files/video.vtt` is corresponding to :
+  **/data/Containers/Data/Applications/YOUR_APPLICATION/Documents/files/video.vtt**
 
 ### from Internal (Not supported)
 
