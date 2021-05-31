@@ -1,3 +1,14 @@
+## 3.0.0-alpha.1
+
+### Chores
+
+- Update to Capacitor 3.0.0
+
+### Added Features
+
+- iOS, Web, Electron platforms
+
+
 ## 2.4.7 (2021-05-31)
 
 - Final version with Capacitor 2.4.7
