@@ -1,3 +1,7 @@
+## 2.4.7 (2021-05-31)
+
+- Final version with Capacitor 2.4.7
+
 ## 2.4.7-2 (2021-04-03)
 
 ### Added Features
