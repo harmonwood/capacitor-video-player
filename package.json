@@ -14,6 +14,7 @@
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "docgen": "docgen --api CapacitorVideoPlayerPlugin --output-readme docs/API.md",
+    "test": "echo \"No test specified\"",
     "prepublishOnly": "npm run build"
   },
   "author": "Jean Pierre Quéau",

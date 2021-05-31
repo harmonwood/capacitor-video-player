@@ -2,6 +2,10 @@
 
 - Final version with Capacitor 2.4.7
 
+### Bug Fixes
+
+- fix Add test script in package.json
+
 ## 2.4.7-2 (2021-04-03)
 
 ### Added Features
