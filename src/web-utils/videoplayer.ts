@@ -2,7 +2,7 @@ import Hls from 'hls.js';
 
 export class VideoPlayer {
   public videoEl: HTMLVideoElement | undefined;
-  public pipMode: boolean = false;
+  public pipMode = false;
   public pipWindow: Window | undefined;
   public isPlaying: boolean | undefined;
 
@@ -16,8 +16,8 @@ export class VideoPlayer {
   private _initial: any;
   private _videoType: string | null = null;
   private _videoContainer: any = null;
-  private _firstReadyToPlay: boolean = true;
-  private _isEnded: boolean = false;
+  private _firstReadyToPlay = true;
+  private _isEnded = false;
 
   constructor(
     mode: string,
@@ -38,7 +38,7 @@ export class VideoPlayer {
     this._playerId = playerId;
   }
 
-  public async initialize() {
+  public async initialize(): Promise<void> {
     // get the video type
     const retB: boolean = this._getVideoType();
     if (retB) {
@@ -109,6 +109,7 @@ export class VideoPlayer {
         'Url Error: type not supported',
       );
     }
+    return;
   }
   private async createVideoElement(
     width: number,
@@ -133,9 +134,11 @@ export class VideoPlayer {
       this.videoEl.oncanplay = async () => {
         if (this._firstReadyToPlay) {
           this._createEvent('Ready', this._playerId);
-          this.videoEl!.muted = false;
-          if (this._mode === 'fullscreen') await this.videoEl!.play();
-          this._firstReadyToPlay = false;
+          if (this.videoEl != null) {
+            this.videoEl.muted = false;
+            if (this._mode === 'fullscreen') await this.videoEl.play();
+            this._firstReadyToPlay = false;
+          }
         }
       };
       this.videoEl.onplay = () => {
@@ -209,99 +212,108 @@ export class VideoPlayer {
   }
 
   private async _setPlayer(): Promise<boolean> {
-    return new Promise(async resolve => {
-      if (Hls.isSupported && this._videoType === 'application/x-mpegURL') {
-        var hls = new Hls();
-        hls.loadSource(this._url);
-        hls.attachMedia(this.videoEl!);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          this.videoEl!.muted = true;
-          this.videoEl!.crossOrigin = 'anonymous';
+    return new Promise(resolve => {
+      if (this.videoEl != null) {
+        if (Hls.isSupported() && this._videoType === 'application/x-mpegURL') {
+          const hls = new Hls();
+          hls.loadSource(this._url);
+          hls.attachMedia(this.videoEl);
+          hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            if (this.videoEl != null) {
+              this.videoEl.muted = true;
+              this.videoEl.crossOrigin = 'anonymous';
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          });
+        } else if (this._videoType === 'video/mp4') {
+          // CMAF (fMP4) && MP4
+          this.videoEl.src = this._url;
+          if (
+            this._url.substring(0, 5) != 'https' &&
+            this._url.substring(0, 4) === 'http'
+          )
+            this.videoEl.crossOrigin = 'anonymous';
+          if (
+            this._url.substring(0, 5) === 'https' ||
+            this._url.substring(0, 4) === 'http'
+          )
+            this.videoEl.muted = true;
           resolve(true);
+        } else {
+          // Not Supported
+          resolve(false);
+        }
+        this.videoEl.addEventListener('enterpictureinpicture', (event: any) => {
+          this.pipWindow = event.pictureInPictureWindow;
+          console.log(' Enter PiP Mode ', this.pipWindow);
+          this.pipMode = true;
+          this._closeFullscreen();
         });
-      } else if (this._videoType === 'video/mp4') {
-        // CMAF (fMP4) && MP4
-        this.videoEl!.src = this._url;
-        if (
-          this._url.substring(0, 5) != 'https' &&
-          this._url.substring(0, 4) === 'http'
-        )
-          this.videoEl!.crossOrigin = 'anonymous';
-        if (
-          this._url.substring(0, 5) === 'https' ||
-          this._url.substring(0, 4) === 'http'
-        )
-          this.videoEl!.muted = true;
-        resolve(true);
+
+        this.videoEl.addEventListener('leavepictureinpicture', () => {
+          console.log(' Exit PiP Mode ');
+          this.pipMode = false;
+          if (!this._isEnded) {
+            this._goFullscreen();
+            if (this.videoEl != null) this.videoEl.play();
+          }
+        });
       } else {
-        // Not Supported
         resolve(false);
       }
-      this.videoEl!.addEventListener('enterpictureinpicture', (event: any) => {
-        this.pipWindow = event.pictureInPictureWindow;
-        console.log(' Enter PiP Mode ', this.pipWindow);
-        this.pipMode = true;
-        this._closeFullscreen();
-      });
-
-      this.videoEl!.addEventListener('leavepictureinpicture', () => {
-        console.log(' Exit PiP Mode ');
-        this.pipMode = false;
-        if (!this._isEnded) {
-          this._goFullscreen();
-          this.videoEl!.play();
-        }
-      });
     });
   }
 
   private _getVideoType(): boolean {
-    let ret: boolean = false;
-    let vType: string = '';
-
-    try {
-      const val = this._url
-        .substring(this._url.lastIndexOf('/'))
-        .match(/(.*)\.(.*)/);
-      if (val == null) {
-        vType = '';
-      } else {
-        vType = this._url.match(/(.*)\.(.*)/)![2].split('?')[0];
+    let ret = false;
+    let vType = '';
+    const sUrl: string = this._url ? this._url : '';
+    if (sUrl != null && sUrl.length > 0) {
+      try {
+        const val = sUrl.substring(sUrl.lastIndexOf('/')).match(/(.*)\.(.*)/);
+        if (val == null) {
+          vType = '';
+        } else {
+          const a = sUrl.match(/(.*)\.(.*)/);
+          vType = a != null ? a[2].split('?')[0] : '';
+        }
+        switch (vType) {
+          case 'mp4':
+          case '':
+          case 'webm':
+          case 'cmaf':
+          case 'cmfv':
+          case 'cmfa': {
+            this._videoType = 'video/mp4';
+            break;
+          }
+          case 'm3u8': {
+            this._videoType = 'application/x-mpegURL';
+            break;
+          }
+          /*
+                  case "mpd" : {
+                  this._videoType = "application/dash+xml";
+                  break;
+                  }
+          */
+          /*
+                  case "youtube" : {
+                  this._videoType = "video/youtube";
+                  break;
+                  }
+          */
+          default: {
+            this._videoType = null;
+            break;
+          }
+        }
+        ret = true;
+      } catch {
+        ret = false;
       }
-      switch (vType) {
-        case 'mp4':
-        case '':
-        case 'webm':
-        case 'cmaf':
-        case 'cmfv':
-        case 'cmfa': {
-          this._videoType = 'video/mp4';
-          break;
-        }
-        case 'm3u8': {
-          this._videoType = 'application/x-mpegURL';
-          break;
-        }
-        /*
-                case "mpd" : {
-                this._videoType = "application/dash+xml";
-                break;
-                }
-        */
-        /*
-                case "youtube" : {
-                this._videoType = "video/youtube";
-                break;
-                }
-        */
-        default: {
-          this._videoType = null;
-          break;
-        }
-      }
-      ret = true;
-    } catch {
-      ret = false;
     }
     return ret;
   }
@@ -309,7 +321,7 @@ export class VideoPlayer {
   private async _doHide(exitEl: HTMLButtonElement, duration: number) {
     clearTimeout(this._initial);
     exitEl.style.visibility = 'visible';
-    let initial = setTimeout(() => {
+    const initial = setTimeout(() => {
       exitEl.style.visibility = 'hidden';
     }, duration);
     return initial;
@@ -322,7 +334,7 @@ export class VideoPlayer {
         detail: { fromPlayerId: playerId, message: message },
       });
     } else {
-      const currentTime: number = this.videoEl!.currentTime;
+      const currentTime: number = this.videoEl ? this.videoEl.currentTime : 0;
       event = new CustomEvent(`videoPlayer${ev}`, {
         detail: { fromPlayerId: playerId, currentTime: currentTime },
       });

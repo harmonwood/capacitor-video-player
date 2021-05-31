@@ -1,2 +1,4 @@
+import type { CapacitorVideoPlayerPlugin } from './definitions';
+declare const CapacitorVideoPlayer: CapacitorVideoPlayerPlugin;
 export * from './definitions';
-export * from './web';
+export { CapacitorVideoPlayer };

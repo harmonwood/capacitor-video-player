@@ -1,12 +1,11 @@
 import { WebPlugin } from '@capacitor/core';
-import { CapacitorVideoPlayerPlugin, capVideoPlayerOptions, capVideoPlayerIdOptions, capVideoVolumeOptions, capVideoTimeOptions, capVideoMutedOptions, capVideoPlayerResult } from './definitions';
+import type { CapacitorVideoPlayerPlugin, capVideoPlayerOptions, capVideoPlayerIdOptions, capVideoVolumeOptions, capVideoTimeOptions, capVideoMutedOptions, capVideoPlayerResult } from './definitions';
 export interface IPlayerSize {
-    height?: number;
-    width?: number;
+    height: number;
+    width: number;
 }
 export declare class CapacitorVideoPlayerWeb extends WebPlugin implements CapacitorVideoPlayerPlugin {
     private _players;
-    constructor();
     echo(options: {
         value: string;
     }): Promise<capVideoPlayerResult>;
@@ -90,5 +89,3 @@ export declare class CapacitorVideoPlayerWeb extends WebPlugin implements Capaci
     private handlePlayerExit;
     private handlePlayerReady;
 }
-declare const CapacitorVideoPlayer: CapacitorVideoPlayerWeb;
-export { CapacitorVideoPlayer };

@@ -1,9 +1,12 @@
 //
-//  Extension.swift
+//  View.swift
+//  Plugin
+//
 //  Sample_TableView
 //
 //  Created by Esat Kemal Ekren on 5.04.2018.
-//  Copyright © 2018 Esat Kemal Ekren. All rights reserved.
+//  Copyright © 2021 Esat Kemal Ekren. All rights reserved.
+//  Copyright © 2021 Max Lynch. All rights reserved.
 //
 
 import UIKit

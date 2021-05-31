@@ -1,5 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
-import {
+
+import type {
   CapacitorVideoPlayerPlugin,
   capVideoPlayerOptions,
   capVideoPlayerIdOptions,
@@ -11,8 +12,8 @@ import {
 import { VideoPlayer } from './web-utils/videoplayer';
 
 export interface IPlayerSize {
-  height?: number;
-  width?: number;
+  height: number;
+  width: number;
 }
 
 export class CapacitorVideoPlayerWeb
@@ -20,12 +21,6 @@ export class CapacitorVideoPlayerWeb
   implements CapacitorVideoPlayerPlugin {
   private _players: any = [];
 
-  constructor() {
-    super({
-      name: 'CapacitorVideoPlayer',
-      platforms: ['web'],
-    });
-  }
   async echo(options: { value: string }): Promise<capVideoPlayerResult> {
     console.log('ECHO', options);
     return Promise.resolve({ result: true, method: 'echo', value: options });
@@ -39,7 +34,15 @@ export class CapacitorVideoPlayerWeb
   async initPlayer(
     options: capVideoPlayerOptions,
   ): Promise<capVideoPlayerResult> {
-    let mode: string = options.mode!;
+    if (options == null) {
+      return Promise.resolve({
+        result: false,
+        method: 'initPlayer',
+        message: 'Must provide a capVideoPlayerOptions object',
+      });
+    }
+
+    const mode: string = options.mode ? options.mode : '';
     if (mode == null || mode.length === 0) {
       return Promise.resolve({
         result: false,
@@ -48,7 +51,7 @@ export class CapacitorVideoPlayerWeb
       });
     }
     if (mode === 'fullscreen' || mode === 'embedded') {
-      let url: string = options.url!;
+      const url: string = options.url ? options.url : '';
       if (url == null || url.length === 0) {
         return Promise.resolve({
           result: false,
@@ -63,7 +66,7 @@ export class CapacitorVideoPlayerWeb
           message: 'Internal Videos not supported on Web Platform',
         });
       }
-      let playerId: string = options.playerId!;
+      const playerId: string = options.playerId ? options.playerId : '';
       if (playerId == null || playerId.length === 0) {
         return Promise.resolve({
           result: false,
@@ -71,7 +74,9 @@ export class CapacitorVideoPlayerWeb
           message: 'Must provide a Player Id',
         });
       }
-      let componentTag: string = options.componentTag!;
+      const componentTag: string = options.componentTag
+        ? options.componentTag
+        : '';
       if (componentTag == null || componentTag.length === 0) {
         return Promise.resolve({
           result: false,
@@ -107,12 +112,19 @@ export class CapacitorVideoPlayerWeb
   async isPlaying(
     options: capVideoPlayerIdOptions,
   ): Promise<capVideoPlayerResult> {
-    let playerId: string = options.playerId!;
+    if (options == null) {
+      return Promise.resolve({
+        result: false,
+        method: 'isPlaying',
+        message: 'Must provide a capVideoPlayerIdOptions object',
+      });
+    }
+    let playerId: string = options.playerId ? options.playerId : '';
     if (playerId == null || playerId.length === 0) {
       playerId = 'fullscreen';
     }
     if (this._players[playerId]) {
-      let playing: boolean = this._players[playerId].isPlaying;
+      const playing: boolean = this._players[playerId].isPlaying;
       return Promise.resolve({
         method: 'isPlaying',
         result: true,
@@ -133,7 +145,14 @@ export class CapacitorVideoPlayerWeb
    * @param options
    */
   async play(options: capVideoPlayerIdOptions): Promise<capVideoPlayerResult> {
-    let playerId: string = options.playerId!;
+    if (options == null) {
+      return Promise.resolve({
+        result: false,
+        method: 'play',
+        message: 'Must provide a capVideoPlayerIdOptions object',
+      });
+    }
+    let playerId: string = options.playerId ? options.playerId : '';
     if (playerId == null || playerId.length === 0) {
       playerId = 'fullscreen';
     }
@@ -154,7 +173,14 @@ export class CapacitorVideoPlayerWeb
    * @param options
    */
   async pause(options: capVideoPlayerIdOptions): Promise<capVideoPlayerResult> {
-    let playerId: string = options.playerId!;
+    if (options == null) {
+      return Promise.resolve({
+        result: false,
+        method: 'pause',
+        message: 'Must provide a capVideoPlayerIdOptions object',
+      });
+    }
+    let playerId: string = options.playerId ? options.playerId : '';
     if (playerId == null || playerId.length === 0) {
       playerId = 'fullscreen';
     }
@@ -178,12 +204,19 @@ export class CapacitorVideoPlayerWeb
   async getDuration(
     options: capVideoPlayerIdOptions,
   ): Promise<capVideoPlayerResult> {
-    let playerId: string = options.playerId!;
+    if (options == null) {
+      return Promise.resolve({
+        result: false,
+        method: 'getDuration',
+        message: 'Must provide a capVideoPlayerIdOptions object',
+      });
+    }
+    let playerId: string = options.playerId ? options.playerId : '';
     if (playerId == null || playerId.length === 0) {
       playerId = 'fullscreen';
     }
     if (this._players[playerId]) {
-      let duration: number = this._players[playerId].videoEl.duration;
+      const duration: number = this._players[playerId].videoEl.duration;
       return Promise.resolve({
         method: 'getDuration',
         result: true,
@@ -205,11 +238,18 @@ export class CapacitorVideoPlayerWeb
   async setVolume(
     options: capVideoVolumeOptions,
   ): Promise<capVideoPlayerResult> {
-    let playerId: string = options.playerId!;
+    if (options == null) {
+      return Promise.resolve({
+        result: false,
+        method: 'setVolume',
+        message: 'Must provide a capVideoVolumeOptions object',
+      });
+    }
+    let playerId: string = options.playerId ? options.playerId : '';
     if (playerId == null || playerId.length === 0) {
       playerId = 'fullscreen';
     }
-    let volume: number = options.volume ? options.volume : 0.5;
+    const volume: number = options.volume ? options.volume : 0.5;
     if (this._players[playerId]) {
       this._players[playerId].videoEl.volume = volume;
       return Promise.resolve({
@@ -233,12 +273,19 @@ export class CapacitorVideoPlayerWeb
   async getVolume(
     options: capVideoPlayerIdOptions,
   ): Promise<capVideoPlayerResult> {
-    let playerId: string = options.playerId!;
+    if (options == null) {
+      return Promise.resolve({
+        result: false,
+        method: 'getVolume',
+        message: 'Must provide a capVideoPlayerIdOptions object',
+      });
+    }
+    let playerId: string = options.playerId ? options.playerId : '';
     if (playerId == null || playerId.length === 0) {
       playerId = 'fullscreen';
     }
     if (this._players[playerId]) {
-      let volume: number = this._players[playerId].videoEl.volume;
+      const volume: number = this._players[playerId].videoEl.volume;
       return Promise.resolve({
         method: 'getVolume',
         result: true,
@@ -258,11 +305,18 @@ export class CapacitorVideoPlayerWeb
    * @param options
    */
   async setMuted(options: capVideoMutedOptions): Promise<capVideoPlayerResult> {
-    let playerId: string = options.playerId!;
+    if (options == null) {
+      return Promise.resolve({
+        result: false,
+        method: 'setMuted',
+        message: 'Must provide a capVideoMutedOptions object',
+      });
+    }
+    let playerId: string = options.playerId ? options.playerId : '';
     if (playerId == null || playerId.length === 0) {
       playerId = 'fullscreen';
     }
-    let muted: boolean = options.muted ? options.muted : false;
+    const muted: boolean = options.muted ? options.muted : false;
     if (this._players[playerId]) {
       this._players[playerId].videoEl.muted = muted;
       return Promise.resolve({
@@ -286,12 +340,19 @@ export class CapacitorVideoPlayerWeb
   async getMuted(
     options: capVideoPlayerIdOptions,
   ): Promise<capVideoPlayerResult> {
-    let playerId: string = options.playerId!;
+    if (options == null) {
+      return Promise.resolve({
+        result: false,
+        method: 'getMuted',
+        message: 'Must provide a capVideoPlayerIdOptions object',
+      });
+    }
+    let playerId: string = options.playerId ? options.playerId : '';
     if (playerId == null || playerId.length === 0) {
       playerId = 'fullscreen';
     }
     if (this._players[playerId]) {
-      let muted: boolean = this._players[playerId].videoEl.muted;
+      const muted: boolean = this._players[playerId].videoEl.muted;
       return Promise.resolve({
         method: 'getMuted',
         result: true,
@@ -313,7 +374,14 @@ export class CapacitorVideoPlayerWeb
   async setCurrentTime(
     options: capVideoTimeOptions,
   ): Promise<capVideoPlayerResult> {
-    let playerId: string = options.playerId!;
+    if (options == null) {
+      return Promise.resolve({
+        result: false,
+        method: 'setCurrentTime',
+        message: 'Must provide a capVideoTimeOptions object',
+      });
+    }
+    let playerId: string = options.playerId ? options.playerId : '';
     if (playerId == null || playerId.length === 0) {
       playerId = 'fullscreen';
     }
@@ -344,7 +412,14 @@ export class CapacitorVideoPlayerWeb
   async getCurrentTime(
     options: capVideoPlayerIdOptions,
   ): Promise<capVideoPlayerResult> {
-    let playerId: string = options.playerId!;
+    if (options == null) {
+      return Promise.resolve({
+        result: false,
+        method: 'getCurrentTime',
+        message: 'Must provide a capVideoPlayerIdOptions object',
+      });
+    }
+    let playerId: string = options.playerId ? options.playerId : '';
     if (playerId == null || playerId.length === 0) {
       playerId = 'fullscreen';
     }
@@ -368,9 +443,9 @@ export class CapacitorVideoPlayerWeb
    *
    */
   async stopAllPlayers(): Promise<capVideoPlayerResult> {
-    for (let i in this._players) {
+    for (const i in this._players) {
       if (this._players[i].pipMode) {
-        var doc: any = document;
+        const doc: any = document;
         if (doc.pictureInPictureElement) {
           await doc.exitPictureInPicture();
         }
@@ -384,16 +459,16 @@ export class CapacitorVideoPlayerWeb
     });
   }
   private checkSize(options: capVideoPlayerOptions): IPlayerSize {
-    let playerSize: IPlayerSize = {
+    const playerSize: IPlayerSize = {
       width: options.width ? options.width : 320,
       height: options.height ? options.height : 180,
     };
-    let ratio: number = playerSize.height! / playerSize.width!;
-    if (playerSize.width! > window.innerWidth) {
+    const ratio: number = playerSize.height / playerSize.width;
+    if (playerSize.width > window.innerWidth) {
       playerSize.width = window.innerWidth;
       playerSize.height = Math.floor(playerSize.width * ratio);
     }
-    if (playerSize.height! > window.innerHeight) {
+    if (playerSize.height > window.innerHeight) {
       playerSize.height = window.innerHeight;
       playerSize.width = Math.floor(playerSize.height / ratio);
     }
@@ -488,14 +563,15 @@ export class CapacitorVideoPlayerWeb
     const videoContainer: HTMLDivElement = document.createElement('div');
     videoContainer.id = `vc_${playerId}`;
     if (componentTag != null && componentTag.length > 0) {
-      let cmpTagEl: HTMLElement | null = document.querySelector(
+      const cmpTagEl: HTMLElement | null = document.querySelector(
         `${componentTag}`,
       );
       if (cmpTagEl === null) return Promise.resolve(null);
       let container: HTMLDivElement | null = null;
-      try {
-        container = cmpTagEl.shadowRoot!.querySelector(`#${playerId}`);
-      } catch {
+      const shadowRoot = cmpTagEl.shadowRoot ? cmpTagEl.shadowRoot : null;
+      if (shadowRoot != null) {
+        container = shadowRoot.querySelector(`#${playerId}`);
+      } else {
         container = cmpTagEl.querySelector(`#${playerId}`);
       }
       if (container != null) container.appendChild(videoContainer);
@@ -521,10 +597,3 @@ export class CapacitorVideoPlayerWeb
     this.notifyListeners('jeepCapVideoPlayerReady', data);
   }
 }
-
-const CapacitorVideoPlayer = new CapacitorVideoPlayerWeb();
-
-export { CapacitorVideoPlayer };
-
-import { registerWebPlugin } from '@capacitor/core';
-registerWebPlugin(CapacitorVideoPlayer);

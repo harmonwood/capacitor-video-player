@@ -1,6 +1,8 @@
 <p align="center"><br><img src="https://user-images.githubusercontent.com/236501/85893648-1c92e880-b7a8-11ea-926d-95355b8175c7.png" width="128" height="128" /></p>
 <h3 align="center">Video Player</h3>
 <p align="center"><strong><code>capacitor-video-player</code></strong></p>
+<br>
+<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 3 🚧</strong></p><br>
 <p align="center">
   Capacitor Video Player Plugin is a custom Native Capacitor plugin to play a video 
 <br>
@@ -27,6 +29,19 @@
 | ----------------- | ----------------------------------------- | ------ |
 | Quéau Jean Pierre | [jepiqueau](https://github.com/jepiqueau) |        |
 
+
+## NEXT FOR CAPACITOR 3 🚧 (Master)
+
+The master release has been upgraded to `@capacitor/core@3.0.0`.
+
+🚨 !!! ONLY iOS and Web plugins have been upgraded !!! 🚨
+
+🚨 !!! Android work in progress !!! 🚨
+
+## LATEST CAPACITOR 2.4.7
+
+The `2.4.7` is now 🛑 NOT MAINTAINED ANYMORE 🛑 and can be used as is.
+
 ## Browser Support
 
 The plugin follows the guidelines from the `Capacitor Team`,
@@ -37,55 +52,74 @@ meaning that it will not work in IE11 without additional JavaScript transformati
 
 ## Installation
 
-```bash
-npm install capacitor-video-player
-npx cap sync
-npx cap sync @capacitor-community/electron
-```
+### Release 2.4.7
 
-- On Web and Electron, no further steps are needed.
+  ```bash
+  npm install --save capacitor-video-player@2.4.7
+  npx cap sync
+  npx cap sync @capacitor-community/electron
+  ```
+  - On Web and Electron, no further steps are needed.
 
-- on iOS, you need to set your app Capabilities Background Modes (Audio and AirPlay) in Xcode
+  - on iOS, you need to set your app Capabilities Background Modes (Audio and AirPlay) in Xcode
 
-- On Android, register the plugin in your main activity:
+  - On Android, register the plugin in your main activity:
 
-```java
-import com.jeep.plugin.capacitor.CapacitorVideoPlayer;
+  ```java
+  import com.jeep.plugin.capacitor.CapacitorVideoPlayer;
 
-public class MainActivity extends BridgeActivity {
+  public class MainActivity extends BridgeActivity {
 
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
 
-    // Initializes the Bridge
-    this.init(
-        savedInstanceState,
-        new ArrayList<Class<? extends Plugin>>() {
-          {
-            // Additional plugins you've installed go here
-            // Ex: add(TotallyAwesomePlugin.class);
-            add(CapacitorVideoPlayer.class);
+      // Initializes the Bridge
+      this.init(
+          savedInstanceState,
+          new ArrayList<Class<? extends Plugin>>() {
+            {
+              // Additional plugins you've installed go here
+              // Ex: add(TotallyAwesomePlugin.class);
+              add(CapacitorVideoPlayer.class);
+            }
           }
-        }
-      );
+        );
+    }
   }
-}
 
-```
+  ```
 
-Then build YOUR_APPLICATION
+### Release 3.0.0 
 
-```
-npm run build
-npx cap copy
-npx cap copy web
-npx cap copy @capacitor-community/electron
-npx cap open android
-npx cap open ios
-npx cap open @capacitor-community/electron
-npx cap serve
-```
+  ```bash
+  npm install --save capacitor-video-player@next
+  npx cap sync
+  npx cap sync @capacitor-community/electron
+  ```
+
+  - On Web and Electron , 
+  ```
+  npm install --save hls.js
+  ```
+
+  - on iOS, you need to set your app Capabilities Background Modes (Audio and AirPlay) in Xcode
+
+  - On Android, no further steps are needed.
+
+### Build
+  Then build YOUR_APPLICATION
+
+  ```
+  npm run build
+  npx cap copy
+  npx cap copy web
+  npx cap copy @capacitor-community/electron
+  npx cap open android
+  npx cap open ios
+  npx cap open @capacitor-community/electron
+  npx cap serve
+  ```
 
 ## Configuration
 
@@ -93,7 +127,7 @@ No configuration required for this plugin
 
 ## Supported methods
 
-| Name                               | Android | iOS | Electron | Web |
+| Name                               | Android 🚧| iOS | Electron | Web |
 | :--------------------------------- | :------ | :-- | :------- | :-- |
 | initPlayer (mode fullscreen)       | ✅      | ✅  | ✅       | ✅  |
 | initPlayer (mode embedded)         | ❌      | ❌  | ✅       | ✅  |
@@ -129,234 +163,29 @@ No configuration required for this plugin
 
 ## Applications demonstrating the use of the plugin
 
-### Ionic/Angular
-
-- [test-angular-jeep-capacitor-plugins](https://github.com/jepiqueau/capacitor-apps/tree/master/IonicAngular/jeep-test-app)
-
-### Application Starter
+### Application Starter 2.4.7
 
 - [pwa-video-player-app-starter](https://github.com/jepiqueau/pwa-video-player-app-starter)
 
-- [angular-video-player-app-starter](https://github.com/jepiqueau/angular-videoplayer-app-starter)
+- [angular-video-player-app-starter](https://github.com/jepiqueau/angular-videoplayer-app-starter/tree/0.6.3)
 
 - [react-video-player-app-starter](https://github.com/jepiqueau/react-video-player-app-starter)
 
-## Usage
+### Application Starter 3.0.0 🚧
+
+- [angular-video-player-app-starter](https://github.com/jepiqueau/angular-videoplayer-app-starter/tree/0.6.3)
+
+## Usage 2.4.7
 
 - [see capacitor documentation](https://capacitor.ionicframework.com/docs/getting-started/with-ionic)
 
-- In your code
+- [see usage 2.4.7](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/Usage_2.4.7.md)
 
-```ts
- import { Component, OnInit } from '@angular/core';
- import { Plugins } from '@capacitor/core';
- import * as WebVPPlugin from 'capacitor-video-player';
- const { CapacitorVideoPlayer,Device } = Plugins;
+## Usage 3.0.0 🚧
 
- @Component({
-   tag: 'my-page',
-   styleUrl: 'my-page.css'
- })
- export class MyPage implements OnInit {
-    private _videoPlayer: any;
-    private _url: string;
-    private _handlerPlay: any;
-    private _handlerPause: any;
-    private _handlerEnded: any;
-    private _handlerReady: any;
-    private _handlerExit: any;
-    private _first: boolean = false;
-    private _apiTimer1: any;
-    private _apiTimer2: any;
-    private _apiTimer3: any;
-    private _testApi: boolean = true;
+- [see capacitor documentation](https://capacitor.ionicframework.com/docs/getting-started/with-ionic)
 
-    ...
-    async ngOnInit() {
-      // define the plugin to use
-      const info = await Device.getInfo();
-      if (info.platform === "ios" || info.platform === "android") {
-        this._videoPlayer = CapacitorVideoPlayer;
-      } else {
-        this._videoPlayer = WebVPPlugin.CapacitorVideoPlayer
-      }
-      // define the video url
-      this._url = "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4"
-      // add listeners to the plugin
-      this._addListenersToPlayerPlugin();
-    }
-    async ionViewDidEnter() {
-      ...
-      const res:any  = await this._videoPlayer.initPlayer({mode:"fullscreen",url:this._url,playerId:"fullscreen",componentTag:"my-page"});
-      ...
-
-    }
-
-    private _addListenersToPlayerPlugin() {
-      this._handlerPlay = this._videoPlayer.addListener('jeepCapVideoPlayerPlay', (data:any) => {
-        console.log('Event jeepCapVideoPlayerPlay ', data);
-        ...
-      }, false);
-      this._handlerPause = this._videoPlayer.addListener('jeepCapVideoPlayerPause', (data:any) => {
-        console.log('Event jeepCapVideoPlayerPause ', data);
-        ...
-      }, false);
-      this._handlerEnded = this._videoPlayer.addListener('jeepCapVideoPlayerEnded', async (data:any) => {
-        console.log('Event jeepCapVideoPlayerEnded ', data);
-        ...
-      }, false);
-      this._handlerExit = this._videoPlayer.addListener('jeepCapVideoPlayerExit', async (data:any) => {
-        console.log('Event jeepCapVideoPlayerExit ', data)
-        ...
-        }, false);
-      this._handlerReady = this._videoPlayer.addListener('jeepCapVideoPlayerReady', async (data:any) => {
-        console.log('Event jeepCapVideoPlayerReady ', data)
-        console.log("testVideoPlayerPlugin testAPI ",this._testApi);
-        console.log("testVideoPlayerPlugin first ",this._first);
-        if(this._testApi && this._first) {
-          // test the API
-          this._first = false;
-          console.log("testVideoPlayerPlugin calling isPlaying ");
-          const isPlaying = await this._videoPlayer.isPlaying({playerId:"fullscreen"});
-          console.log('const isPlaying ', isPlaying)
-          this._apiTimer1 = setTimeout(async () => {
-            const pause = await this._videoPlayer.pause({playerId:"fullscreen"});
-            console.log('const pause ', pause)
-            const isPlaying = await this._videoPlayer.isPlaying({playerId:"fullscreen"});
-            console.log('const isPlaying after pause ', isPlaying)
-            let currentTime = await this._videoPlayer.getCurrentTime({playerId:"fullscreen"});
-            console.log('const currentTime ', currentTime);
-            let muted = await this._videoPlayer.getMuted({playerId:"fullscreen"});
-            console.log('initial muted ', muted);
-            const setMuted = await this._videoPlayer.setMuted({playerId:"fullscreen",muted:!muted.value});
-            console.log('setMuted ', setMuted);
-            muted = await this._videoPlayer.getMuted({playerId:"fullscreen"});
-            console.log('const muted ', muted);
-            const duration = await this._videoPlayer.getDuration({playerId:"fullscreen"});
-            console.log("duration ",duration);
-            // valid for movies havin a duration > 25
-            const seektime = currentTime.value + 0.5 * duration.value < duration.value -25 ? currentTime.value + 0.5 * duration.value
-                            : duration.value -25;
-            const setCurrentTime = await this._videoPlayer.setCurrentTime({playerId:"fullscreen",seektime:(seektime)});
-            console.log('const setCurrentTime ', setCurrentTime);
-            const play = await this._videoPlayer.play({playerId:"fullscreen"});
-            console.log("play ",play);
-            this._apiTimer2 = setTimeout(async () => {
-              const setMuted = await this._videoPlayer.setMuted({playerId:"fullscreen",muted:false});
-              console.log('setMuted ', setMuted);
-              const setVolume = await this._videoPlayer.setVolume({playerId:"fullscreen",volume:0.5});
-              console.log("setVolume ",setVolume);
-              const volume = await this._videoPlayer.getVolume({playerId:"fullscreen"});
-              console.log("Volume ",volume);
-              this._apiTimer3 = setTimeout(async () => {
-                const pause = await this._videoPlayer.pause({playerId:"fullscreen"});
-                console.log('const pause ', pause);
-                const duration = await this._videoPlayer.getDuration({playerId:"fullscreen"});
-                console.log("duration ",duration);
-                const volume = await this._videoPlayer.setVolume({playerId:"fullscreen",volume:1.0});
-                console.log("Volume ",volume);
-                const setCurrentTime = await this._videoPlayer.setCurrentTime({playerId:"fullscreen",seektime:(duration.value - 3)});
-                console.log('const setCurrentTime ', setCurrentTime);
-                const play = await this._videoPlayer.play({playerId:"fullscreen"});
-                console.log('const play ', play);
-              }, 10000);
-            }, 10000);
-
-          }, 5000);
-        }
-      }, false);
-
-    }
-    ...
- }
-```
-
-then in my-page.html
-
-```html
-...
-<!-- Mandatory id="fullscreen" -->
-<div id="fullscreen" slot="fixed"></div>
-...
-```
-
-### Usage on PWA
-
-- in your code
-
-```ts
-import {  CapacitorVideoPlayer } from 'capacitor-video-player';
- @Component( ... )
- export class MyPage {
-    private _videoPlayer: any;
-    private _url: string;
-    private _handlerPlay: any;
-    private _handlerPause: any;
-    private _handlerEnded: any;
-    private _handlerReady: any;
-    private _handlerPlaying: any;
-    private _handlerExit: any;
-
-    componentWillLoad() {
-      ...
-      this._videoPlayer = CapacitorVideoPlayer;
-      this._url = "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4";
-      this._addListenersToPlayerPlugin();
-      ...
-    }
-    async componentDidLoad() {
-      ...
-      const res:any  = await videoPlayer.initPlayer({mode:"fullscreen",url:this._url,playerId="fullscreen",componentTag="my-page"});
-      console.log('result of init ', res)
-      ...
-    }
-    private _addListenersToPlayerPlugin() {
-      this._handlerPlay = this._videoPlayer.addListener('jeepCapVideoPlayerPlay', (data:any) => {
-        console.log('Event jeepCapVideoPlayerPlay ', data);
-        ...
-      }, false);
-      this._handlerPause = this._videoPlayer.addListener('jeepCapVideoPlayerPause', (data:any) => {
-        console.log('Event jeepCapVideoPlayerPause ', data);
-        ...
-      }, false);
-      this._handlerEnded = this._videoPlayer.addListener('jeepCapVideoPlayerEnded', async (data:any) => {
-        console.log('Event jeepCapVideoPlayerEnded ', data);
-        ...
-      }, false);
-      this._handlerExit = this._videoPlayer.addListener('jeepCapVideoPlayerExit', async (data:any) => {
-        console.log('Event jeepCapVideoPlayerExit ', data)
-        ...
-        }, false);
-      this._handlerReady = this._videoPlayer.addListener('jeepCapVideoPlayerReady', async (data:any) => {
-        console.log('Event jeepCapVideoPlayerReady ', data)
-        ...
-      }, false);
-      this._handlerPlaying = this._videoPlayer.addListener('jeepCapVideoPlayerPlaying', async (data:any) => {
-        console.log('Event jeepCapVideoPlayerPlaying ', data)
-        ...
-      }, false);
-
-    }
-    render() {
-      return (
-        <Host>
-          <slot>
-            <div id="fullscreen">
-
-            </div>
-          </slot>
-        </Host>
-      );
-    }
- }
-```
-
-```bash
-npm run build
-npx cap copy
-npx cap copy web
-npm start
-```
+- [see usage 3.0.0](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/Usage_3.0.0.md)
 
 ## Dependencies
 

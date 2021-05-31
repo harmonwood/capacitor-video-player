@@ -1,9 +1,3 @@
-declare module '@capacitor/core' {
-  interface PluginRegistry {
-    CapacitorVideoPlayer: CapacitorVideoPlayerPlugin;
-  }
-}
-
 export interface CapacitorVideoPlayerPlugin {
   /**
    * Echo

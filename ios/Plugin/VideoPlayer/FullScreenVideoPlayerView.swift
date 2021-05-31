@@ -3,14 +3,14 @@
 //  Plugin
 //
 //  Created by  Quéau Jean Pierre on 13/01/2020.
-//  Copyright © 2020 Max Lynch. All rights reserved.
+//  Copyright © 2021 Max Lynch. All rights reserved.
 //
 
 import UIKit
 import AVKit
 
 // swiftlint:disable type_body_length
-class FullScreenVideoPlayerView: UIView {
+open class FullScreenVideoPlayerView: UIView {
     private var _url: URL
     private var _isReadyToPlay: Bool = false
     private var _videoId: String = "fullscreen"
@@ -65,39 +65,39 @@ class FullScreenVideoPlayerView: UIView {
             let composition = AVMutableComposition()
 
             if let videoTrack = composition.addMutableTrack(
-                    withMediaType: AVMediaType.video,
-                    preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) {
+                withMediaType: AVMediaType.video,
+                preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) {
                 if let audioTrack = composition.addMutableTrack(
-                        withMediaType: AVMediaType.audio,
-                        preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) {
+                    withMediaType: AVMediaType.audio,
+                    preferredTrackID: Int32(kCMPersistentTrackID_Invalid)) {
                     do {
                         try videoTrack.insertTimeRange(
                             CMTimeRangeMake(start: CMTime.zero,
                                             duration: self.videoAsset.duration),
-                                            of: self.videoAsset.tracks(
-                                            withMediaType: AVMediaType.video)[0],
-                                            at: CMTime.zero)
+                            of: self.videoAsset.tracks(
+                                withMediaType: AVMediaType.video)[0],
+                            at: CMTime.zero)
                         // if video has an audio track
                         if self.videoAsset.tracks.count > 0 {
-                          let clipAudioTrack = self.videoAsset.tracks(
-                            withMediaType: AVMediaType.audio)[0]
+                            let clipAudioTrack = self.videoAsset.tracks(
+                                withMediaType: AVMediaType.audio)[0]
                             try audioTrack.insertTimeRange(CMTimeRangeMake(
-                                    start: CMTime.zero,
-                                    duration: self.videoAsset.duration),
-                                    of: clipAudioTrack, at: CMTime.zero)
+                                                            start: CMTime.zero,
+                                                            duration: self.videoAsset.duration),
+                                                           of: clipAudioTrack, at: CMTime.zero)
                         }
                         //Adds subtitle track
                         if let subtitleTrack = composition.addMutableTrack(
-                                withMediaType: .text,
-                                preferredTrackID: kCMPersistentTrackID_Invalid) {
+                            withMediaType: .text,
+                            preferredTrackID: kCMPersistentTrackID_Invalid) {
                             do {
                                 let duration = self.videoAsset.duration
                                 try subtitleTrack.insertTimeRange(
                                     CMTimeRangeMake(start: CMTime.zero,
                                                     duration: duration),
-                                                    of: subTitleAsset.tracks(
-                                                        withMediaType: .text)[0],
-                                                    at: CMTime.zero)
+                                    of: subTitleAsset.tracks(
+                                        withMediaType: .text)[0],
+                                    at: CMTime.zero)
 
                                 self.playerItem = AVPlayerItem(asset: composition)
                                 self.playerItem?.textStyleRules = textStyle
@@ -136,7 +136,7 @@ class FullScreenVideoPlayerView: UIView {
         }
         if let textStyle: AVTextStyleRule = AVTextStyleRule(textMarkupAttributes: [
             kCMTextMarkupAttribute_CharacterBackgroundColorARGB as String:
-            backColor
+                backColor
         ]) {
             styles.append(textStyle)
         }
@@ -170,84 +170,86 @@ class FullScreenVideoPlayerView: UIView {
     // swiftlint:disable cyclomatic_complexity
     private func addObservers() {
 
-        self.itemStatusObserver = self.playerItem?.observe(\.status, options: [.new, .old],
-                                                          changeHandler: {(playerItem, _) in
-            // Switch over the status
-            switch playerItem.status {
-            case .readyToPlay:
-            // Player item is ready to play.
-                if self._firstReadyToPlay {
-                    self._isLoaded.updateValue(true, forKey: self._videoId)
-                    self._isReadyToPlay = true
-                    self._isEnded = false
-                    if let item = self.playerItem {
-                        self._currentTime = CMTimeGetSeconds(item.currentTime())
-                    }
-                    let vId: [String: Any] = ["fromPlayerId": self._videoId, "currentTime": self._currentTime ]
-                    NotificationCenter.default.post(name: .playerItemReady, object: nil, userInfo: vId)
-                    self._firstReadyToPlay = false
-                }
-            case .failed:
-                print("failing to load")
-                self._isLoaded.updateValue(false, forKey: self._videoId)
-            case .unknown:
-                // Player item is not yet ready.
-                print("playerItem not yet ready")
+        self.itemStatusObserver = self.playerItem?
+            .observe(\.status, options: [.new, .old],
+                     changeHandler: {(playerItem, _) in
+                        // Switch over the status
+                        switch playerItem.status {
+                        case .readyToPlay:
+                            // Player item is ready to play.
+                            if self._firstReadyToPlay {
+                                self._isLoaded.updateValue(true, forKey: self._videoId)
+                                self._isReadyToPlay = true
+                                self._isEnded = false
+                                if let item = self.playerItem {
+                                    self._currentTime = CMTimeGetSeconds(item.currentTime())
+                                }
+                                let vId: [String: Any] = ["fromPlayerId": self._videoId, "currentTime": self._currentTime ]
+                                NotificationCenter.default.post(name: .playerItemReady, object: nil, userInfo: vId)
+                                self._firstReadyToPlay = false
+                            }
+                        case .failed:
+                            print("failing to load")
+                            self._isLoaded.updateValue(false, forKey: self._videoId)
+                        case .unknown:
+                            // Player item is not yet ready.
+                            print("playerItem not yet ready")
 
-            @unknown default:
-                print("playerItem Error \(String(describing: self.playerItem?.error))")
-            }
+                        @unknown default:
+                            print("playerItem Error \(String(describing: self.playerItem?.error))")
+                        }
 
-        })
+                     })
 
         self.itemBufferObserver = self.playerItem?
             .observe(\.isPlaybackBufferEmpty,
-                   options: [.new, .old], changeHandler: {(playerItem, _) in
-                let empty: Bool = ((self.playerItem?.isPlaybackBufferEmpty) != nil)
-            if empty {
-                self._isBufferEmpty.updateValue(true, forKey: self._videoId)
-            } else {
-                self._isBufferEmpty.updateValue(false, forKey: self._videoId)
-            }
-        })
+                     options: [.new, .old], changeHandler: {(playerItem, _) in
+                        let empty: Bool = ((self.playerItem?.isPlaybackBufferEmpty) != nil)
+                        if empty {
+                            self._isBufferEmpty.updateValue(true, forKey: self._videoId)
+                        } else {
+                            self._isBufferEmpty.updateValue(false, forKey: self._videoId)
+                        }
+                     })
         self.playerRateObserver = self.player?
             .observe(\.rate, options: [.new, .old], changeHandler: {(player, _) in
-            let rate: Float = player.rate
-            if let item = self.playerItem {
-                self._currentTime = CMTimeGetSeconds(item.currentTime())
-                self._duration = CMTimeGetSeconds(item.duration)
-            }
-            let vId: [String: Any] = ["fromPlayerId": self._videoId, "currentTime": self._currentTime]
-            if !(self._isLoaded[self._videoId] ?? true) {
-                print("AVPlayer Rate for player \(self._videoId): Loading")
-            } else if rate == 1.0 && self._isReadyToPlay {
-                print("AVPlayer Rate for player \(self._videoId): Playing")
-                self.isPlaying = true
-                NotificationCenter.default.post(name: .playerItemPlay, object: nil, userInfo: vId)
-            } else if rate == 0 && !self._isEnded && abs(self._currentTime - self._duration) < 0.2 {
-                print("AVPlayer Rate for player \(self._videoId): Ended")
-                self._isEnded = true
-                self.isPlaying = false
-                if self._exitOnEnd {
-                    NotificationCenter.default.post(name: .playerItemEnd, object: nil, userInfo: vId)
+                let rate: Float = player.rate
+                if let item = self.playerItem {
+                    self._currentTime = CMTimeGetSeconds(item.currentTime())
+                    self._duration = CMTimeGetSeconds(item.duration)
                 }
-            } else if rate == 0 {
-                print("AVPlayer Rate for player \(self._videoId): Paused")
-                self.isPlaying = false
-                NotificationCenter.default.post(name: .playerItemPause, object: nil, userInfo: vId)
-            } else if self._isBufferEmpty[self._videoId] ?? true {
-                print("AVPlayer Rate for player \(self._videoId): Buffer Empty Loading")
-            }
-        })
-        self.videoPlayerFrameObserver = self.videoPlayer.observe(\.view.frame, options: [.new, .old],
-                                                                 changeHandler: {(videoPlayer, _) in
-            if self.videoPlayer.isBeingDismissed && !self._isEnded {
-                if !self.isPlaying {
-                    self.pause()
+                let vId: [String: Any] = ["fromPlayerId": self._videoId, "currentTime": self._currentTime]
+                if !(self._isLoaded[self._videoId] ?? true) {
+                    print("AVPlayer Rate for player \(self._videoId): Loading")
+                } else if rate == 1.0 && self._isReadyToPlay {
+                    print("AVPlayer Rate for player \(self._videoId): Playing")
+                    self.isPlaying = true
+                    NotificationCenter.default.post(name: .playerItemPlay, object: nil, userInfo: vId)
+                } else if rate == 0 && !self._isEnded && abs(self._currentTime - self._duration) < 0.2 {
+                    print("AVPlayer Rate for player \(self._videoId): Ended")
+                    self._isEnded = true
+                    self.isPlaying = false
+                    if self._exitOnEnd {
+                        NotificationCenter.default.post(name: .playerItemEnd, object: nil, userInfo: vId)
+                    }
+                } else if rate == 0 {
+                    print("AVPlayer Rate for player \(self._videoId): Paused")
+                    self.isPlaying = false
+                    NotificationCenter.default.post(name: .playerItemPause, object: nil, userInfo: vId)
+                } else if self._isBufferEmpty[self._videoId] ?? true {
+                    print("AVPlayer Rate for player \(self._videoId): Buffer Empty Loading")
                 }
-                NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
-            }
-        })
+            })
+        self.videoPlayerFrameObserver = self.videoPlayer
+            .observe(\.view.frame, options: [.new, .old],
+                     changeHandler: {(videoPlayer, _) in
+                        if self.videoPlayer.isBeingDismissed && !self._isEnded {
+                            if !self.isPlaying {
+                                self.pause()
+                            }
+                            NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
+                        }
+                     })
     }
     // swiftlint:enable function_body_length
     // swiftlint:enable cyclomatic_complexity
@@ -263,7 +265,7 @@ class FullScreenVideoPlayerView: UIView {
 
     // MARK: - Required init
 
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     // MARK: - Set-up Public functions
@@ -315,17 +317,17 @@ class FullScreenVideoPlayerView: UIView {
                 if array.count == 4 {
                     var retArray: [Float] = []
                     retArray.append((array[3]
-                                .trimmingCharacters(in: .whitespaces) as NSString)
-                                .floatValue)
+                                        .trimmingCharacters(in: .whitespaces) as NSString)
+                                        .floatValue)
                     retArray.append((array[0]
-                                .trimmingCharacters(in: .whitespaces) as NSString)
-                                .floatValue / 255)
+                                        .trimmingCharacters(in: .whitespaces) as NSString)
+                                        .floatValue / 255)
                     retArray.append((array[1]
-                                .trimmingCharacters(in: .whitespaces) as NSString)
-                                .floatValue / 255)
+                                        .trimmingCharacters(in: .whitespaces) as NSString)
+                                        .floatValue / 255)
                     retArray.append((array[2]
-                                .trimmingCharacters(in: .whitespaces) as NSString)
-                                .floatValue / 255)
+                                        .trimmingCharacters(in: .whitespaces) as NSString)
+                                        .floatValue / 255)
                     return retArray
                 } else {
                     return []

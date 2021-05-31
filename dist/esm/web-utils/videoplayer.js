@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import Hls from 'hls.js';
 export class VideoPlayer {
     constructor(mode, url, playerId, container, zIndex, width, height) {
@@ -24,177 +15,179 @@ export class VideoPlayer {
         this._zIndex = zIndex ? zIndex : 1;
         this._playerId = playerId;
     }
-    initialize() {
-        return __awaiter(this, void 0, void 0, function* () {
-            // get the video type
-            const retB = this._getVideoType();
-            if (retB) {
-                // style the container
-                if (this._mode === 'fullscreen') {
-                    this._container.style.position = 'absolute';
-                    this._container.style.width = '100vw';
-                    this._container.style.height = '100vh';
-                }
-                if (this._mode === 'embedded') {
-                    this._container.style.position = 'relative';
-                    this._container.style.width = this._width.toString() + 'px';
-                    this._container.style.height = this._height.toString() + 'px';
-                }
-                this._container.style.left = '0';
-                this._container.style.top = '0';
-                this._container.style.display = 'flex';
-                this._container.style.alignItems = 'center';
-                this._container.style.justifyContent = 'center';
-                this._container.style.backgroundColor = '#000000';
-                this._container.style.zIndex = this._zIndex.toString();
-                const width = this._mode === 'fullscreen'
-                    ? window.innerWidth /*this._container.offsetWidth*/
-                    : this._width;
-                const height = this._mode === 'fullscreen'
-                    ? window.innerHeight /*this._container.offsetHeight*/
-                    : this._height;
-                const xmlns = 'http://www.w3.org/2000/svg';
-                const svg = document.createElementNS(xmlns, 'svg');
-                svg.setAttributeNS(null, 'width', width.toString());
-                svg.setAttributeNS(null, 'height', height.toString());
-                const viewbox = '0 0 ' + width.toString() + ' ' + height.toString();
-                svg.setAttributeNS(null, 'viewBox', viewbox);
-                svg.style.zIndex = (this._zIndex + 1).toString();
-                const rect = document.createElementNS(xmlns, 'rect');
-                rect.setAttributeNS(null, 'x', '0');
-                rect.setAttributeNS(null, 'y', '0');
-                rect.setAttributeNS(null, 'width', width.toString());
-                rect.setAttributeNS(null, 'height', height.toString());
-                rect.setAttributeNS(null, 'fill', '#000000');
-                svg.appendChild(rect);
-                this._container.appendChild(svg);
-                const heightVideo = (width * this._height) / this._width;
-                this._videoContainer = document.createElement('div');
-                this._videoContainer.style.position = 'absolute';
-                this._videoContainer.style.left = '0';
-                this._videoContainer.style.width = width.toString() + 'px';
-                this._videoContainer.style.height = heightVideo.toString() + 'px';
-                this._videoContainer.style.zIndex = (this._zIndex + 2).toString();
-                this._container.appendChild(this._videoContainer);
-                /*   Create Video Element */
-                const isCreated = yield this.createVideoElement(width, heightVideo);
-                if (!isCreated) {
-                    this._createEvent('Exit', this._playerId, 'Video Error: failed to create the Video Element');
-                }
+    async initialize() {
+        // get the video type
+        const retB = this._getVideoType();
+        if (retB) {
+            // style the container
+            if (this._mode === 'fullscreen') {
+                this._container.style.position = 'absolute';
+                this._container.style.width = '100vw';
+                this._container.style.height = '100vh';
             }
-            else {
-                this._createEvent('Exit', this._playerId, 'Url Error: type not supported');
+            if (this._mode === 'embedded') {
+                this._container.style.position = 'relative';
+                this._container.style.width = this._width.toString() + 'px';
+                this._container.style.height = this._height.toString() + 'px';
             }
-        });
+            this._container.style.left = '0';
+            this._container.style.top = '0';
+            this._container.style.display = 'flex';
+            this._container.style.alignItems = 'center';
+            this._container.style.justifyContent = 'center';
+            this._container.style.backgroundColor = '#000000';
+            this._container.style.zIndex = this._zIndex.toString();
+            const width = this._mode === 'fullscreen'
+                ? window.innerWidth /*this._container.offsetWidth*/
+                : this._width;
+            const height = this._mode === 'fullscreen'
+                ? window.innerHeight /*this._container.offsetHeight*/
+                : this._height;
+            const xmlns = 'http://www.w3.org/2000/svg';
+            const svg = document.createElementNS(xmlns, 'svg');
+            svg.setAttributeNS(null, 'width', width.toString());
+            svg.setAttributeNS(null, 'height', height.toString());
+            const viewbox = '0 0 ' + width.toString() + ' ' + height.toString();
+            svg.setAttributeNS(null, 'viewBox', viewbox);
+            svg.style.zIndex = (this._zIndex + 1).toString();
+            const rect = document.createElementNS(xmlns, 'rect');
+            rect.setAttributeNS(null, 'x', '0');
+            rect.setAttributeNS(null, 'y', '0');
+            rect.setAttributeNS(null, 'width', width.toString());
+            rect.setAttributeNS(null, 'height', height.toString());
+            rect.setAttributeNS(null, 'fill', '#000000');
+            svg.appendChild(rect);
+            this._container.appendChild(svg);
+            const heightVideo = (width * this._height) / this._width;
+            this._videoContainer = document.createElement('div');
+            this._videoContainer.style.position = 'absolute';
+            this._videoContainer.style.left = '0';
+            this._videoContainer.style.width = width.toString() + 'px';
+            this._videoContainer.style.height = heightVideo.toString() + 'px';
+            this._videoContainer.style.zIndex = (this._zIndex + 2).toString();
+            this._container.appendChild(this._videoContainer);
+            /*   Create Video Element */
+            const isCreated = await this.createVideoElement(width, heightVideo);
+            if (!isCreated) {
+                this._createEvent('Exit', this._playerId, 'Video Error: failed to create the Video Element');
+            }
+        }
+        else {
+            this._createEvent('Exit', this._playerId, 'Url Error: type not supported');
+        }
+        return;
     }
-    createVideoElement(width, height) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.videoEl = document.createElement('video');
-            this.videoEl.controls = true;
-            this.videoEl.style.zIndex = (this._zIndex + 3).toString();
-            this.videoEl.style.width = `${width.toString()}px`;
-            this.videoEl.style.height = `${height.toString()}px`;
-            this._videoContainer.appendChild(this.videoEl);
-            // set the player
-            const isSet = yield this._setPlayer();
-            if (isSet) {
-                this.videoEl.onended = () => {
-                    if (this._mode === 'fullscreen') {
-                        this._closeFullscreen();
-                    }
-                    this._isEnded = true;
-                    this._createEvent('Ended', this._playerId);
-                };
-                this.videoEl.oncanplay = () => __awaiter(this, void 0, void 0, function* () {
-                    if (this._firstReadyToPlay) {
-                        this._createEvent('Ready', this._playerId);
+    async createVideoElement(width, height) {
+        this.videoEl = document.createElement('video');
+        this.videoEl.controls = true;
+        this.videoEl.style.zIndex = (this._zIndex + 3).toString();
+        this.videoEl.style.width = `${width.toString()}px`;
+        this.videoEl.style.height = `${height.toString()}px`;
+        this._videoContainer.appendChild(this.videoEl);
+        // set the player
+        const isSet = await this._setPlayer();
+        if (isSet) {
+            this.videoEl.onended = () => {
+                if (this._mode === 'fullscreen') {
+                    this._closeFullscreen();
+                }
+                this._isEnded = true;
+                this._createEvent('Ended', this._playerId);
+            };
+            this.videoEl.oncanplay = async () => {
+                if (this._firstReadyToPlay) {
+                    this._createEvent('Ready', this._playerId);
+                    if (this.videoEl != null) {
                         this.videoEl.muted = false;
                         if (this._mode === 'fullscreen')
-                            yield this.videoEl.play();
+                            await this.videoEl.play();
                         this._firstReadyToPlay = false;
                     }
-                });
-                this.videoEl.onplay = () => {
-                    this.isPlaying = true;
-                    this._createEvent('Play', this._playerId);
-                };
-                this.videoEl.onplaying = () => {
-                    this._createEvent('Playing', this._playerId);
-                };
-                this.videoEl.onpause = () => {
-                    this.isPlaying = false;
-                    this._createEvent('Pause', this._playerId);
-                };
-                if (this._mode === 'fullscreen') {
-                    // create the video player exit button
-                    const exitEl = document.createElement('button');
-                    exitEl.textContent = 'X';
-                    exitEl.style.position = 'absolute';
-                    exitEl.style.left = '1%';
-                    exitEl.style.top = '5%';
-                    exitEl.style.width = '5vmin';
-                    exitEl.style.padding = '0.5%';
-                    exitEl.style.fontSize = '1.2rem';
-                    exitEl.style.background = 'rgba(51,51,51,.4)';
-                    exitEl.style.color = '#fff';
-                    exitEl.style.visibility = 'hidden';
-                    exitEl.style.zIndex = (this._zIndex + 4).toString();
-                    exitEl.style.border = '1px solid rgba(51,51,51,.4)';
-                    exitEl.style.borderRadius = '20px';
-                    this._videoContainer.onclick = () => __awaiter(this, void 0, void 0, function* () {
-                        this._initial = yield this._doHide(exitEl, 3000);
-                    });
-                    this._videoContainer.ontouchstart = () => __awaiter(this, void 0, void 0, function* () {
-                        this._initial = yield this._doHide(exitEl, 3000);
-                    });
-                    this._videoContainer.onmousemove = () => __awaiter(this, void 0, void 0, function* () {
-                        this._initial = yield this._doHide(exitEl, 3000);
-                    });
-                    exitEl.onclick = () => {
-                        this._createEvent('Exit', this._playerId);
-                    };
-                    exitEl.ontouchstart = () => {
-                        this._createEvent('Exit', this._playerId);
-                    };
-                    this._videoContainer.appendChild(exitEl);
-                    this._initial = yield this._doHide(exitEl, 3000);
-                    this._goFullscreen();
                 }
+            };
+            this.videoEl.onplay = () => {
+                this.isPlaying = true;
+                this._createEvent('Play', this._playerId);
+            };
+            this.videoEl.onplaying = () => {
+                this._createEvent('Playing', this._playerId);
+            };
+            this.videoEl.onpause = () => {
+                this.isPlaying = false;
+                this._createEvent('Pause', this._playerId);
+            };
+            if (this._mode === 'fullscreen') {
+                // create the video player exit button
+                const exitEl = document.createElement('button');
+                exitEl.textContent = 'X';
+                exitEl.style.position = 'absolute';
+                exitEl.style.left = '1%';
+                exitEl.style.top = '5%';
+                exitEl.style.width = '5vmin';
+                exitEl.style.padding = '0.5%';
+                exitEl.style.fontSize = '1.2rem';
+                exitEl.style.background = 'rgba(51,51,51,.4)';
+                exitEl.style.color = '#fff';
+                exitEl.style.visibility = 'hidden';
+                exitEl.style.zIndex = (this._zIndex + 4).toString();
+                exitEl.style.border = '1px solid rgba(51,51,51,.4)';
+                exitEl.style.borderRadius = '20px';
+                this._videoContainer.onclick = async () => {
+                    this._initial = await this._doHide(exitEl, 3000);
+                };
+                this._videoContainer.ontouchstart = async () => {
+                    this._initial = await this._doHide(exitEl, 3000);
+                };
+                this._videoContainer.onmousemove = async () => {
+                    this._initial = await this._doHide(exitEl, 3000);
+                };
+                exitEl.onclick = () => {
+                    this._createEvent('Exit', this._playerId);
+                };
+                exitEl.ontouchstart = () => {
+                    this._createEvent('Exit', this._playerId);
+                };
+                this._videoContainer.appendChild(exitEl);
+                this._initial = await this._doHide(exitEl, 3000);
+                this._goFullscreen();
             }
-            return isSet;
-        });
+        }
+        return isSet;
     }
-    _goFullscreen() {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (this._container.mozRequestFullScreen) {
-                /* Firefox */
-                this._container.mozRequestFullScreen();
-            }
-            else if (this._container.webkitRequestFullscreen) {
-                /* Chrome, Safari & Opera */
-                this._container.webkitRequestFullscreen();
-            }
-            else if (this._container.msRequestFullscreen) {
-                /* IE/Edge */
-                this._container.msRequestFullscreen();
-            }
-            else if (this._container.requestFullscreen) {
-                this._container.requestFullscreen();
-            }
-            return;
-        });
+    async _goFullscreen() {
+        if (this._container.mozRequestFullScreen) {
+            /* Firefox */
+            this._container.mozRequestFullScreen();
+        }
+        else if (this._container.webkitRequestFullscreen) {
+            /* Chrome, Safari & Opera */
+            this._container.webkitRequestFullscreen();
+        }
+        else if (this._container.msRequestFullscreen) {
+            /* IE/Edge */
+            this._container.msRequestFullscreen();
+        }
+        else if (this._container.requestFullscreen) {
+            this._container.requestFullscreen();
+        }
+        return;
     }
-    _setPlayer() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-                if (Hls.isSupported && this._videoType === 'application/x-mpegURL') {
-                    var hls = new Hls();
+    async _setPlayer() {
+        return new Promise(resolve => {
+            if (this.videoEl != null) {
+                if (Hls.isSupported() && this._videoType === 'application/x-mpegURL') {
+                    const hls = new Hls();
                     hls.loadSource(this._url);
                     hls.attachMedia(this.videoEl);
                     hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                        this.videoEl.muted = true;
-                        this.videoEl.crossOrigin = 'anonymous';
-                        resolve(true);
+                        if (this.videoEl != null) {
+                            this.videoEl.muted = true;
+                            this.videoEl.crossOrigin = 'anonymous';
+                            resolve(true);
+                        }
+                        else {
+                            resolve(false);
+                        }
                     });
                 }
                 else if (this._videoType === 'video/mp4') {
@@ -223,72 +216,76 @@ export class VideoPlayer {
                     this.pipMode = false;
                     if (!this._isEnded) {
                         this._goFullscreen();
-                        this.videoEl.play();
+                        if (this.videoEl != null)
+                            this.videoEl.play();
                     }
                 });
-            }));
+            }
+            else {
+                resolve(false);
+            }
         });
     }
     _getVideoType() {
         let ret = false;
         let vType = '';
-        try {
-            const val = this._url
-                .substring(this._url.lastIndexOf('/'))
-                .match(/(.*)\.(.*)/);
-            if (val == null) {
-                vType = '';
-            }
-            else {
-                vType = this._url.match(/(.*)\.(.*)/)[2].split('?')[0];
-            }
-            switch (vType) {
-                case 'mp4':
-                case '':
-                case 'webm':
-                case 'cmaf':
-                case 'cmfv':
-                case 'cmfa': {
-                    this._videoType = 'video/mp4';
-                    break;
+        const sUrl = this._url ? this._url : '';
+        if (sUrl != null && sUrl.length > 0) {
+            try {
+                const val = sUrl.substring(sUrl.lastIndexOf('/')).match(/(.*)\.(.*)/);
+                if (val == null) {
+                    vType = '';
                 }
-                case 'm3u8': {
-                    this._videoType = 'application/x-mpegURL';
-                    break;
+                else {
+                    const a = sUrl.match(/(.*)\.(.*)/);
+                    vType = a != null ? a[2].split('?')[0] : '';
                 }
-                /*
-                        case "mpd" : {
-                        this._videoType = "application/dash+xml";
+                switch (vType) {
+                    case 'mp4':
+                    case '':
+                    case 'webm':
+                    case 'cmaf':
+                    case 'cmfv':
+                    case 'cmfa': {
+                        this._videoType = 'video/mp4';
                         break;
-                        }
-                */
-                /*
-                        case "youtube" : {
-                        this._videoType = "video/youtube";
+                    }
+                    case 'm3u8': {
+                        this._videoType = 'application/x-mpegURL';
                         break;
-                        }
-                */
-                default: {
-                    this._videoType = null;
-                    break;
+                    }
+                    /*
+                            case "mpd" : {
+                            this._videoType = "application/dash+xml";
+                            break;
+                            }
+                    */
+                    /*
+                            case "youtube" : {
+                            this._videoType = "video/youtube";
+                            break;
+                            }
+                    */
+                    default: {
+                        this._videoType = null;
+                        break;
+                    }
                 }
+                ret = true;
             }
-            ret = true;
-        }
-        catch (_a) {
-            ret = false;
+            catch (_a) {
+                ret = false;
+            }
         }
         return ret;
     }
-    _doHide(exitEl, duration) {
-        return __awaiter(this, void 0, void 0, function* () {
-            clearTimeout(this._initial);
-            exitEl.style.visibility = 'visible';
-            let initial = setTimeout(() => {
-                exitEl.style.visibility = 'hidden';
-            }, duration);
-            return initial;
-        });
+    async _doHide(exitEl, duration) {
+        clearTimeout(this._initial);
+        exitEl.style.visibility = 'visible';
+        const initial = setTimeout(() => {
+            exitEl.style.visibility = 'hidden';
+        }, duration);
+        return initial;
     }
     _createEvent(ev, playerId, msg) {
         const message = msg ? msg : null;
@@ -299,7 +296,7 @@ export class VideoPlayer {
             });
         }
         else {
-            const currentTime = this.videoEl.currentTime;
+            const currentTime = this.videoEl ? this.videoEl.currentTime : 0;
             event = new CustomEvent(`videoPlayer${ev}`, {
                 detail: { fromPlayerId: playerId, currentTime: currentTime },
             });

@@ -3,7 +3,7 @@
 //  Plugin
 //
 //  Created by  Quéau Jean Pierre on 13/01/2020.
-//  Copyright © 2020 Max Lynch. All rights reserved.
+//  Copyright © 2021 Max Lynch. All rights reserved.
 //
 
 import CoreMedia
