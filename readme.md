@@ -2,7 +2,7 @@
 <h3 align="center">Video Player</h3>
 <p align="center"><strong><code>capacitor-video-player</code></strong></p>
 <br>
-<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 3 🚧</strong></p><br>
+<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 3 </strong></p><br>
 <p align="center">
   Capacitor Video Player Plugin is a custom Native Capacitor plugin to play a video 
 <br>
@@ -33,10 +33,6 @@
 ## NEXT FOR CAPACITOR 3 🚧 (Master)
 
 The master release has been upgraded to `@capacitor/core@3.0.0`.
-
-🚨 !!! ONLY iOS and Web plugins have been upgraded !!! 🚨
-
-🚨 !!! Android work in progress !!! 🚨
 
 ## LATEST CAPACITOR 2.4.7
 
@@ -105,7 +101,16 @@ meaning that it will not work in IE11 without additional JavaScript transformati
 
   - on iOS, you need to set your app Capabilities Background Modes (Audio and AirPlay) in Xcode
 
-  - On Android, no further steps are needed.
+  - On Android, the `AndroidManifest.xml`should include
+  ```
+    <!-- Permissions -->
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Camera, Photos, input file -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+  ```
+
 
 ### Build
   Then build YOUR_APPLICATION
@@ -127,14 +132,14 @@ No configuration required for this plugin
 
 ## Supported methods
 
-| Name                               | Android 🚧| iOS | Electron | Web |
+| Name                               | Android | iOS | Electron | Web |
 | :--------------------------------- | :------ | :-- | :------- | :-- |
 | initPlayer (mode fullscreen)       | ✅      | ✅  | ✅       | ✅  |
 | initPlayer (mode embedded)         | ❌      | ❌  | ✅       | ✅  |
 | initPlayer (url assets)            | ✅      | ✅  | ✅       | ✅  |
 | initPlayer (url internal)          | ✅      | ✅  | ❌       | ❌  |
 | initPlayer (url application/files) | ✅      | ✅  | ❌       | ❌  |
-| initPlayer (subtitles)             | ✅      | ❌  | ❌       | ❌  |
+| initPlayer (subtitles)             | ✅      | ✅  | ❌       | ❌  |
 | isPlaying                          | ✅      | ✅  | ✅       | ✅  |
 | play                               | ✅      | ✅  | ✅       | ✅  |
 | pause                              | ✅      | ✅  | ✅       | ✅  |

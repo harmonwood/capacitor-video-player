@@ -1,3 +1,9 @@
+## 3.0.0-rc.1 (2021-06-01)
+
+### Added Features
+
+- Android platform
+
 ## 3.0.0-alpha.1 (2021-05-31)
 
 ### Chores

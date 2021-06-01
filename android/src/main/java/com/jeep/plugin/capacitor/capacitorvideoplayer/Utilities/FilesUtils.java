@@ -1,0 +1,35 @@
+package com.jeep.plugin.capacitor.capacitorvideoplayer.Utilities;
+
+import android.content.Context;
+import java.io.File;
+
+public class FilesUtils {
+
+    private Context context;
+
+    public FilesUtils(Context context) {
+        this.context = context;
+    }
+
+    public String getFilePath(String url) {
+        String path = null;
+        String http = url.substring(0, 4);
+        if (http.equals("http")) {
+            path = url;
+        } else {
+            if (url.substring(0, 11).equals("application")) {
+                String filesDir = context.getFilesDir() + "/";
+                path = filesDir + url.substring(url.lastIndexOf('/') + 1);
+                File file = new File(path);
+                if (!file.exists()) {
+                    path = null;
+                }
+            } else if (url.contains("assets")) {
+                path = "file:///android_asset/" + url;
+            } else {
+                path = null;
+            }
+        }
+        return path;
+    }
+}
