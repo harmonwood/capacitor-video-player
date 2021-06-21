@@ -1,3 +1,13 @@
+## 3.0.0-rc.2 (2021-06-21)
+
+### Chores
+
+- Update to Capacitor 3.0.0
+
+### Bug Fixes
+
+- fix Android subtitle issue#46
+
 ## 3.0.0-rc.1 (2021-06-01)
 
 ### Added Features

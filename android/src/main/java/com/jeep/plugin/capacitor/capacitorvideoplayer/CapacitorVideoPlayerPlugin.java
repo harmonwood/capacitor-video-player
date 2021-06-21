@@ -114,7 +114,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 // get the videoPath
                 videoPath = filesUtils.getFilePath(url);
                 // get the subTitlePath if any
-                if (subtitle != null) {
+                if (subtitle != null && subtitle.length() > 0) {
                     subTitlePath = filesUtils.getFilePath(subtitle);
                 } else {
                     subTitlePath = null;
