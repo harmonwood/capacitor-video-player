@@ -30,11 +30,11 @@
 | Quéau Jean Pierre | [jepiqueau](https://github.com/jepiqueau) |        |
 
 
-## NEXT FOR CAPACITOR 3 🚧 (Master)
+## LATEST FOR CAPACITOR 3 (Master)
 
-The master release has been upgraded to `@capacitor/core@3.0.0`.
+The master release has been upgraded to `@capacitor/core@3.2.0`.
 
-## LATEST CAPACITOR 2.4.7
+## PREVIOUS CAPACITOR 2.4.7
 
 The `2.4.7` is now 🛑 NOT MAINTAINED ANYMORE 🛑 and can be used as is.
 
