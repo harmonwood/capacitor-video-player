@@ -1,3 +1,9 @@
+## 3.2.0-2 (2021-08-30)
+
+### Bug Fixes
+
+- fix package.json version
+
 ## 3.2.0-1 (2021-08-30)
 
 ### Chores
