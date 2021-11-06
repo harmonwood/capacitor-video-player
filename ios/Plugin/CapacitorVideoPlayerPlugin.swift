@@ -95,7 +95,18 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                         self?.implementation.pickVideoFromInternal() {
                         self?.bridge?.viewController?.present(videoPickerViewController,
                                                               animated: true,
-                                                              completion: {return})
+                                                              completion: {
+                            // add audio session
+                            self?.audioSession = AVAudioSession.sharedInstance()
+                            // Set the audio session category, mode, and options.
+                            try? self?.audioSession?
+                                    .setCategory(.playback, mode: .moviePlayback,
+                                                 options: [.mixWithOthers,.allowAirPlay])
+                            // Activate the audio session.
+                            try? self?.audioSession?.setActive(true)
+
+                            return
+                        })
                     }
                 }
 

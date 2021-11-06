@@ -1,6 +1,6 @@
 {
   "name": "capacitor-video-player",
-  "version": "3.2.0-2",
+  "version": "3.2.5",
   "description": "custom Native Capacitor plugin to play a video",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -46,10 +46,10 @@
     "prepublishOnly": "npm run build && npm run docgen"
   },
   "devDependencies": {
-    "@capacitor/android": "^3.2.0",
-    "@capacitor/core": "^3.2.0",
+    "@capacitor/android": "^3.2.5",
+    "@capacitor/core": "3.2.5",
     "@capacitor/docgen": "^0.0.17",
-    "@capacitor/ios": "^3.2.0",
+    "@capacitor/ios": "^3.2.5",
     "@ionic/eslint-config": "^0.3.0",
     "@ionic/prettier-config": "^1.0.1",
     "@ionic/swiftlint-config": "^1.1.2",
@@ -65,7 +65,7 @@
     "typescript": "~4.0.5"
   },
   "peerDependencies": {
-    "@capacitor/core": "^3.2.0",
+    "@capacitor/core": "^3.2.5",
     "hls.js": "^1.0.10"
   },
   "prettier": "@ionic/prettier-config",

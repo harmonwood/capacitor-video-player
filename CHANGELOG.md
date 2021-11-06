@@ -1,3 +1,13 @@
+## 3.2.5 (2021-11-06)
+
+### Chores
+
+- Update to Capacitor 3.2.5
+
+### Bug Fixes
+
+- fix Play from folders inside Application Folder issue#55
+
 ## 3.2.0-2 (2021-08-30)
 
 ### Bug Fixes

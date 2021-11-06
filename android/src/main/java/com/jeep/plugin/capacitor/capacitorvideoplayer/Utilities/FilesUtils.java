@@ -19,7 +19,7 @@ public class FilesUtils {
         } else {
             if (url.substring(0, 11).equals("application")) {
                 String filesDir = context.getFilesDir() + "/";
-                path = filesDir + url.substring(url.lastIndexOf('/') + 1);
+                path = filesDir + url.substring(url.lastIndexOf("files/") + 6);
                 File file = new File(path);
                 if (!file.exists()) {
                     path = null;
