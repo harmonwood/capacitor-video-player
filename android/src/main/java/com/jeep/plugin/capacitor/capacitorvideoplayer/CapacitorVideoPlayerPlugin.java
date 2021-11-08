@@ -83,7 +83,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             call.resolve(ret);
             return;
         }
-        if (mode.equals("fullscreen")) {
+        if ("fullscreen".equals(mode)) {
             fsPlayerId = playerId;
             String url = call.getString("url");
             if (url == null) {
@@ -135,7 +135,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                     return;
                 }
             }
-        } else if (mode == "embedded") {
+        } else if ("embedded".equals(mode)) {
             ret.put("message", "Embedded Mode not implemented");
             call.resolve(ret);
             return;
@@ -154,7 +154,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             call.resolve(ret);
             return;
         }
-        if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
+        if ("fullscreen".equals(mode) && fsPlayerId.equals(playerId)) {
             bridge
                 .getActivity()
                 .runOnUiThread(
@@ -189,7 +189,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             call.resolve(ret);
             return;
         }
-        if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
+        if ("fullscreen".equals(mode) && fsPlayerId.equals(playerId)) {
             bridge
                 .getActivity()
                 .runOnUiThread(
@@ -225,7 +225,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             call.resolve(ret);
             return;
         }
-        if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
+        if ("fullscreen".equals(mode) && fsPlayerId.equals(playerId)) {
             bridge
                 .getActivity()
                 .runOnUiThread(
@@ -260,7 +260,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             call.resolve(ret);
             return;
         }
-        if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
+        if ("fullscreen".equals(mode) && fsPlayerId.equals(playerId)) {
             bridge
                 .getActivity()
                 .runOnUiThread(
@@ -295,7 +295,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             call.resolve(ret);
             return;
         }
-        if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
+        if ("fullscreen".equals(mode) && fsPlayerId.equals(playerId)) {
             bridge
                 .getActivity()
                 .runOnUiThread(
@@ -338,7 +338,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             return;
         }
         final int cTime = (int) Math.round(value);
-        if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
+        if ("fullscreen".equals(mode) && fsPlayerId.equals(playerId)) {
             bridge
                 .getActivity()
                 .runOnUiThread(
@@ -373,7 +373,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             call.resolve(ret);
             return;
         }
-        if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
+        if ("fullscreen".equals(mode) && fsPlayerId.equals(playerId)) {
             bridge
                 .getActivity()
                 .runOnUiThread(
@@ -417,7 +417,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             return;
         }
         final Float volume = Float.valueOf(value.trim());
-        if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
+        if ("fullscreen".equals(mode) && fsPlayerId.equals(playerId)) {
             bridge
                 .getActivity()
                 .runOnUiThread(
@@ -452,7 +452,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             call.resolve(ret);
             return;
         }
-        if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
+        if ("fullscreen".equals(mode) && fsPlayerId.equals(playerId)) {
             bridge
                 .getActivity()
                 .runOnUiThread(
@@ -495,7 +495,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             return;
         }
         final boolean bValue = value;
-        if (mode.equals("fullscreen") && fsPlayerId.equals(playerId)) {
+        if ("fullscreen".equals(mode) && fsPlayerId.equals(playerId)) {
             bridge
                 .getActivity()
                 .runOnUiThread(
