@@ -103,6 +103,10 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             if (call.getData().has("subtitleOptions")) {
                 subTitleOptions = call.getObject("subtitleOptions");
             }
+            Boolean hideCloseButton = false;
+            if (call.getData().has("hideCloseButton")) {
+                hideCloseButton = call.getBoolean("hideCloseButton", false);
+            }
 
             AddObserversToNotificationCenter();
             Log.v(TAG, "display url: " + url);
@@ -122,7 +126,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 Log.v(TAG, "*** calculated videoPath: " + videoPath);
                 Log.v(TAG, "*** calculated subTitlePath: " + subTitlePath);
                 if (videoPath != null) {
-                    createFullScreenFragment(call, videoPath, subTitlePath, language, subTitleOptions, isTV, playerId, false, null);
+                    createFullScreenFragment(call, videoPath, subTitlePath, language, subTitleOptions, isTV, playerId, false, null, hideCloseButton);
                 } else {
                     Map<String, Object> info = new HashMap<String, Object>() {
                         {
@@ -161,7 +165,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                     new Runnable() {
                         @Override
                         public void run() {
-                            boolean playing = fsFragment.isPlaying();
+                            boolean playing = fsFragment != null && fsFragment.isPlaying();
                             JSObject data = new JSObject();
                             data.put("result", true);
                             data.put("method", "isPlaying");
@@ -304,7 +308,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                         public void run() {
                             JSObject ret = new JSObject();
                             ret.put("method", "getCurrentTime");
-                            int curTime = fsFragment.getCurrentTime();
+                            int curTime = fsFragment == null ? 0 : fsFragment.getCurrentTime();
                             ret.put("result", true);
                             ret.put("value", curTime);
                             call.resolve(ret);
@@ -672,7 +676,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                         }
                         pkFragment = null;
                         if (videoId != -1) {
-                            createFullScreenFragment(call, videoPath, null, null, null, isTV, fsPlayerId, true, videoId);
+                            createFullScreenFragment(call, videoPath, null, null, null, isTV, fsPlayerId, true, videoId, false);
                         } else {
                             Toast.makeText(context, "No Video files found ", Toast.LENGTH_SHORT).show();
                             Map<String, Object> info = new HashMap<String, Object>() {
@@ -696,10 +700,11 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         Boolean isTV,
         String playerId,
         Boolean isInternal,
-        Long videoId
+        Long videoId,
+        Boolean hideCloseButton
     ) {
         fsFragment =
-            implementation.createFullScreenFragment(videoPath, subTitle, language, subTitleOptions, isTV, playerId, isInternal, videoId);
+            implementation.createFullScreenFragment(videoPath, subTitle, language, subTitleOptions, isTV, playerId, isInternal, videoId, hideCloseButton);
         bridge
             .getActivity()
             .runOnUiThread(

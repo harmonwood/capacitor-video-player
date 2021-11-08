@@ -320,14 +320,15 @@ Stop all players playing
 
 #### capVideoPlayerOptions
 
-| Prop             | Type   | Description                                        |
-| ---------------- | ------ | -------------------------------------------------- |
-| **mode**         | string | Player mode - "fullscreen" - "embedded" (Web only) |
-| **url**          | string | The url of the video to play                       |
-| **playerId**     | string | Id of DIV Element parent of the player             |
-| **componentTag** | string | Component Tag or DOM Element Tag (React app)       |
-| **width**        | number | Player Width (mode "embedded" only)                |
-| **height**       | number | Player height (mode "embedded" only)               |
+| Prop                 | Type    | Description                                        |
+| -------------------- | ------- | -------------------------------------------------- |
+| **mode**             | string  | Player mode - "fullscreen" - "embedded" (Web only) |
+| **url**              | string  | The url of the video to play                       |
+| **playerId**         | string  | Id of DIV Element parent of the player             |
+| **componentTag**     | string  | Component Tag or DOM Element Tag (React app)       |
+| **width**            | number  | Player Width (mode "embedded" only)                |
+| **height**           | number  | Player height (mode "embedded" only)               |
+| **hideCloseButton**  | boolean | Whether to hide the close button                   |
 
 #### capVideoPlayerIdOptions
 

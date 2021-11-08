@@ -19,11 +19,13 @@
     android:background="#CC000000"
     android:orientation="vertical"
     tools:targetApi="28">
+
     <ImageButton
         android:id="@+id/exo_close"
         style="@style/ExoMediaButton"
         android:background="@drawable/exo_close_btn"
-        android:src ="@android:drawable/ic_menu_close_clear_cancel"/>
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        tools:visibility="visible" />
 
     <LinearLayout
         android:layout_width="match_parent"

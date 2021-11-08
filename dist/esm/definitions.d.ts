@@ -111,6 +111,10 @@ export interface capVideoPlayerOptions {
      * Player height (mode "embedded" only)
      */
     height?: number;
+    /**
+     * Whether to hide the close button
+     */
+    hideCloseButton?: boolean
 }
 export interface capVideoPlayerIdOptions {
     /**

@@ -78,6 +78,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public Boolean isTV;
     public Boolean isInternal;
     public Long videoId;
+    public Boolean hideCloseButton;
 
     private static final String TAG = FullscreenExoPlayerFragment.class.getName();
     public static final long UNKNOWN_TIME = -1L;
@@ -133,6 +134,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
         playerView = view.findViewById(R.id.videoViewId);
         Pbar = view.findViewById(R.id.indeterminateBar);
         btn = (ImageButton) view.findViewById(R.id.exo_close);
+
+        if (hideCloseButton) {
+            btn.setVisibility(View.GONE);
+        }
 
         // Listening for events
         playbackStateListener = new FullscreenExoPlayerFragment.PlaybackStateListener();
