@@ -54,6 +54,11 @@
 - iOS & Android Plugin only
   . `internal`
 
+### from Internal folder
+
+- Android Plugin only 
+  . `///file:/storage/emulated/0/DCIM/Camera/YOUR_VIDEO`
+  
 ## Subtitle (Android, iOS Only)
 
 ### Supported Formats

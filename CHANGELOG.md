@@ -1,3 +1,9 @@
+## 3.3.0-1 (2021-11-08)
+
+### Bug Fixes
+
+- Android fix DCIM folder as URL-Path issue#56
+
 ## 3.2.5 (2021-11-06)
 
 ### Chores
