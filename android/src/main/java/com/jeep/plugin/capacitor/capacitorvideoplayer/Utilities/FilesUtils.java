@@ -12,6 +12,9 @@ public class FilesUtils {
     }
 
     public String getFilePath(String url) {
+        if (url.startsWith("file:///")) {
+            return url;
+        }
         String path = null;
         String http = url.substring(0, 4);
         if (http.equals("http")) {
