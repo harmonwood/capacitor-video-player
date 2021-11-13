@@ -32,7 +32,17 @@
 
 ## LATEST FOR CAPACITOR 3 (Master)
 
-The master release has been upgraded to `@capacitor/core@3.2.0`.
+The master release has been upgraded to `@capacitor/core@3.3.1`.
+
+🚨 Since release 3.3.1-1 ->> 🚨
+
+the PIP (Picture in Picture) mode has been added to the Android plugin. Is it accessible by clicking on the PiP button next to the Close button on the top-left window corner. To have it running in your application, you must include in the `AndroidManifest.xml`file under the `<activity` tag the following
+```
+    android:resizeableActivity="true"
+    android:supportsPictureInPicture="true"
+```
+
+🚨 Since release 3.3.1-1 <<- 🚨
 
 ## PREVIOUS CAPACITOR 2.4.7
 

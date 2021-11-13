@@ -1,3 +1,14 @@
+## 3.3.1-1 (2021-11-13)
+
+### Chores
+
+- Update to Capacitor 3.2.5
+
+### Add Features
+
+- Add Picture in Picture Android platform
+
+
 ## 3.3.0-1 (2021-11-08)
 
 ### Bug Fixes

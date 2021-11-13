@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
+import com.getcapacitor.Logger;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -26,6 +27,7 @@ import java.util.Map;
 @CapacitorPlugin(name = "CapacitorVideoPlayer")
 public class CapacitorVideoPlayerPlugin extends Plugin {
 
+    private static final String EVENT_STATE_CHANGE = "appStateChange";
     private CapacitorVideoPlayer implementation;
     private static final String TAG = "CapacitorVideoPlayer";
     private int frameLayoutViewId = 256;
