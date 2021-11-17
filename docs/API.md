@@ -56,8 +56,14 @@
 
 ### from Internal folder
 
-- Android Plugin only 
-  . `///file:/storage/emulated/0/DCIM/Camera/YOUR_VIDEO`
+- Android Plugin 
+  . `file:///sdcard/DCIM/Camera/YOUR_VIDEO` 
+  . `file:///storage/extSdCard/DCIM/Camera/YOUR_VIDEO`
+
+- iOS Plugin 
+  . `file:///var/mobile/Media/DCIM/100APPLE/YOUR_VIDEO`
+  . `file:///var/mobile/Containers/Data/Application/YOUR_APPLICATION_ID/tmp/YOUR_VIDEO`
+  
   
 ## Subtitle (Android, iOS Only)
 

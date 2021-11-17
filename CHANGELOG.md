@@ -1,8 +1,15 @@
+## 3.3.1-2 (2021-11-17)
+
+### Bug Fixes
+
+- iOS fix DCIM folder as URL-Path issue#56
+- iOS fix Player does not play video on iOS with "filePath not implemented" message issue#61
+
 ## 3.3.1-1 (2021-11-13)
 
 ### Chores
 
-- Update to Capacitor 3.2.5
+- Update to Capacitor 3.3.1
 
 ### Add Features
 

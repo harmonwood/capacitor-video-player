@@ -12,6 +12,8 @@ extension CapacitorVideoPlayerPlugin {
 
     // MARK: - getURLFromFilePath
 
+    // swiftlint:disable cyclomatic_complexity
+    // swiftlint:disable function_body_length
     func getURLFromFilePath(filePath: String) -> [String: Any] {
         var dict: [String: Any] = [:]
         dict["message"] = ""
@@ -48,9 +50,68 @@ extension CapacitorVideoPlayerPlugin {
                 return dict
             }
         }
+        if String(filePath.prefix(29)) == "file:///var/mobile/Containers" {
+
+            let appPath: String = NSSearchPathForDirectoriesInDomains(.applicationDirectory,
+                                                                      .userDomainMask,
+                                                                      true)[0]
+            // get the appId from the appPath
+            let pathArray = appPath.components(separatedBy: "Application")
+            let appId: String = pathArray[1].replacingOccurrences(of: "/", with: "")
+            // remove the appId from the given filePath and replace it with the current appId
+            let fPathArray = filePath.components(separatedBy: "Application")
+            if let uPath = URL(string: pathArray[0]) {
+                let fPath = (uPath.appendingPathComponent("Application")
+                                .appendingPathComponent(appId)
+                                .appendingPathComponent(
+                                    String(fPathArray[1].dropFirst(38)))
+                ).absoluteString
+                if !isFileExists(filePath: fPath) {
+                    print("*** file does not exist at path \n \(fPath) \n***")
+                    let info: [String: Any] = ["dismiss": true]
+                    self.notifyListeners("jeepCapVideoPlayerExit", data: info,
+                                         retainUntilConsumed: true)
+                    dict["message"] = "file does not exist"
+                    return dict
+                }
+                dict["url"] = URL(fileURLWithPath: fPath)
+            } else {
+                dict["message"] = "file path not correct"
+            }
+            return dict
+        }
+        if String(filePath.prefix(38)) == "file:///var/mobile/Media/DCIM/100APPLE" {
+            let appPath: String = NSSearchPathForDirectoriesInDomains(.applicationDirectory,
+                                                                      .userDomainMask,
+                                                                      true)[0]
+            // get the appId from the appPath
+            let pathArray = appPath.components(separatedBy: "Containers")
+            let fPathArray = filePath.components(separatedBy: "mobile/")
+
+            if let uPath = URL(string: pathArray[0]) {
+                let fPath = (uPath.appendingPathComponent(
+                                String(fPathArray[1]))
+                ).absoluteString
+                if !isFileExists(filePath: fPath) {
+                    print("*** file does not exist at path \n \(fPath) \n***")
+                    let info: [String: Any] = ["dismiss": true]
+                    self.notifyListeners("jeepCapVideoPlayerExit", data: info,
+                                         retainUntilConsumed: true)
+                    dict["message"] = "file does not exist"
+                    return dict
+                }
+                dict["url"] = URL(fileURLWithPath: fPath)
+                return dict
+            } else {
+                dict["message"] = "file path not correct"
+            }
+            return dict
+        }
         dict["message"] = "filePath not implemented"
         return dict
     }
+    // swiftlint:enable function_body_length
+    // swiftlint:enable cyclomatic_complexity
 
     // MARK: - isFileExists
 
