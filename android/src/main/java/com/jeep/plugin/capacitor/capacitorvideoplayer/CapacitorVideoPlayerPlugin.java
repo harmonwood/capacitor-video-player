@@ -423,12 +423,14 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                     new Runnable() {
                         @Override
                         public void run() {
-                            fsFragment.setVolume(value);
-                            JSObject ret = new JSObject();
-                            ret.put("result", true);
-                            ret.put("method", "setVolume");
-                            ret.put("value", value);
-                            call.resolve(ret);
+                            if (fsFragment != null) {
+                                fsFragment.setVolume(value);
+                                JSObject ret = new JSObject();
+                                ret.put("result", true);
+                                ret.put("method", "setVolume");
+                                ret.put("value", value);
+                                call.resolve(ret);
+                            }
                         }
                     }
                 );
