@@ -122,6 +122,11 @@ open class FullScreenVideoPlayerView: UIView {
         }
         self.player = AVPlayer(playerItem: playerItem)
         self.videoPlayer.player = self.player
+        self.videoPlayer.allowsPictureInPicturePlayback = false
+        if isPIPModeAvailable {
+            self.videoPlayer.allowsPictureInPicturePlayback = true
+        }
+
         self._isLoaded.updateValue(false, forKey: self._videoId)
 
     }
@@ -229,26 +234,31 @@ open class FullScreenVideoPlayerView: UIView {
                     print("AVPlayer Rate for player \(self._videoId): Ended")
                     self._isEnded = true
                     self.isPlaying = false
-                    if self._exitOnEnd {
+                    if !isInPIPMode && self._exitOnEnd {
                         NotificationCenter.default.post(name: .playerItemEnd, object: nil, userInfo: vId)
                     }
                 } else if rate == 0 {
-                    print("AVPlayer Rate for player \(self._videoId): Paused")
-                    self.isPlaying = false
-                    NotificationCenter.default.post(name: .playerItemPause, object: nil, userInfo: vId)
+                    if !isInPIPMode && !isInBackgroundMode {
+                        print("AVPlayer Rate for player \(self._videoId): Paused")
+                        self.isPlaying = false
+                        NotificationCenter.default.post(name: .playerItemPause, object: nil, userInfo: vId)
+                    }
                 } else if self._isBufferEmpty[self._videoId] ?? true {
                     print("AVPlayer Rate for player \(self._videoId): Buffer Empty Loading")
                 }
             })
         self.videoPlayerFrameObserver = self.videoPlayer
             .observe(\.view.frame, options: [.new, .old],
-                     changeHandler: {(videoPlayer, _) in
-                        if self.videoPlayer.isBeingDismissed && !self._isEnded {
-                            if !self.isPlaying {
-                                self.pause()
+                     changeHandler: {(_, _) in
+                        if !isInPIPMode {
+                            if self.videoPlayer.isBeingDismissed && !self._isEnded {
+                                if self.isPlaying {
+                                    self.player?.pause()
+                                }
+                                NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
                             }
-                            NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
                         }
+
                      })
     }
     // swiftlint:enable function_body_length
@@ -339,5 +349,7 @@ open class FullScreenVideoPlayerView: UIView {
             return []
         }
     }
+
 }
+
 // swiftlint:enable type_body_length

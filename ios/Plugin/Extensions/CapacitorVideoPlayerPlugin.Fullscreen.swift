@@ -20,7 +20,8 @@ extension CapacitorVideoPlayerPlugin {
         DispatchQueue.main.async { [weak self] in
             let playerId: String = self?.fsPlayerId ?? "fullscreen"
             if let fullscreenView = self?.implementation
-                .createFullscreenPlayer(playerId: playerId, videoUrl: videoUrl,
+                .createFullscreenPlayer(playerId: playerId,
+                                        videoUrl: videoUrl,
                                         subTitleUrl: subTitleUrl,
                                         language: subTitleLanguage,
                                         options: subTitleOptions) {
@@ -34,21 +35,29 @@ extension CapacitorVideoPlayerPlugin {
                                    "message": error])
                     return
                 }
+                videoPlayer.delegate = self
 
                 self?.bridge?.viewController?.present(videoPlayer, animated: true, completion: {
                     // add audio session
                     self?.audioSession = AVAudioSession.sharedInstance()
                     // Set the audio session category, mode, and options.
-                    try? self?.audioSession?.setCategory(.playback, mode: .moviePlayback,
-                                                         options: [.mixWithOthers,
-                                                                   .allowAirPlay])
-                    // Activate the audio session.
-                    try? self?.audioSession?.setActive(true)
-                    call.resolve([ "result": true,
-                                   "method": "createVideoPlayerFullScreenView",
-                                   "value": true])
-                    return
-
+                    do {
+                        try self?.audioSession?
+                            .setCategory(AVAudioSession.Category.playback,
+                                         mode: AVAudioSession.Mode.moviePlayback,
+                                         options: [.mixWithOthers, .allowAirPlay])
+                        // Activate the audio session.
+                        try self?.audioSession?.setActive(true)
+                        call.resolve([ "result": true,
+                                       "method": "createVideoPlayerFullScreenView",
+                                       "value": true])
+                        return
+                    } catch let error as NSError {
+                        print("Unable to activate audio session:  \(error.localizedDescription)")
+                        call.resolve([ "result": false, "method": "createVideoPlayerFullScreenView",
+                                       "message": error])
+                        return
+                    }
                 })
             }
         }

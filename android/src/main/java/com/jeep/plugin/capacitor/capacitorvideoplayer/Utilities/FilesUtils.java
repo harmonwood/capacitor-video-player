@@ -5,7 +5,7 @@ import java.io.File;
 
 public class FilesUtils {
 
-    private Context context;
+    private final Context context;
 
     public FilesUtils(Context context) {
         this.context = context;

@@ -24,12 +24,19 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
     var endObserver: Any?
     var readyObserver: Any?
     var fsDismissObserver: Any?
+    var willResignObserver: Any?
     var backgroundObserver: Any?
     var foregroundObserver: Any?
     var vpInternalObserver: Any?
 
     override public func load() {
         self.addObserversToNotificationCenter()
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.pad),
+           #available(iOS 13.0, *) {
+            isPIPModeAvailable = true
+        } else if #available(iOS 14.0, *) {
+            isPIPModeAvailable = true
+        }
     }
     deinit {
         NotificationCenter.default.removeObserver(playObserver as Any)
@@ -37,6 +44,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
         NotificationCenter.default.removeObserver(endObserver as Any)
         NotificationCenter.default.removeObserver(readyObserver as Any)
         NotificationCenter.default.removeObserver(fsDismissObserver as Any)
+        NotificationCenter.default.removeObserver(willResignObserver as Any)
         NotificationCenter.default.removeObserver(backgroundObserver as Any)
         NotificationCenter.default.removeObserver(foregroundObserver as Any)
         NotificationCenter.default.removeObserver(vpInternalObserver as Any)
@@ -95,18 +103,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                         self?.implementation.pickVideoFromInternal() {
                         self?.bridge?.viewController?.present(videoPickerViewController,
                                                               animated: true,
-                                                              completion: {
-                                                                // add audio session
-                                                                self?.audioSession = AVAudioSession.sharedInstance()
-                                                                // Set the audio session category, mode, and options.
-                                                                try? self?.audioSession?
-                                                                    .setCategory(.playback, mode: .moviePlayback,
-                                                                                 options: [.mixWithOthers, .allowAirPlay])
-                                                                // Activate the audio session.
-                                                                try? self?.audioSession?.setActive(true)
-
-                                                                return
-                                                              })
+                                                              completion: {return})
                     }
                 }
 
@@ -150,7 +147,6 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                                                      subTitleUrl: subTitle,
                                                      subTitleLanguage: subTitleLanguage,
                                                      subTitleOptions: subTitleOptions)
-                return
 
             }
         } else {

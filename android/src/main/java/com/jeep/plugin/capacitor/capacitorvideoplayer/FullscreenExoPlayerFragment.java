@@ -4,13 +4,14 @@ import android.annotation.SuppressLint;
 import android.app.PictureInPictureParams;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.provider.MediaStore;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.util.Rational;
 import android.util.TypedValue;
@@ -35,6 +36,7 @@ import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
+import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
@@ -76,7 +78,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
     private static final String TAG = FullscreenExoPlayerFragment.class.getName();
     public static final long UNKNOWN_TIME = -1L;
-    private List<String> supportedFormat = Arrays.asList(
+    private final List<String> supportedFormat = Arrays.asList(
         new String[] { "mp4", "webm", "ogv", "3gp", "flv", "dash", "mpd", "m3u8", "ism", "ytube", "" }
     );
     private PlaybackStateListener playbackStateListener;
@@ -104,7 +106,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private Integer stFontSize = 16;
     private boolean isInPictureInPictureMode = false;
     private TrackSelector trackSelector;
-    private PlayerControlView controls;
     // Current playback position (in milliseconds).
     private int mCurrentPosition = 0;
     private int mDuration;
@@ -113,10 +114,19 @@ public class FullscreenExoPlayerFragment extends Fragment {
     // Tag for the instance state bundle.
     private static final String PLAYBACK_TIME = "play_time";
 
-    //private ActionBar actionBar;
     private PictureInPictureParams.Builder pictureInPictureParams;
-
+    private MediaSessionCompat mediaSession;
+    private MediaSessionConnector mediaSessionConnector;
     private PlayerControlView.VisibilityListener visibilityListener;
+    private PackageManager packageManager;
+    private Boolean isPIPModeeEnabled = true;
+    final Handler handler = new Handler();
+    final Runnable mRunnable = new Runnable() {
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        public void run() {
+            checkPIPPermission();
+        }
+    };
 
     /**
      * Create Fragment View
@@ -125,24 +135,32 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * @param savedInstanceState
      * @return View
      */
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = container.getContext();
-
+        packageManager = context.getPackageManager();
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_fs_exoplayer, container, false);
         constLayout = view.findViewById(R.id.fsExoPlayer);
         linearLayout = view.findViewById(R.id.linearLayout);
         playerView = view.findViewById(R.id.videoViewId);
-        controls = view.findViewById(R.id.controls);
+
         Pbar = view.findViewById(R.id.indeterminateBar);
         closeBtn = view.findViewById(R.id.exo_close);
         pipBtn = view.findViewById(R.id.exo_pip);
-        // init PictureInPictureParams requires Android O or higher
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            pictureInPictureParams = new PictureInPictureParams.Builder();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            pipBtn.setVisibility(View.GONE);
         }
         playerView.requestFocus();
+        linearLayout.setVisibility(View.INVISIBLE);
+        playerView.setControllerShowTimeoutMs(3000);
+        playerView.setControllerVisibilityListener(
+            new PlayerControlView.VisibilityListener() {
+                @Override
+                public void onVisibilityChange(int visibility) {
+                    linearLayout.setVisibility(visibility);
+                }
+            }
+        );
         // Listening for events
         playbackStateListener = new PlaybackStateListener();
         if (isTV) {
@@ -216,11 +234,12 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
                             // initialize the player
                             initializePlayer();
+
                             closeBtn.setOnClickListener(
                                 new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        backPressed();
+                                        playerExit();
                                     }
                                 }
                             );
@@ -229,14 +248,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
                                     @Override
                                     public void onClick(View view) {
                                         pictureInPictureMode();
-                                    }
-                                }
-                            );
-                            view.setOnClickListener(
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        showControls();
                                     }
                                 }
                             );
@@ -254,13 +265,24 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * Perform backPressed Action
      */
     private void backPressed() {
+        if (
+            !isInPictureInPictureMode &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
+            packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) &&
+            isPIPModeeEnabled
+        ) {
+            pictureInPictureMode();
+        } else {
+            playerExit();
+        }
+    }
+
+    private void playerExit() {
         Map<String, Object> info = new HashMap<String, Object>() {
             {
                 put("dismiss", "1");
             }
         };
-        Log.d(TAG, "$$$$ in backPressed $$$$");
-
         player.seekTo(0);
         player.setVolume(curVolume);
         releasePlayer();
@@ -271,18 +293,38 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * Perform pictureInPictureMode Action
      */
     private void pictureInPictureMode() {
-        // require android O or higher
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // setup height and width of the PIP window
-            Rational aspectRatio = new Rational(playerView.getWidth(), playerView.getHeight());
-            pictureInPictureParams.setAspectRatio(aspectRatio).build();
-            getActivity().enterPictureInPictureMode(pictureInPictureParams.build());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+            playerView.setUseController(false);
+            linearLayout.setVisibility(View.INVISIBLE);
+            // require android O or higher
+            if (
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+            ) {
+                pictureInPictureParams = new PictureInPictureParams.Builder();
+                // setup height and width of the PIP window
+                Rational aspectRatio = new Rational(playerView.getWidth(), playerView.getHeight());
+                pictureInPictureParams.setAspectRatio(aspectRatio).build();
+                getActivity().enterPictureInPictureMode(pictureInPictureParams.build());
+            } else {
+                getActivity().enterPictureInPictureMode();
+            }
             isInPictureInPictureMode = getActivity().isInPictureInPictureMode();
             if (sturi != null) {
                 setSubtitle(true);
             }
+            if (player != null) player.setPlayWhenReady(true);
+
+            handler.postDelayed(mRunnable, 100);
         } else {
             Log.d(TAG, "pictureInPictureMode: doesn't support PIP");
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void checkPIPPermission() {
+        isPIPModeeEnabled = isInPictureInPictureMode;
+        if (!isInPictureInPictureMode) {
+            backPressed();
         }
     }
 
@@ -304,7 +346,15 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public void onStop() {
         super.onStop();
         if (Util.SDK_INT >= 24) {
+            if (player != null) {
+                player.seekTo(0);
+                player.setVolume(curVolume);
+            }
             releasePlayer();
+        }
+        if (isInPictureInPictureMode) {
+            linearLayout.setVisibility(View.VISIBLE);
+            getActivity().finishAndRemoveTask();
         }
     }
 
@@ -314,15 +364,16 @@ public class FullscreenExoPlayerFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
         if (!isInPictureInPictureMode) {
             if (player != null) player.setPlayWhenReady(false);
             if (Util.SDK_INT < 24) {
                 releasePlayer();
             }
         } else {
-            controls.setVisibility(View.GONE);
-            linearLayout.setVisibility(View.GONE);
+            if (linearLayout.getVisibility() == View.VISIBLE) {
+                linearLayout.setVisibility(View.INVISIBLE);
+            }
+            if (player != null) player.setPlayWhenReady(true);
         }
     }
 
@@ -334,6 +385,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
             playWhenReady = player.getPlayWhenReady();
             playbackPosition = player.getCurrentPosition();
             currentWindow = player.getCurrentWindowIndex();
+            mediaSessionConnector.setPlayer(null);
+            mediaSession.setActive(false);
             player.removeListener(playbackStateListener);
             player.release();
             player = null;
@@ -348,19 +401,23 @@ public class FullscreenExoPlayerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        Log.v(TAG, "$$$$$ in onResume " + isInPictureInPictureMode + " $$$$$");
+
         if (!isInPictureInPictureMode) {
             hideSystemUi();
             if ((Util.SDK_INT < 24 || player == null)) {
                 initializePlayer();
             }
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                showControls();
+            isInPictureInPictureMode = false;
+            if (
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+            ) {
+                playerView.setUseController(true);
             }
             if (sturi != null) {
                 setSubtitle(false);
             }
-            isInPictureInPictureMode = false;
         }
     }
 
@@ -405,19 +462,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
         }
 
         playerView.setPlayer(player);
-        controls.setPlayer(playerView.getPlayer());
-        visibilityListener =
-            new PlayerControlView.VisibilityListener() {
-                @Override
-                public void onVisibilityChange(int visibility) {
-                    controls.setVisibility(visibility);
-                    linearLayout.setVisibility(visibility);
-                }
-            };
-        playerView.setControllerVisibilityListener(visibilityListener);
+
         MediaSource mediaSource;
         if (!isInternal) {
-            Log.v(TAG, "****** videoPath " + videoPath);
             if (videoPath.substring(0, 21).equals("file:///android_asset")) {
                 mediaSource = buildAssetMediaSource(uri);
             } else {
@@ -441,24 +488,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
         if (sturi != null) {
             setSubtitle(false);
         }
+        //Use Media Session Connector from the EXT library to enable MediaSession Controls in PIP.
+        mediaSession = new MediaSessionCompat(context, "capacitorvideoplayer");
+        mediaSessionConnector = new MediaSessionConnector(mediaSession);
+        mediaSessionConnector.setPlayer(player);
+        mediaSession.setActive(true);
 
         NotificationCenter.defaultCenter().postNotification("initializePlayer", info);
-    }
-
-    private void showControls() {
-        controls.setVisibility(View.VISIBLE);
-        linearLayout.setVisibility(View.VISIBLE);
-        new Handler(Looper.myLooper())
-            .postDelayed(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        controls.setVisibility(View.GONE);
-                        linearLayout.setVisibility(View.GONE);
-                    }
-                },
-                3000
-            );
     }
 
     private void setSubtitle(boolean transparent) {
@@ -636,11 +672,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * Play Pause TV
      */
     private void play_pause() {
-        if (player.isPlaying()) {
-            player.setPlayWhenReady(false);
-        } else {
-            player.setPlayWhenReady(true);
-        }
+        player.setPlayWhenReady(!player.isPlaying());
     }
 
     /**
@@ -756,7 +788,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
                 case ExoPlayer.STATE_READY:
                     stateString = "ExoPlayer.STATE_READY     -";
                     Pbar.setVisibility(View.GONE);
-                    showControls();
+                    playerView.setUseController(true);
+                    linearLayout.setVisibility(View.INVISIBLE);
                     Log.v(TAG, "**** in ExoPlayer.STATE_READY firstReadyToPlay " + firstReadyToPlay);
 
                     if (firstReadyToPlay) {
@@ -778,6 +811,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
                     break;
                 case ExoPlayer.STATE_ENDED:
                     stateString = "ExoPlayer.STATE_ENDED     -";
+                    Log.v(TAG, "**** in ExoPlayer.STATE_ENDED going to notify playerItemEnd ");
+
                     player.seekTo(0);
                     player.setVolume(curVolume);
                     releasePlayer();

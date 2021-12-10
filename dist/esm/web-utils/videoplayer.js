@@ -99,14 +99,16 @@ export class VideoPlayer {
                     this._createEvent('Ready', this._playerId);
                     if (this.videoEl != null) {
                         this.videoEl.muted = false;
-                        if (this._mode === 'fullscreen')
-                            await this.videoEl.play();
+                        /*            if (this._mode === 'fullscreen') await this.videoEl.play();
                         this._firstReadyToPlay = false;
+            */
                     }
                 }
             };
             this.videoEl.onplay = () => {
                 this.isPlaying = true;
+                if (this._firstReadyToPlay)
+                    this._firstReadyToPlay = false;
                 this._createEvent('Play', this._playerId);
             };
             this.videoEl.onplaying = () => {

@@ -6,7 +6,7 @@ import com.jeep.plugin.capacitor.capacitorvideoplayer.PickerVideo.PickerVideoFra
 
 public class CapacitorVideoPlayer {
 
-    private Context context;
+    private final Context context;
 
     CapacitorVideoPlayer(Context context) {
         this.context = context;
@@ -40,7 +40,6 @@ public class CapacitorVideoPlayer {
     }
 
     public PickerVideoFragment createPickerVideoFragment() {
-        PickerVideoFragment pkFragment = new PickerVideoFragment();
-        return pkFragment;
+        return new PickerVideoFragment();
     }
 }

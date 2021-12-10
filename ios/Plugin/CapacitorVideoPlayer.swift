@@ -10,9 +10,13 @@ enum CapacitorVideoPlayerError: Error {
     @objc public func echo(_ value: String) -> String {
         return value
     }
-    @objc public func createFullscreenPlayer(playerId: String, videoUrl: URL,
-                                             subTitleUrl: URL?, language: String?,
+
+    @objc public func createFullscreenPlayer(playerId: String,
+                                             videoUrl: URL,
+                                             subTitleUrl: URL?,
+                                             language: String?,
                                              options: [String: Any]?
+
     ) -> FullScreenVideoPlayerView {
 
         let videoPlayerFullScreenView = FullScreenVideoPlayerView(
@@ -21,6 +25,7 @@ enum CapacitorVideoPlayerError: Error {
             exitOnEnd: true)
         return videoPlayerFullScreenView
     }
+
     @objc public func pickVideoFromInternal() -> VideoPickerViewController {
         let videoPickerViewController = VideoPickerViewController()
         return videoPickerViewController

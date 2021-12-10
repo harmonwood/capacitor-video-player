@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import AVFoundation
 
 extension CapacitorVideoPlayerPlugin {
 
@@ -29,20 +30,54 @@ extension CapacitorVideoPlayerPlugin {
         vpInternalObserver = NotificationCenter.default.addObserver(forName: .videoPathInternalReady, object: nil,
                                                                     queue: nil, using: videoPathInternalReady)
 
+        willResignObserver =
+            NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil,
+                                                   queue: nil) { (_) in
+                if !isPIPModeAvailable && self.videoPlayerFullScreenView != nil {
+                    // release video tracks
+                    if let playerItem = self.videoPlayerFullScreenView?.playerItem {
+                        self.videoTrackEnable(playerItem: playerItem, enable: false)
+                    }
+                }
+            }
         backgroundObserver =
             NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil,
                                                    queue: nil) { (_) in
-                if self.videoPlayerFullScreenView != nil {
+                isInBackgroundMode = true
+                if !isPIPModeAvailable && self.videoPlayerFullScreenView != nil {
                     self.videoPlayerFullScreenView?.videoPlayer.player = nil
                 }
             }
         foregroundObserver =
             NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil,
                                                    queue: OperationQueue.main) { (_) in
-                if self.bgPlayer != nil && self.videoPlayerFullScreenView != nil {
+
+                isInBackgroundMode = false
+                if !isPIPModeAvailable && self.bgPlayer != nil &&        self.videoPlayerFullScreenView != nil {
+                    //enable video track
+                    if let playerItem = self.videoPlayerFullScreenView?.playerItem {
+                        self.videoTrackEnable(playerItem: playerItem, enable: true)
+                    }
+
                     self.videoPlayerFullScreenView?.videoPlayer.player = self.bgPlayer
                 }
             }
+    }
+
+    // MARK: - videoTrackEnable
+
+    func videoTrackEnable(playerItem: AVPlayerItem, enable: Bool) {
+        let tracks = playerItem.tracks
+        for playerItemTrack in tracks {
+            // Find the video tracks.
+            if let mediaType = playerItemTrack.assetTrack?.mediaType {
+                if mediaType == AVMediaType.video {
+                    // Enable/Disable the track.
+                    playerItemTrack.isEnabled = enable
+                }
+            }
+        }
+
     }
 
     // MARK: - videoPathInternalReady

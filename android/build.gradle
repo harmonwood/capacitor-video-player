@@ -62,6 +62,7 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-hls:2.11.4'
     implementation 'com.google.android.exoplayer:exoplayer-dash:2.11.4'
     implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.11.4'
+    implementation 'com.google.android.exoplayer:extension-mediasession:2.11.4'
     implementation 'com.squareup.picasso:picasso:2.71828'
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"

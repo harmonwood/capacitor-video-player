@@ -1,3 +1,14 @@
+## 3.3.1 (2021-12-11)
+
+### Add Features
+
+- Add Picture in Picture iOS platform
+
+### Bug Fixes
+
+- fix Controls position for Picture in Picture Android
+- fix setVolume as Float Android
+
 ## 3.3.1-2 (2021-11-17)
 
 ### Bug Fixes

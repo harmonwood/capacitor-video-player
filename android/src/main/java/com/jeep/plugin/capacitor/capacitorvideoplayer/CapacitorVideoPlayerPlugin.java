@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
-import com.getcapacitor.Logger;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -27,11 +26,10 @@ import java.util.Map;
 @CapacitorPlugin(name = "CapacitorVideoPlayer")
 public class CapacitorVideoPlayerPlugin extends Plugin {
 
-    private static final String EVENT_STATE_CHANGE = "appStateChange";
     private CapacitorVideoPlayer implementation;
     private static final String TAG = "CapacitorVideoPlayer";
-    private int frameLayoutViewId = 256;
-    private int pickerLayoutViewId = 257;
+    private final int frameLayoutViewId = 256;
+    private final int pickerLayoutViewId = 257;
 
     private Context context;
     private String videoPath;
@@ -163,12 +161,18 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                     new Runnable() {
                         @Override
                         public void run() {
-                            boolean playing = fsFragment.isPlaying();
-                            JSObject data = new JSObject();
-                            data.put("result", true);
-                            data.put("method", "isPlaying");
-                            data.put("value", playing);
-                            call.resolve(data);
+                            JSObject ret = new JSObject();
+                            ret.put("method", "isPlaying");
+                            if (fsFragment != null) {
+                                boolean playing = fsFragment.isPlaying();
+                                ret.put("result", true);
+                                ret.put("value", playing);
+                                call.resolve(ret);
+                            } else {
+                                ret.put("result", false);
+                                ret.put("message", "Fullscreen fragment is not defined");
+                                call.resolve(ret);
+                            }
                         }
                     }
                 );
@@ -198,13 +202,19 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                     new Runnable() {
                         @Override
                         public void run() {
-                            fsFragment.play();
-                            boolean playing = fsFragment.isPlaying();
-                            JSObject data = new JSObject();
-                            data.put("result", true);
-                            data.put("method", "play");
-                            data.put("value", true);
-                            call.resolve(data);
+                            JSObject ret = new JSObject();
+                            ret.put("method", "play");
+                            if (fsFragment != null) {
+                                fsFragment.play();
+                                boolean playing = fsFragment.isPlaying();
+                                ret.put("result", true);
+                                ret.put("value", true);
+                                call.resolve(ret);
+                            } else {
+                                ret.put("result", false);
+                                ret.put("message", "Fullscreen fragment is not defined");
+                                call.resolve(ret);
+                            }
                         }
                     }
                 );
@@ -234,12 +244,18 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                     new Runnable() {
                         @Override
                         public void run() {
-                            fsFragment.pause();
-                            JSObject data = new JSObject();
-                            data.put("result", true);
-                            data.put("method", "pause");
-                            data.put("value", true);
-                            call.resolve(data);
+                            JSObject ret = new JSObject();
+                            ret.put("method", "pause");
+                            if (fsFragment != null) {
+                                fsFragment.pause();
+                                ret.put("result", true);
+                                ret.put("value", true);
+                                call.resolve(ret);
+                            } else {
+                                ret.put("result", false);
+                                ret.put("message", "Fullscreen fragment is not defined");
+                                call.resolve(ret);
+                            }
                         }
                     }
                 );
@@ -271,10 +287,16 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                         public void run() {
                             JSObject ret = new JSObject();
                             ret.put("method", "getDuration");
-                            int duration = fsFragment.getDuration();
-                            ret.put("result", true);
-                            ret.put("value", duration);
-                            call.resolve(ret);
+                            if (fsFragment != null) {
+                                int duration = fsFragment.getDuration();
+                                ret.put("result", true);
+                                ret.put("value", duration);
+                                call.resolve(ret);
+                            } else {
+                                ret.put("result", false);
+                                ret.put("message", "Fullscreen fragment is not defined");
+                                call.resolve(ret);
+                            }
                         }
                     }
                 );
@@ -306,10 +328,16 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                         public void run() {
                             JSObject ret = new JSObject();
                             ret.put("method", "getCurrentTime");
-                            int curTime = fsFragment.getCurrentTime();
-                            ret.put("result", true);
-                            ret.put("value", curTime);
-                            call.resolve(ret);
+                            if (fsFragment != null) {
+                                int curTime = fsFragment.getCurrentTime();
+                                ret.put("result", true);
+                                ret.put("value", curTime);
+                                call.resolve(ret);
+                            } else {
+                                ret.put("result", false);
+                                ret.put("message", "Fullscreen fragment is not defined");
+                                call.resolve(ret);
+                            }
                         }
                     }
                 );
@@ -347,12 +375,18 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                     new Runnable() {
                         @Override
                         public void run() {
-                            fsFragment.setCurrentTime(cTime);
                             JSObject ret = new JSObject();
-                            ret.put("result", true);
                             ret.put("method", "setCurrentTime");
-                            ret.put("value", cTime);
-                            call.resolve(ret);
+                            if (fsFragment != null) {
+                                fsFragment.setCurrentTime(cTime);
+                                ret.put("result", true);
+                                ret.put("value", cTime);
+                                call.resolve(ret);
+                            } else {
+                                ret.put("result", false);
+                                ret.put("message", "Fullscreen fragment is not defined");
+                                call.resolve(ret);
+                            }
                         }
                     }
                 );
@@ -382,12 +416,18 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                     new Runnable() {
                         @Override
                         public void run() {
-                            Float volume = fsFragment.getVolume();
                             JSObject ret = new JSObject();
-                            ret.put("result", true);
                             ret.put("method", "getVolume");
-                            ret.put("value", volume);
-                            call.resolve(ret);
+                            if (fsFragment != null) {
+                                Float volume = fsFragment.getVolume();
+                                ret.put("result", true);
+                                ret.put("value", volume);
+                                call.resolve(ret);
+                            } else {
+                                ret.put("result", false);
+                                ret.put("message", "Fullscreen fragment is not defined");
+                                call.resolve(ret);
+                            }
                         }
                     }
                 );
@@ -410,15 +450,14 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             call.resolve(ret);
             return;
         }
-        String value = call.getString("volume");
-        if (value == null) {
+        Float volume = call.getFloat("volume");
+        if (volume == null) {
             ret.put("result", false);
             ret.put("method", "setVolume");
             ret.put("message", "Must provide a volume value");
             call.resolve(ret);
             return;
         }
-        final Float volume = Float.valueOf(value.trim());
         if ("fullscreen".equals(mode) && fsPlayerId.equals(playerId)) {
             bridge
                 .getActivity()
@@ -426,12 +465,18 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                     new Runnable() {
                         @Override
                         public void run() {
-                            fsFragment.setVolume(volume);
                             JSObject ret = new JSObject();
-                            ret.put("result", true);
                             ret.put("method", "setVolume");
-                            ret.put("value", volume);
-                            call.resolve(ret);
+                            if (fsFragment != null) {
+                                fsFragment.setVolume(volume);
+                                ret.put("result", true);
+                                ret.put("value", volume);
+                                call.resolve(ret);
+                            } else {
+                                ret.put("result", false);
+                                ret.put("message", "Fullscreen fragment is not defined");
+                                call.resolve(ret);
+                            }
                         }
                     }
                 );
@@ -461,12 +506,18 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                     new Runnable() {
                         @Override
                         public void run() {
-                            boolean value = fsFragment.getMuted();
                             JSObject ret = new JSObject();
-                            ret.put("result", true);
                             ret.put("method", "getMuted");
-                            ret.put("value", value);
-                            call.resolve(ret);
+                            if (fsFragment != null) {
+                                boolean value = fsFragment.getMuted();
+                                ret.put("result", true);
+                                ret.put("value", value);
+                                call.resolve(ret);
+                            } else {
+                                ret.put("result", false);
+                                ret.put("message", "Fullscreen fragment is not defined");
+                                call.resolve(ret);
+                            }
                         }
                     }
                 );
@@ -504,12 +555,18 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                     new Runnable() {
                         @Override
                         public void run() {
-                            fsFragment.setMuted(bValue);
                             JSObject ret = new JSObject();
-                            ret.put("result", true);
                             ret.put("method", "setMuted");
-                            ret.put("value", bValue);
-                            call.resolve(ret);
+                            if (fsFragment != null) {
+                                fsFragment.setMuted(bValue);
+                                ret.put("result", true);
+                                ret.put("value", bValue);
+                                call.resolve(ret);
+                            } else {
+                                ret.put("result", false);
+                                ret.put("message", "Fullscreen fragment is not defined");
+                                call.resolve(ret);
+                            }
                         }
                     }
                 );
@@ -529,12 +586,18 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 new Runnable() {
                     @Override
                     public void run() {
-                        if (fsFragment != null) fsFragment.pause();
                         JSObject ret = new JSObject();
-                        ret.put("result", true);
                         ret.put("method", "stopAllPlayers");
-                        ret.put("value", true);
-                        call.resolve(ret);
+                        if (fsFragment != null) {
+                            fsFragment.pause();
+                            ret.put("result", true);
+                            ret.put("value", true);
+                            call.resolve(ret);
+                        } else {
+                            ret.put("result", false);
+                            ret.put("message", "Fullscreen fragment is not defined");
+                            call.resolve(ret);
+                        }
                     }
                 }
             );
