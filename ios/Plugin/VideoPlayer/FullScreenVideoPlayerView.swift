@@ -159,7 +159,6 @@ open class FullScreenVideoPlayerView: UIView {
         if let pixSize = options["fontSize"] as? Int {
             ftSize = pixSize * 10
         }
-        print("$$$ ftSize \(ftSize)")
         if let textStyle2: AVTextStyleRule = AVTextStyleRule(textMarkupAttributes: [
             kCMTextMarkupAttribute_RelativeFontSize as String: ftSize,
             kCMTextMarkupAttribute_CharacterEdgeStyle as String: kCMTextMarkupCharacterEdgeStyle_None
@@ -237,10 +236,14 @@ open class FullScreenVideoPlayerView: UIView {
                         NotificationCenter.default.post(name: .playerItemEnd, object: nil, userInfo: vId)
                     }
                 } else if rate == 0 {
-                    if !isInPIPMode && !isInBackgroundMode {
-                        print("AVPlayer Rate for player \(self._videoId): Paused")
+                    if !isInPIPMode && !isInBackgroundMode && !isRateZero {
                         self.isPlaying = false
-                        NotificationCenter.default.post(name: .playerItemPause, object: nil, userInfo: vId)
+                        if !self.videoPlayer.isBeingDismissed {
+                            print("AVPlayer Rate for player \(self._videoId): Paused")
+                            NotificationCenter.default.post(name: .playerItemPause, object: nil, userInfo: vId)
+                        }
+                    } else {
+                        isRateZero = true
                     }
                 } else if self._isBufferEmpty[self._videoId] ?? true {
                     print("AVPlayer Rate for player \(self._videoId): Buffer Empty Loading")
@@ -251,9 +254,7 @@ open class FullScreenVideoPlayerView: UIView {
                      changeHandler: {(_, _) in
                         if !isInPIPMode {
                             if self.videoPlayer.isBeingDismissed && !isVideoEnded {
-                                if self.isPlaying {
-                                    self.player?.pause()
-                                }
+
                                 NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
                             }
                         }

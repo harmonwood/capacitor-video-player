@@ -1,3 +1,13 @@
+## 3.3.2 (2021-12-11)
+
+### Chores
+
+- Update to Capacitor 3.3.2
+
+### Bug Fixes
+
+- fix from PiP to Fullscreen iOS platform
+
 ## 3.3.1 (2021-12-11)
 
 ### Add Features
