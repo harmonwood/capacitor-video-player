@@ -34,15 +34,19 @@
 
 The master release has been upgraded to `@capacitor/core@3.3.1`.
 
-🚨 Since release 3.3.1-1 ->> 🚨
+🚨 Since release 3.3.1 ->> 🚨
 
-the PIP (Picture in Picture) mode has been added to the Android plugin. Is it accessible by clicking on the PiP button next to the Close button on the top-left window corner. To have it running in your application, you must include in the `AndroidManifest.xml`file under the `<activity` tag the following
+the PIP (Picture in Picture) mode has been added to the Android (API >= N) and iOS (iPad - iOS >= 13, iPhone - iOS >= 14) plugins. Is it accessible by clicking on the PiP button next to the Close button on the top-left window corner.
+
+In Android, to have it running in your application, you must include in the `AndroidManifest.xml`file under the `<activity` tag the following
 ```
     android:resizeableActivity="true"
     android:supportsPictureInPicture="true"
 ```
 
-🚨 Since release 3.3.1-1 <<- 🚨
+In iOS, to have it running in your application, you must set the `Background Modes` application capabilities and switch on the mode `Audio, Air-Play, and Picture in Picture` 
+
+🚨 Since release 3.3.1 <<- 🚨
 
 ## PREVIOUS CAPACITOR 2.4.7
 
@@ -99,7 +103,7 @@ meaning that it will not work in IE11 without additional JavaScript transformati
 ### Release 3.0.0 
 
   ```bash
-  npm install --save capacitor-video-player@next
+  npm install --save capacitor-video-player@latest
   npx cap sync
   npx cap sync @capacitor-community/electron
   ```
@@ -182,13 +186,17 @@ No configuration required for this plugin
 
 - [pwa-video-player-app-starter](https://github.com/jepiqueau/pwa-video-player-app-starter)
 
-- [angular-video-player-app-starter](https://github.com/jepiqueau/angular-videoplayer-app-starter/tree/0.6.3)
+- [angular-video-player-app-starter](https://github.com/jepiqueau/angular-videoplayer-app-starter/tree/0.6.4)
 
-- [react-video-player-app-starter](https://github.com/jepiqueau/react-video-player-app-starter)
+- [react-video-player-app-starter](https://github.com/jepiqueau/react-video-player-app-starter/blob/0.0.5)
 
 ### Application Starter 3.0.0 🚧
 
-- [angular-video-player-app-starter](https://github.com/jepiqueau/angular-videoplayer-app-starter/tree/0.6.3)
+- [angular-video-player-app-starter](https://github.com/jepiqueau/angular-videoplayer-app-starter)
+
+- [react-video-player-app-starter](https://github.com/jepiqueau/react-video-player-app-starter)
+
+- [vite-react-videoplayer-app](https://github.com/jepiqueau/vite-react-videoplayer-app)
 
 ## Usage 2.4.7
 

@@ -11,6 +11,7 @@ import AVKit
 var isInPIPMode: Bool = false
 var isInBackgroundMode: Bool = false
 var isPIPModeAvailable: Bool = false
+var isVideoEnded: Bool = false
 
 extension CapacitorVideoPlayerPlugin: AVPlayerViewControllerDelegate {
 
@@ -25,10 +26,19 @@ extension CapacitorVideoPlayerPlugin: AVPlayerViewControllerDelegate {
             return false
         }
     }
-    public func playerViewController(_ playerViewController: AVPlayerViewController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
+    public func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
         if isPIPModeAvailable {
             isInPIPMode = false
-            self.bridge?.viewController?.present(playerViewController, animated: true, completion: nil)
+            NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
+        }
+    }
+    public func playerViewController(_ playerViewController: AVPlayerViewController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
+        if isPIPModeAvailable {
+            if isInPIPMode && !isVideoEnded {
+                print(">>>> Going tp present playerViewController")
+                self.bridge?.viewController?.present(playerViewController, animated: true, completion: nil)
+            }
+            isInPIPMode = false
         }
 
     }

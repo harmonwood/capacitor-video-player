@@ -18,7 +18,6 @@ open class FullScreenVideoPlayerView: UIView {
     private var _duration: Double = 0
     private var _isLoaded: [String: Bool] = [:]
     private var _isBufferEmpty: [String: Bool] = [:]
-    private var _isEnded: Bool = false
     private var _exitOnEnd: Bool = true
     private var _firstReadyToPlay: Bool = true
     private var _stUrl: URL?
@@ -185,7 +184,7 @@ open class FullScreenVideoPlayerView: UIView {
                             if self._firstReadyToPlay {
                                 self._isLoaded.updateValue(true, forKey: self._videoId)
                                 self._isReadyToPlay = true
-                                self._isEnded = false
+                                isVideoEnded = false
                                 if let item = self.playerItem {
                                     self._currentTime = CMTimeGetSeconds(item.currentTime())
                                 }
@@ -230,11 +229,11 @@ open class FullScreenVideoPlayerView: UIView {
                     print("AVPlayer Rate for player \(self._videoId): Playing")
                     self.isPlaying = true
                     NotificationCenter.default.post(name: .playerItemPlay, object: nil, userInfo: vId)
-                } else if rate == 0 && !self._isEnded && abs(self._currentTime - self._duration) < 0.2 {
+                } else if rate == 0 && !isVideoEnded && abs(self._currentTime - self._duration) < 0.2 {
                     print("AVPlayer Rate for player \(self._videoId): Ended")
-                    self._isEnded = true
+                    isVideoEnded = true
                     self.isPlaying = false
-                    if !isInPIPMode && self._exitOnEnd {
+                    if /*!isInPIPMode && */self._exitOnEnd {
                         NotificationCenter.default.post(name: .playerItemEnd, object: nil, userInfo: vId)
                     }
                 } else if rate == 0 {
@@ -251,7 +250,7 @@ open class FullScreenVideoPlayerView: UIView {
             .observe(\.view.frame, options: [.new, .old],
                      changeHandler: {(_, _) in
                         if !isInPIPMode {
-                            if self.videoPlayer.isBeingDismissed && !self._isEnded {
+                            if self.videoPlayer.isBeingDismissed && !isVideoEnded {
                                 if self.isPlaying {
                                     self.player?.pause()
                                 }
@@ -289,7 +288,7 @@ open class FullScreenVideoPlayerView: UIView {
         self.player?.pause()
     }
     @objc func didFinishPlaying() -> Bool {
-        return self._isEnded
+        return isVideoEnded
     }
     @objc func getDuration() -> Double {
         return Double(CMTimeGetSeconds(self.videoAsset.duration))

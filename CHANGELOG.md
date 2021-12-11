@@ -3,6 +3,7 @@
 ### Add Features
 
 - Add Picture in Picture iOS platform
+- Add link to a `vite-react-videoplayer-app` 
 
 ### Bug Fixes
 

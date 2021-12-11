@@ -202,8 +202,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
                                     public boolean onKey(View v, int keyCode, KeyEvent event) {
                                         if (event.getAction() == KeyEvent.ACTION_UP) {
                                             long videoPosition = player.getCurrentPosition();
-                                            Log.d(TAG, "$$$$ onKey " + keyCode + " $$$$");
-                                            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                                            Log.v(TAG, "$$$$ onKey " + keyCode + " $$$$");
+                                            if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME) {
+                                                Log.v(TAG, "$$$$ Going to backpress $$$$");
                                                 backPressed();
                                             } else if (isTV) {
                                                 switch (keyCode) {
@@ -316,7 +317,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
             handler.postDelayed(mRunnable, 100);
         } else {
-            Log.d(TAG, "pictureInPictureMode: doesn't support PIP");
+            Log.v(TAG, "pictureInPictureMode: doesn't support PIP");
         }
     }
 
@@ -335,7 +336,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public void onStart() {
         super.onStart();
         if (Util.SDK_INT >= 24) {
-            initializePlayer();
+            if (playerView != null) {
+                initializePlayer();
+            } else {
+                getActivity().finishAndRemoveTask();
+            }
         }
     }
 
@@ -364,6 +369,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+
         if (!isInPictureInPictureMode) {
             if (player != null) player.setPlayWhenReady(false);
             if (Util.SDK_INT < 24) {
@@ -401,8 +407,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.v(TAG, "$$$$$ in onResume " + isInPictureInPictureMode + " $$$$$");
-
         if (!isInPictureInPictureMode) {
             hideSystemUi();
             if ((Util.SDK_INT < 24 || player == null)) {
@@ -718,6 +722,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * @param timeSecond int
      */
     public void setCurrentTime(int timeSecond) {
+        if (isInPictureInPictureMode) {
+            playerView.setUseController(false);
+            linearLayout.setVisibility(View.INVISIBLE);
+        }
         long seekPosition = player.getCurrentPosition() == UNKNOWN_TIME
             ? 0
             : Math.min(Math.max(0, timeSecond * 1000), player.getDuration());
