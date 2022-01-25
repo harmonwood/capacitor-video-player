@@ -14,10 +14,10 @@
 <p align="center">
   <img src="https://img.shields.io/maintenance/yes/2021?style=flat-square" />
   <a href="https://github.com/jepiqueau/capacitor-video-player/actions?query=workflow%3A%22CI%22"><img src="https://img.shields.io/github/workflow/status/jepiqueau/capacitor-video-player/CI?style=flat-square" /></a>
-  <a href="https://www.npmjs.com/package/jepiqueau/capacitor-video-player"><img src="https://img.shields.io/npm/l/capacitor-video-player.svg?style=flat-square" /></a>
+  <a href="https://www.npmjs.com/package/capacitor-video-player"><img src="https://img.shields.io/npm/l/capacitor-video-player.svg?style=flat-square" /></a>
 <br>
-  <a href="https://www.npmjs.com/package/jepiqueau/capacitor-video-player"><img src="https://img.shields.io/npm/dw/capacitor-video-player?style=flat-square" /></a>
-  <a href="https://www.npmjs.com/package/jepiqueau/capacitor-video-player"><img src="https://img.shields.io/npm/v/capacitor-video-player?style=flat-square" /></a>
+  <a href="https://www.npmjs.com/package/capacitor-video-player"><img src="https://img.shields.io/npm/dw/capacitor-video-player?style=flat-square" /></a>
+  <a href="https://www.npmjs.com/package/capacitor-video-player"><img src="https://img.shields.io/npm/v/capacitor-video-player?style=flat-square" /></a>
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 <a href="#contributors-"><img src="https://img.shields.io/badge/all%20contributors-3-orange?style=flat-square" /></a>
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
@@ -197,6 +197,8 @@ No configuration required for this plugin
 - [react-video-player-app-starter](https://github.com/jepiqueau/react-video-player-app-starter)
 
 - [vite-react-videoplayer-app](https://github.com/jepiqueau/vite-react-videoplayer-app)
+- 
+- [vue-videoplayer-app](https://github.com/jepiqueau/vue-videoplayer-app-starter)
 
 ## Usage 2.4.7
 
