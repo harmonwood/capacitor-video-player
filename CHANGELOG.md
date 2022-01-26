@@ -1,3 +1,15 @@
+## 3.4.0-1 (2022-01-26)
+
+### Chores
+
+- Update to Capacitor 3.4.0
+
+## Bug Fixes
+
+- fix dynamic id in web.ts
+- update README
+
+
 ## 3.3.2 (2021-12-11)
 
 ### Chores

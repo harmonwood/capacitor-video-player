@@ -515,10 +515,10 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             let container = null;
             const shadowRoot = cmpTagEl.shadowRoot ? cmpTagEl.shadowRoot : null;
             if (shadowRoot != null) {
-                container = shadowRoot.querySelector(`#${playerId}`);
+                container = shadowRoot.querySelector(`[id='${playerId}']`);
             }
             else {
-                container = cmpTagEl.querySelector(`#${playerId}`);
+                container = cmpTagEl.querySelector(`[id='${playerId}']`);
             }
             if (container != null)
                 container.appendChild(videoContainer);
