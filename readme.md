@@ -165,6 +165,8 @@ No configuration required for this plugin
 | getVolume                          | ✅      | ✅  | ✅       | ✅  |
 | setVolume                          | ✅      | ✅  | ✅       | ✅  |
 | stopAllPlayers                     | ✅      | ✅  | ✅       | ✅  |
+| getRate                            | ✅      | ✅  | ✅       | ✅  |
+| setRate                            | ✅      | ✅  | ✅       | ✅  |
 
 ## Supported listeners
 

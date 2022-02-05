@@ -19,6 +19,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
     var audioSession: AVAudioSession?
     var mode: String?
     var fsPlayerId: String = "fullscreen"
+    var videoRate: Float = 1.0
     var playObserver: Any?
     var pauseObserver: Any?
     var endObserver: Any?
@@ -28,6 +29,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
     var backgroundObserver: Any?
     var foregroundObserver: Any?
     var vpInternalObserver: Any?
+    let rateList: [Float] = [0.25, 0.5, 0.75, 1.0, 2.0, 4.0]
 
     override public func load() {
         self.addObserversToNotificationCenter()
@@ -77,8 +79,16 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                            "message": error])
             return
         }
+        var mRate: Float = 1.0
+        if let sRate = call.options["rate"] as? Float {
+            if rateList.contains(sRate) {
+                mRate = sRate
+            }
+        }
+
         self.fsPlayerId = playerId
         self.mode = mode
+        self.videoRate = mRate
         if mode == "fullscreen" {
             guard let videoPath = call.options["url"] as? String else {
                 let error: String = "Must provide a video url"
@@ -100,10 +110,11 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
             if videoPath == "internal" {
                 DispatchQueue.main.async { [weak self] in
                     if let videoPickerViewController =
-                        self?.implementation.pickVideoFromInternal() {
-                        self?.bridge?.viewController?.present(videoPickerViewController,
-                                                              animated: true,
-                                                              completion: {return})
+                        self?.implementation.pickVideoFromInternal(
+                            rate: self?.videoRate ?? 1.0) {
+                        self?.bridge?.viewController?.present(
+                            videoPickerViewController,
+                            animated: true, completion: {return})
                     }
                 }
 
@@ -142,11 +153,11 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                     subTitle = sturl
                 }
                 guard let call = self.call else { return }
-                self.createVideoPlayerFullscreenView(call: call,
-                                                     videoUrl: url,
-                                                     subTitleUrl: subTitle,
-                                                     subTitleLanguage: subTitleLanguage,
-                                                     subTitleOptions: subTitleOptions)
+                self.createVideoPlayerFullscreenView(
+                    call: call, videoUrl: url,
+                    rate: videoRate, subTitleUrl: subTitle,
+                    subTitleLanguage: subTitleLanguage,
+                    subTitleOptions: subTitleOptions)
 
             }
         } else {
@@ -473,6 +484,72 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
 
         }
     }
+
+    // MARK: - get Rate for the given player
+
+    @objc func getRate(_ call: CAPPluginCall) {
+        self.call = call
+
+        guard let playerId = call.options["playerId"] as? String else {
+            let error: String = "Must provide a playerId"
+            print(error)
+            call.resolve([ "result": false, "method": "getRate", "message": error])
+            return
+        }
+        if self.mode == "fullscreen" && self.fsPlayerId == playerId {
+            if let playerView = self.videoPlayerFullScreenView {
+                DispatchQueue.main.async {
+                    let rate: Float = playerView.getRate()
+                    call.resolve([ "result": true, "method": "getRate", "value": rate])
+                    return
+                }
+            } else {
+                let error: String = "Fullscreen playerId not found"
+                print(error)
+                call.resolve([ "result": false, "method": "getRate", "message": error])
+                return
+            }
+        }
+    }
+
+    // MARK: - set Rate for the given player
+
+    @objc func setRate(_ call: CAPPluginCall) {
+        self.call = call
+
+        guard let playerId = call.options["playerId"] as? String else {
+            let error: String = "Must provide a playerId"
+            print(error)
+            call.resolve([ "result": false, "method": "setRate", "message": error])
+            return
+        }
+        guard let rate = call.options["rate"] as? Float else {
+            let error: String = "Must provide a rate value"
+            print(error)
+            call.resolve([ "result": false, "method": "setRate", "message": error])
+
+            return
+        }
+        self.videoRate = rateList.contains(rate) ? rate : 1.0
+
+        if self.mode == "fullscreen" && self.fsPlayerId == playerId {
+            if let playerView = self.videoPlayerFullScreenView {
+                DispatchQueue.main.async {
+                    playerView.setRate(rate: self.videoRate)
+                    call.resolve([ "result": true, "method": "setRate",
+                                   "value": self.videoRate])
+                    return
+                }
+            } else {
+                let error: String = "Fullscreen playerId not found"
+                print(error)
+                call.resolve([ "result": false, "method": "setRate", "message": error])
+                return
+            }
+        }
+
+    }
+
 }
 
 // swiftlint:enable type_body_length

@@ -6,6 +6,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.PlaybackParams;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
@@ -68,6 +70,7 @@ import java.util.Map;
 public class FullscreenExoPlayerFragment extends Fragment {
 
     public String videoPath;
+    public Float videoRate;
     public String playerId;
     public String subTitle;
     public String language;
@@ -313,7 +316,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
             if (sturi != null) {
                 setSubtitle(true);
             }
-            if (player != null) player.setPlayWhenReady(true);
+            if (player != null) play();
 
             handler.postDelayed(mRunnable, 100);
         } else {
@@ -379,7 +382,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
             if (linearLayout.getVisibility() == View.VISIBLE) {
                 linearLayout.setVisibility(View.INVISIBLE);
             }
-            if (player != null) player.setPlayWhenReady(true);
+            if (player != null) play();
         }
     }
 
@@ -655,7 +658,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
                 player.setPlayWhenReady(false);
             }
             player.seekTo(position + (long) times * videoStep);
-            player.setPlayWhenReady(true);
+            play();
         }
     }
 
@@ -668,7 +671,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
                 player.setPlayWhenReady(false);
             }
             player.seekTo(position - (long) times * videoStep);
-            player.setPlayWhenReady(true);
+            play();
         }
     }
 
@@ -691,6 +694,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * Start the player
      */
     public void play() {
+        PlaybackParameters param = new PlaybackParameters(videoRate);
+        player.setPlaybackParameters(param);
         player.setPlayWhenReady(true);
     }
 
@@ -750,6 +755,24 @@ public class FullscreenExoPlayerFragment extends Fragment {
     }
 
     /**
+     * Return the player rate
+     * @return float
+     */
+    public float getRate() {
+        return videoRate;
+    }
+
+    /**
+     * Set the player rate
+     * @param _rate float range [0.25f, 0.5f, 0.75f, 1f, 2f, 4f]
+     */
+    public void setRate(float _rate) {
+        videoRate = _rate;
+        PlaybackParameters param = new PlaybackParameters(videoRate);
+        player.setPlaybackParameters(param);
+    }
+
+    /**
      * Switch Off/On the player volume
      * @param _isMuted boolean
      */
@@ -803,7 +826,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
                     if (firstReadyToPlay) {
                         firstReadyToPlay = false;
                         NotificationCenter.defaultCenter().postNotification("playerItemReady", info);
-                        player.setPlayWhenReady(true);
+                        play();
                         Log.v(TAG, "**** in ExoPlayer.STATE_READY firstReadyToPlay player.isPlaying" + player.isPlaying());
                         player.seekTo(currentWindow, playbackPosition);
                     } else {

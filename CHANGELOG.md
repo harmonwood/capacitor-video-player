@@ -1,3 +1,13 @@
+## 3.4.0-2 (2022-02-05)
+
+### Add Features
+
+- Add methods `getRate` and `setRate(rate)` with rate in [0.25,0.5,0.75,1.0,2.0,4.0] otherwise 1.0
+
+### Bug Fixes
+
+- Fix feature request > speed control issue#67
+
 ## 3.4.0-1 (2022-01-26)
 
 ### Chores

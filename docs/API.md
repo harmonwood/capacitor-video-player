@@ -2,24 +2,26 @@
 
 ## Methods Index
 
-<!--DOCGEN_INDEX_START-->
+<docgen-index>
 
-- [echo()](#echo)
-- [initPlayer()](#initplayer)
-- [isPlaying()](#isplaying)
-- [play()](#play)
-- [pause()](#pause)
-- [getDuration()](#getduration)
-- [getCurrentTime()](#getcurrenttime)
-- [setCurrentTime()](#setcurrenttime)
-- [getVolume()](#getvolume)
-- [setVolume()](#setvolume)
-- [getMuted()](#getmuted)
-- [setMuted()](#setmuted)
-- [stopAllPlayers()](#stopallplayers)
-- [Interfaces](#interfaces)
-- [Listeners](#listeners)
-<!--DOCGEN_INDEX_END-->
+* [`echo(...)`](#echo)
+* [`initPlayer(...)`](#initplayer)
+* [`isPlaying(...)`](#isplaying)
+* [`play(...)`](#play)
+* [`pause(...)`](#pause)
+* [`getDuration(...)`](#getduration)
+* [`getCurrentTime(...)`](#getcurrenttime)
+* [`setCurrentTime(...)`](#setcurrenttime)
+* [`getVolume(...)`](#getvolume)
+* [`setVolume(...)`](#setvolume)
+* [`getMuted(...)`](#getmuted)
+* [`setMuted(...)`](#setmuted)
+* [`setRate(...)`](#setrate)
+* [`getRate(...)`](#getrate)
+* [`stopAllPlayers()`](#stopallplayers)
+* [Interfaces](#interfaces)
+
+</docgen-index>
 
 ## Url
 
@@ -103,7 +105,7 @@
 
 ### from Internal (Not supported)
 
-<!--DOCGEN_API_START-->
+<docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
 ## API

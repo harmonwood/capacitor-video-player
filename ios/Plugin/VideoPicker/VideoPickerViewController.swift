@@ -11,12 +11,25 @@ import MobileCoreServices
 import UIKit
 
 open class VideoPickerViewController: UIViewController {
+    private var _videoRate: Float = 1.0
+
+    // MARK: - Set-up rate
+
+    var rate: Float {
+        get {
+            return self._videoRate
+        }
+        set {
+            self._videoRate = newValue
+        }
+    }
 
     override open func viewDidLoad() {
         super.viewDidLoad()
         VideoHelper.startMediaBrowser(delegate: self,
                                       sourceType: .savedPhotosAlbum)
     }
+
 }
 
 // MARK: - UIImagePickerControllerDelegate
@@ -32,11 +45,13 @@ extension VideoPickerViewController: UIImagePickerControllerDelegate {
         else {
             return
         }
-        let vId: [String: Any] = ["videoUrl": url]
+        let vId: [String: Any] = ["videoUrl": url,
+                                  "videoRate": rate]
         NotificationCenter.default.post(name: .videoPathInternalReady, object: nil, userInfo: vId)
     }
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        let vId: [String: Any] = ["videoUrl": ""]
+        let vId: [String: Any] = ["videoUrl": "",
+                                  "videoRate": rate]
         NotificationCenter.default.post(name: .videoPathInternalReady, object: nil, userInfo: vId)
     }
 }

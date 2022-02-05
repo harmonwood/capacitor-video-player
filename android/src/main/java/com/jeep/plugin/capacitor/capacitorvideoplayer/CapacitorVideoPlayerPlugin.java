@@ -42,6 +42,8 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private FilesUtils filesUtils;
     private FragmentUtils fragmentUtils;
     private PluginCall call;
+    private Float rateList[] = { 0.25f, 0.5f, 0.75f, 1f, 2f, 4f };
+    private Float videoRate = 1f;
 
     @Override
     public void load() {
@@ -83,6 +85,13 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             call.resolve(ret);
             return;
         }
+        videoRate = 1f;
+        if (call.getData().has("rate")) {
+            Float mRate = call.getFloat("rate");
+            if (isInRate(rateList, mRate)) {
+                videoRate = mRate;
+            }
+        }
         if ("fullscreen".equals(mode)) {
             fsPlayerId = playerId;
             String url = call.getString("url");
@@ -122,7 +131,18 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 Log.v(TAG, "*** calculated videoPath: " + videoPath);
                 Log.v(TAG, "*** calculated subTitlePath: " + subTitlePath);
                 if (videoPath != null) {
-                    createFullScreenFragment(call, videoPath, subTitlePath, language, subTitleOptions, isTV, playerId, false, null);
+                    createFullScreenFragment(
+                        call,
+                        videoPath,
+                        videoRate,
+                        subTitlePath,
+                        language,
+                        subTitleOptions,
+                        isTV,
+                        playerId,
+                        false,
+                        null
+                    );
                 } else {
                     Map<String, Object> info = new HashMap<String, Object>() {
                         {
@@ -578,6 +598,101 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void getRate(final PluginCall call) {
+        this.call = call;
+        JSObject ret = new JSObject();
+        ret.put("method", "getRate");
+        String playerId = call.getString("playerId");
+        if (playerId == null) {
+            ret.put("result", false);
+            ret.put("message", "Must provide a PlayerId");
+            call.resolve(ret);
+            return;
+        }
+        if ("fullscreen".equals(mode) && fsPlayerId.equals(playerId)) {
+            bridge
+                .getActivity()
+                .runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            JSObject ret = new JSObject();
+                            ret.put("method", "getRate");
+                            if (fsFragment != null) {
+                                Float rate = fsFragment.getRate();
+                                ret.put("result", true);
+                                ret.put("value", rate);
+                                call.resolve(ret);
+                            } else {
+                                ret.put("result", false);
+                                ret.put("message", "Fullscreen fragment is not defined");
+                                call.resolve(ret);
+                            }
+                        }
+                    }
+                );
+        } else {
+            ret.put("result", false);
+            ret.put("message", "player is not defined");
+            call.resolve(ret);
+        }
+    }
+
+    @PluginMethod
+    public void setRate(final PluginCall call) {
+        this.call = call;
+        JSObject ret = new JSObject();
+        ret.put("method", "setRate");
+        String playerId = call.getString("playerId");
+        if (playerId == null) {
+            ret.put("result", false);
+            ret.put("message", "Must provide a PlayerId");
+            call.resolve(ret);
+            return;
+        }
+        Float rate = call.getFloat("rate");
+        if (rate == null) {
+            ret.put("result", false);
+            ret.put("method", "setRate");
+            ret.put("message", "Must provide a volume value");
+            call.resolve(ret);
+            return;
+        }
+        if (isInRate(rateList, rate)) {
+            videoRate = rate;
+        } else {
+            videoRate = 1f;
+        }
+        if ("fullscreen".equals(mode) && fsPlayerId.equals(playerId)) {
+            bridge
+                .getActivity()
+                .runOnUiThread(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            JSObject ret = new JSObject();
+                            ret.put("method", "setRate");
+                            if (fsFragment != null) {
+                                fsFragment.setRate(videoRate);
+                                ret.put("result", true);
+                                ret.put("value", videoRate);
+                                call.resolve(ret);
+                            } else {
+                                ret.put("result", false);
+                                ret.put("message", "Fullscreen fragment is not defined");
+                                call.resolve(ret);
+                            }
+                        }
+                    }
+                );
+        } else {
+            ret.put("result", false);
+            ret.put("message", "player is not defined");
+            call.resolve(ret);
+        }
+    }
+
+    @PluginMethod
     public void stopAllPlayers(PluginCall call) {
         this.call = call;
         bridge
@@ -610,6 +725,17 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             return uiManager != null && uiManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
         }
         return false;
+    }
+
+    private Boolean isInRate(Float arr[], Float rate) {
+        Boolean ret = false;
+        for (Float el : arr) {
+            if (el.equals(rate)) {
+                ret = true;
+                break;
+            }
+        }
+        return ret;
     }
 
     private void AddObserversToNotificationCenter() {
@@ -737,7 +863,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                         }
                         pkFragment = null;
                         if (videoId != -1) {
-                            createFullScreenFragment(call, videoPath, null, null, null, isTV, fsPlayerId, true, videoId);
+                            createFullScreenFragment(call, videoPath, videoRate, null, null, null, isTV, fsPlayerId, true, videoId);
                         } else {
                             Toast.makeText(context, "No Video files found ", Toast.LENGTH_SHORT).show();
                             Map<String, Object> info = new HashMap<String, Object>() {
@@ -755,6 +881,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private void createFullScreenFragment(
         final PluginCall call,
         String videoPath,
+        Float videoRate,
         String subTitle,
         String language,
         JSObject subTitleOptions,
@@ -764,7 +891,17 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         Long videoId
     ) {
         fsFragment =
-            implementation.createFullScreenFragment(videoPath, subTitle, language, subTitleOptions, isTV, playerId, isInternal, videoId);
+            implementation.createFullScreenFragment(
+                videoPath,
+                videoRate,
+                subTitle,
+                language,
+                subTitleOptions,
+                isTV,
+                playerId,
+                isInternal,
+                videoId
+            );
         bridge
             .getActivity()
             .runOnUiThread(

@@ -1,5 +1,5 @@
 import { WebPlugin } from '@capacitor/core';
-import type { CapacitorVideoPlayerPlugin, capVideoPlayerOptions, capVideoPlayerIdOptions, capVideoVolumeOptions, capVideoTimeOptions, capVideoMutedOptions, capVideoPlayerResult } from './definitions';
+import type { CapacitorVideoPlayerPlugin, capVideoPlayerOptions, capVideoPlayerIdOptions, capVideoVolumeOptions, capVideoTimeOptions, capVideoMutedOptions, capVideoRateOptions, capVideoPlayerResult } from './definitions';
 export interface IPlayerSize {
     height: number;
     width: number;
@@ -39,6 +39,18 @@ export declare class CapacitorVideoPlayerWeb extends WebPlugin implements Capaci
      * @param options
      */
     getDuration(options: capVideoPlayerIdOptions): Promise<capVideoPlayerResult>;
+    /**
+     * Set the rate of the current video from a given playerId
+     *
+     * @param options
+     */
+    setRate(options: capVideoRateOptions): Promise<capVideoPlayerResult>;
+    /**
+     * Get the volume of the current video from a given playerId
+     *
+     * @param options
+     */
+    getRate(options: capVideoPlayerIdOptions): Promise<capVideoPlayerResult>;
     /**
      * Set the volume of the current video from a given playerId
      *

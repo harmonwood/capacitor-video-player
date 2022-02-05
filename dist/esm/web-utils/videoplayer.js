@@ -1,17 +1,19 @@
 import Hls from 'hls.js';
 export class VideoPlayer {
-    constructor(mode, url, playerId, container, zIndex, width, height) {
+    constructor(mode, url, playerId, rate, container, zIndex, width, height) {
         this.pipMode = false;
         this._videoType = null;
         this._videoContainer = null;
         this._firstReadyToPlay = true;
         this._isEnded = false;
+        this._videoRate = 1.0;
         this._url = url;
         this._container = container;
         this._mode = mode;
         this._width = width ? width : 320;
         this._height = height ? height : 180;
         this._mode = mode;
+        this._videoRate = rate;
         this._zIndex = zIndex ? zIndex : 1;
         this._playerId = playerId;
     }
@@ -83,6 +85,7 @@ export class VideoPlayer {
         this.videoEl.style.zIndex = (this._zIndex + 3).toString();
         this.videoEl.style.width = `${width.toString()}px`;
         this.videoEl.style.height = `${height.toString()}px`;
+        this.videoEl.playbackRate = this._videoRate;
         this._videoContainer.appendChild(this.videoEl);
         // set the player
         const isSet = await this._setPlayer();

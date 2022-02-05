@@ -54,6 +54,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                     message: 'Must provide a Player Id',
                 });
             }
+            const rate = options.rate ? options.rate : 1.0;
             const componentTag = options.componentTag
                 ? options.componentTag
                 : '';
@@ -68,7 +69,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             if (mode === 'embedded') {
                 playerSize = this.checkSize(options);
             }
-            const result = await this._initializeVideoPlayer(url, playerId, mode, componentTag, playerSize);
+            const result = await this._initializeVideoPlayer(url, playerId, mode, rate, componentTag, playerSize);
             return Promise.resolve({ result: result });
         }
         else {
@@ -199,6 +200,76 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         else {
             return Promise.resolve({
                 method: 'getDuration',
+                result: false,
+                message: 'Given PlayerId does not exist)',
+            });
+        }
+    }
+    /**
+     * Set the rate of the current video from a given playerId
+     *
+     * @param options
+     */
+    async setRate(options) {
+        if (options == null) {
+            return Promise.resolve({
+                result: false,
+                method: 'setRate',
+                message: 'Must provide a capVideoRateOptions object',
+            });
+        }
+        let playerId = options.playerId ? options.playerId : '';
+        if (playerId == null || playerId.length === 0) {
+            playerId = 'fullscreen';
+        }
+        const rateList = [0.25, 0.5, 0.75, 1.0, 2.0, 4.0];
+        console.log(`>>> in plugin options.rate: ${options.rate}`);
+        const rate = options.rate && rateList.includes(options.rate) ? options.rate : 1.0;
+        console.log(`>>> in plugin rate: ${rate}`);
+        if (this._players[playerId]) {
+            this._players[playerId].videoEl.playbackRate = rate;
+            return Promise.resolve({
+                method: 'setRate',
+                result: true,
+                value: rate,
+            });
+        }
+        else {
+            return Promise.resolve({
+                method: 'setRate',
+                result: false,
+                message: 'Given PlayerId does not exist)',
+            });
+        }
+    }
+    /**
+     * Get the volume of the current video from a given playerId
+     *
+     * @param options
+     */
+    async getRate(options) {
+        if (options == null) {
+            return Promise.resolve({
+                result: false,
+                method: 'getRate',
+                message: 'Must provide a capVideoPlayerIdOptions object',
+            });
+        }
+        let playerId = options.playerId ? options.playerId : '';
+        if (playerId == null || playerId.length === 0) {
+            playerId = 'fullscreen';
+        }
+        if (this._players[playerId]) {
+            const rate = this._players[playerId].videoEl.playbackRate;
+            return Promise.resolve({
+                method: 'getRate',
+                result: true,
+                value: rate,
+            });
+        }
+        else {
+            return Promise.resolve({
+                method: 'getRate',
                 result: false,
                 message: 'Given PlayerId does not exist)',
             });
@@ -445,7 +516,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         }
         return playerSize;
     }
-    async _initializeVideoPlayer(url, playerId, mode, componentTag, playerSize) {
+    async _initializeVideoPlayer(url, playerId, mode, rate, componentTag, playerSize) {
         const videoURL = url
             ? url.indexOf('%2F') == -1
                 ? encodeURI(url)
@@ -489,11 +560,11 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             this.handlePlayerExit();
         });
         if (mode === 'embedded') {
-            this._players[playerId] = new VideoPlayer('embedded', videoURL, playerId, videoContainer, 2, playerSize.width, playerSize.height);
+            this._players[playerId] = new VideoPlayer('embedded', videoURL, playerId, rate, videoContainer, 2, playerSize.width, playerSize.height);
             await this._players[playerId].initialize();
         }
         else if (mode === 'fullscreen') {
-            this._players['fullscreen'] = new VideoPlayer('fullscreen', videoURL, 'fullscreen', videoContainer, 99995);
+            this._players['fullscreen'] = new VideoPlayer('fullscreen', videoURL, 'fullscreen', rate, videoContainer, 99995);
             await this._players['fullscreen'].initialize();
         }
         else {

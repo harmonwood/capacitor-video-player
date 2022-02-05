@@ -7,6 +7,7 @@ import type {
   capVideoVolumeOptions,
   capVideoTimeOptions,
   capVideoMutedOptions,
+  capVideoRateOptions,
   capVideoPlayerResult,
 } from './definitions';
 import { VideoPlayer } from './web-utils/videoplayer';
@@ -74,6 +75,7 @@ export class CapacitorVideoPlayerWeb
           message: 'Must provide a Player Id',
         });
       }
+      const rate: number = options.rate ? options.rate : 1.0;
       const componentTag: string = options.componentTag
         ? options.componentTag
         : '';
@@ -92,6 +94,7 @@ export class CapacitorVideoPlayerWeb
         url,
         playerId,
         mode,
+        rate,
         componentTag,
         playerSize,
       );
@@ -230,6 +233,78 @@ export class CapacitorVideoPlayerWeb
       });
     }
   }
+  /**
+   * Set the rate of the current video from a given playerId
+   *
+   * @param options
+   */
+  async setRate(options: capVideoRateOptions): Promise<capVideoPlayerResult> {
+    if (options == null) {
+      return Promise.resolve({
+        result: false,
+        method: 'setRate',
+        message: 'Must provide a capVideoRateOptions object',
+      });
+    }
+    let playerId: string = options.playerId ? options.playerId : '';
+    if (playerId == null || playerId.length === 0) {
+      playerId = 'fullscreen';
+    }
+    const rateList: number[] = [0.25, 0.5, 0.75, 1.0, 2.0, 4.0];
+    console.log(`>>> in plugin options.rate: ${options.rate}`);
+    const rate: number =
+      options.rate && rateList.includes(options.rate) ? options.rate : 1.0;
+    console.log(`>>> in plugin rate: ${rate}`);
+    if (this._players[playerId]) {
+      this._players[playerId].videoEl.playbackRate = rate;
+      return Promise.resolve({
+        method: 'setRate',
+        result: true,
+        value: rate,
+      });
+    } else {
+      return Promise.resolve({
+        method: 'setRate',
+        result: false,
+        message: 'Given PlayerId does not exist)',
+      });
+    }
+  }
+  /**
+   * Get the volume of the current video from a given playerId
+   *
+   * @param options
+   */
+  async getRate(
+    options: capVideoPlayerIdOptions,
+  ): Promise<capVideoPlayerResult> {
+    if (options == null) {
+      return Promise.resolve({
+        result: false,
+        method: 'getRate',
+        message: 'Must provide a capVideoPlayerIdOptions object',
+      });
+    }
+    let playerId: string = options.playerId ? options.playerId : '';
+    if (playerId == null || playerId.length === 0) {
+      playerId = 'fullscreen';
+    }
+    if (this._players[playerId]) {
+      const rate: number = this._players[playerId].videoEl.playbackRate;
+      return Promise.resolve({
+        method: 'getRate',
+        result: true,
+        value: rate,
+      });
+    } else {
+      return Promise.resolve({
+        method: 'getRate',
+        result: false,
+        message: 'Given PlayerId does not exist)',
+      });
+    }
+  }
+
   /**
    * Set the volume of the current video from a given playerId
    *
@@ -478,6 +553,7 @@ export class CapacitorVideoPlayerWeb
     url: string,
     playerId: string,
     mode: string,
+    rate: number,
     componentTag: string,
     playerSize: IPlayerSize,
   ): Promise<any> {
@@ -532,6 +608,7 @@ export class CapacitorVideoPlayerWeb
         'embedded',
         videoURL,
         playerId,
+        rate,
         videoContainer,
         2,
         playerSize.width,
@@ -543,6 +620,7 @@ export class CapacitorVideoPlayerWeb
         'fullscreen',
         videoURL,
         'fullscreen',
+        rate,
         videoContainer,
         99995,
       );

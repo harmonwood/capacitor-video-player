@@ -14,17 +14,19 @@ extension CapacitorVideoPlayerPlugin {
 
     // MARK: - createVideoPlayerFullScreenView
 
-    func createVideoPlayerFullscreenView(call: CAPPluginCall, videoUrl: URL,
-                                         subTitleUrl: URL?, subTitleLanguage: String?,
-                                         subTitleOptions: [String: Any]?) {
+    // swiftlint:disable function_parameter_count
+    func createVideoPlayerFullscreenView(
+        call: CAPPluginCall, videoUrl: URL, rate: Float,
+        subTitleUrl: URL?, subTitleLanguage: String?,
+        subTitleOptions: [String: Any]?) {
         DispatchQueue.main.async { [weak self] in
             let playerId: String = self?.fsPlayerId ?? "fullscreen"
             if let fullscreenView = self?.implementation
-                .createFullscreenPlayer(playerId: playerId,
-                                        videoUrl: videoUrl,
-                                        subTitleUrl: subTitleUrl,
-                                        language: subTitleLanguage,
-                                        options: subTitleOptions) {
+                .createFullscreenPlayer(
+                    playerId: playerId, videoUrl: videoUrl,
+                    rate: rate, subTitleUrl: subTitleUrl,
+                    language: subTitleLanguage,
+                    options: subTitleOptions) {
                 self?.videoPlayerFullScreenView = fullscreenView
                 self?.bgPlayer = self?.videoPlayerFullScreenView?.videoPlayer.player
                 guard let videoPlayer: AVPlayerViewController =
@@ -62,5 +64,6 @@ extension CapacitorVideoPlayerPlugin {
             }
         }
     }
+    // swiftlint:enable function_parameter_count
 
 }

@@ -15,7 +15,8 @@ export declare class VideoPlayer {
     private _videoContainer;
     private _firstReadyToPlay;
     private _isEnded;
-    constructor(mode: string, url: string, playerId: string, container: any, zIndex: number, width?: number, height?: number);
+    private _videoRate;
+    constructor(mode: string, url: string, playerId: string, rate: number, container: any, zIndex: number, width?: number, height?: number);
     initialize(): Promise<void>;
     private createVideoElement;
     private _goFullscreen;

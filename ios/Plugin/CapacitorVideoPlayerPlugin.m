@@ -17,4 +17,6 @@ CAP_PLUGIN(CapacitorVideoPlayerPlugin, "CapacitorVideoPlayer",
            CAP_PLUGIN_METHOD(getMuted, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(setMuted, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(stopAllPlayers, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(getRate, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setRate, CAPPluginReturnPromise);
 )

@@ -90,12 +90,15 @@ extension CapacitorVideoPlayerPlugin {
             NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
             return
         }
+        guard let videoRate = info["videoRate"] as? Float else {
+            NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
+            return
+        }
         guard let call = self.call else { return }
-        self.createVideoPlayerFullscreenView(call: call,
-                                             videoUrl: videoUrl,
-                                             subTitleUrl: nil,
-                                             subTitleLanguage: nil,
-                                             subTitleOptions: nil)
+        self.createVideoPlayerFullscreenView(
+            call: call, videoUrl: videoUrl,
+            rate: videoRate, subTitleUrl: nil,
+            subTitleLanguage: nil, subTitleOptions: nil)
         return
     }
 

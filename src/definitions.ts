@@ -62,6 +62,16 @@ export interface CapacitorVideoPlayerPlugin {
    */
   setMuted(options: capVideoMutedOptions): Promise<capVideoPlayerResult>;
   /**
+   * Set the rate of the current video from a given playerId
+   *
+   */
+  setRate(options: capVideoRateOptions): Promise<capVideoPlayerResult>;
+  /**
+   * Get the rate of the current video from a given playerId
+   *
+   */
+  getRate(options: capVideoPlayerIdOptions): Promise<capVideoPlayerResult>;
+  /**
    * Stop all players playing
    *
    */
@@ -103,6 +113,10 @@ export interface capVideoPlayerOptions {
    */
   playerId?: string;
   /**
+   * Initial playing rate
+   */
+  rate?: number;
+  /**
    * Component Tag or DOM Element Tag (React app)
    */
   componentTag?: string;
@@ -120,6 +134,16 @@ export interface capVideoPlayerIdOptions {
    * Id of DIV Element parent of the player
    */
   playerId?: string;
+}
+export interface capVideoRateOptions {
+  /**
+   * Id of DIV Element parent of the player
+   */
+  playerId?: string;
+  /**
+   * Rate value
+   */
+  rate?: number;
 }
 export interface capVideoVolumeOptions {
   /**

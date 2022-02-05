@@ -23,6 +23,7 @@ open class FullScreenVideoPlayerView: UIView {
     private var _stUrl: URL?
     private var _stLanguage: String?
     private var _stOptions: [String: Any]?
+    private var _videoRate: Float
 
     var player: AVPlayer?
     var videoPlayer: AVPlayerViewController
@@ -34,8 +35,9 @@ open class FullScreenVideoPlayerView: UIView {
     var playerRateObserver: NSKeyValueObservation?
     var videoPlayerFrameObserver: NSKeyValueObservation?
 
-    init(url: URL, stUrl: URL?, stLanguage: String?,
-         stOptions: [String: Any]?, playerId: String, exitOnEnd: Bool) {
+    init(url: URL, rate: Float, stUrl: URL?, stLanguage: String?,
+         stOptions: [String: Any]?, playerId: String,
+         exitOnEnd: Bool) {
         //self._videoPath = videoPath
         self._url = url
         self._stUrl = stUrl
@@ -43,6 +45,7 @@ open class FullScreenVideoPlayerView: UIView {
         self._stOptions = stOptions
         self._exitOnEnd = exitOnEnd
         self._videoId = playerId
+        self._videoRate = rate
         self.videoPlayer = AVPlayerViewController()
         self.videoAsset = AVURLAsset(url: url)
         self.isPlaying = false
@@ -120,6 +123,7 @@ open class FullScreenVideoPlayerView: UIView {
             self.playerItem = AVPlayerItem(asset: self.videoAsset)
         }
         self.player = AVPlayer(playerItem: playerItem)
+        self.player?.currentItem?.audioTimePitchAlgorithm = .timeDomain
         self.videoPlayer.player = self.player
         self.videoPlayer.allowsPictureInPicturePlayback = false
         if isPIPModeAvailable {
@@ -187,7 +191,8 @@ open class FullScreenVideoPlayerView: UIView {
                                 if let item = self.playerItem {
                                     self._currentTime = CMTimeGetSeconds(item.currentTime())
                                 }
-                                let vId: [String: Any] = ["fromPlayerId": self._videoId, "currentTime": self._currentTime ]
+                                let vId: [String: Any] = ["fromPlayerId": self._videoId, "currentTime": self._currentTime,
+                                                          "videoRate": self._videoRate]
                                 NotificationCenter.default.post(name: .playerItemReady, object: nil, userInfo: vId)
                                 self._firstReadyToPlay = false
                             }
@@ -221,15 +226,22 @@ open class FullScreenVideoPlayerView: UIView {
                     self._currentTime = CMTimeGetSeconds(item.currentTime())
                     self._duration = CMTimeGetSeconds(item.duration)
                 }
-                let vId: [String: Any] = ["fromPlayerId": self._videoId, "currentTime": self._currentTime]
+                let vId: [String: Any] = [
+                    "fromPlayerId": self._videoId,
+                    "currentTime": self._currentTime,
+                    "videoRate": self._videoRate
+                ]
+
                 if !(self._isLoaded[self._videoId] ?? true) {
                     print("AVPlayer Rate for player \(self._videoId): Loading")
-                } else if rate == 1.0 && self._isReadyToPlay {
-                    print("AVPlayer Rate for player \(self._videoId): Playing")
+                } else if rate > 0 && self._isReadyToPlay {
+                    if rate != self._videoRate {
+                        player.rate = self._videoRate
+                    }
+
                     self.isPlaying = true
                     NotificationCenter.default.post(name: .playerItemPlay, object: nil, userInfo: vId)
                 } else if rate == 0 && !isVideoEnded && abs(self._currentTime - self._duration) < 0.2 {
-                    print("AVPlayer Rate for player \(self._videoId): Ended")
                     isVideoEnded = true
                     self.isPlaying = false
                     if /*!isInPIPMode && */self._exitOnEnd {
@@ -283,6 +295,7 @@ open class FullScreenVideoPlayerView: UIView {
     @objc func play() {
         self.isPlaying = true
         self.player?.play()
+        self.player?.rate = _videoRate
     }
     @objc func pause() {
         self.isPlaying = false
@@ -311,6 +324,13 @@ open class FullScreenVideoPlayerView: UIView {
     }
     @objc func setVolume(volume: Float) {
         self.player?.volume = volume
+    }
+    @objc func getRate() -> Float {
+        return _videoRate
+    }
+
+    @objc func setRate(rate: Float) {
+        _videoRate = rate
     }
     @objc func getMuted() -> Bool {
         return ((self.player?.isMuted) != nil)

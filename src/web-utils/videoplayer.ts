@@ -18,11 +18,13 @@ export class VideoPlayer {
   private _videoContainer: any = null;
   private _firstReadyToPlay = true;
   private _isEnded = false;
+  private _videoRate = 1.0;
 
   constructor(
     mode: string,
     url: string,
     playerId: string,
+    rate: number,
     container: any,
     zIndex: number,
     width?: number,
@@ -34,6 +36,7 @@ export class VideoPlayer {
     this._width = width ? width : 320;
     this._height = height ? height : 180;
     this._mode = mode;
+    this._videoRate = rate;
     this._zIndex = zIndex ? zIndex : 1;
     this._playerId = playerId;
   }
@@ -120,6 +123,7 @@ export class VideoPlayer {
     this.videoEl.style.zIndex = (this._zIndex + 3).toString();
     this.videoEl.style.width = `${width.toString()}px`;
     this.videoEl.style.height = `${height.toString()}px`;
+    this.videoEl.playbackRate = this._videoRate;
     this._videoContainer.appendChild(this.videoEl);
     // set the player
     const isSet: boolean = await this._setPlayer();
