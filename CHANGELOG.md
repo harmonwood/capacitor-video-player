@@ -1,3 +1,13 @@
+## 3.4.0-3 (2022-02-07)
+
+### Add Features
+
+ - Add `exitOnEnd` boolean parameter in `capVideoPlayerOptions`
+
+### Bug Fixes
+
+- Fix feat: move exitOnEnd to initPlayer issue#74
+
 ## 3.4.0-2 (2022-02-05)
 
 ### Add Features

@@ -18,6 +18,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
     var videoPlayerFullScreenView: FullScreenVideoPlayerView?
     var audioSession: AVAudioSession?
     var mode: String?
+    var exitOnEnd: Bool = true
     var fsPlayerId: String = "fullscreen"
     var videoRate: Float = 1.0
     var playObserver: Any?
@@ -85,10 +86,14 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                 mRate = sRate
             }
         }
-
+        var exitOnEnd: Bool = true
+        if let sexitOnEnd = call.options["exitOnEnd"] as? Bool {
+            exitOnEnd = sexitOnEnd
+        }
         self.fsPlayerId = playerId
         self.mode = mode
         self.videoRate = mRate
+        self.exitOnEnd = exitOnEnd
         if mode == "fullscreen" {
             guard let videoPath = call.options["url"] as? String else {
                 let error: String = "Must provide a video url"
@@ -111,7 +116,8 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                 DispatchQueue.main.async { [weak self] in
                     if let videoPickerViewController =
                         self?.implementation.pickVideoFromInternal(
-                            rate: self?.videoRate ?? 1.0) {
+                            rate: self?.videoRate ?? 1.0,
+                            exitOnEnd: self?.exitOnEnd ?? true) {
                         self?.bridge?.viewController?.present(
                             videoPickerViewController,
                             animated: true, completion: {return})
@@ -154,8 +160,8 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                 }
                 guard let call = self.call else { return }
                 self.createVideoPlayerFullscreenView(
-                    call: call, videoUrl: url,
-                    rate: videoRate, subTitleUrl: subTitle,
+                    call: call, videoUrl: url, rate: videoRate,
+                    exitOnEnd: exitOnEnd, subTitleUrl: subTitle,
                     subTitleLanguage: subTitleLanguage,
                     subTitleOptions: subTitleOptions)
 

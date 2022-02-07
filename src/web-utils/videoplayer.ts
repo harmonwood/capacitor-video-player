@@ -19,12 +19,14 @@ export class VideoPlayer {
   private _firstReadyToPlay = true;
   private _isEnded = false;
   private _videoRate = 1.0;
+  private _videoExitOnEnd = true;
 
   constructor(
     mode: string,
     url: string,
     playerId: string,
     rate: number,
+    exitOnEnd: boolean,
     container: any,
     zIndex: number,
     width?: number,
@@ -39,6 +41,7 @@ export class VideoPlayer {
     this._videoRate = rate;
     this._zIndex = zIndex ? zIndex : 1;
     this._playerId = playerId;
+    this._videoExitOnEnd = exitOnEnd;
   }
 
   public async initialize(): Promise<void> {
@@ -129,20 +132,25 @@ export class VideoPlayer {
     const isSet: boolean = await this._setPlayer();
     if (isSet) {
       this.videoEl.onended = () => {
-        if (this._mode === 'fullscreen') {
-          this._closeFullscreen();
-        }
         this._isEnded = true;
-        this._createEvent('Ended', this._playerId);
+        this.isPlaying = false;
+        if (this.videoEl) {
+          this.videoEl.currentTime = 0;
+        }
+        if (this._videoExitOnEnd) {
+          if (this._mode === 'fullscreen') {
+            this._closeFullscreen();
+          }
+          this._createEvent('Ended', this._playerId);
+        }
       };
       this.videoEl.oncanplay = async () => {
         if (this._firstReadyToPlay) {
           this._createEvent('Ready', this._playerId);
           if (this.videoEl != null) {
             this.videoEl.muted = false;
-            /*            if (this._mode === 'fullscreen') await this.videoEl.play();
+            if (this._mode === 'fullscreen') await this.videoEl.play();
             this._firstReadyToPlay = false;
-*/
           }
         }
       };

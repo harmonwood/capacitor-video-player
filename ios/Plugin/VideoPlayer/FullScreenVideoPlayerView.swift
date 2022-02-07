@@ -242,9 +242,12 @@ open class FullScreenVideoPlayerView: UIView {
                     self.isPlaying = true
                     NotificationCenter.default.post(name: .playerItemPlay, object: nil, userInfo: vId)
                 } else if rate == 0 && !isVideoEnded && abs(self._currentTime - self._duration) < 0.2 {
-                    isVideoEnded = true
                     self.isPlaying = false
+                    player.seek(to: CMTime.zero)
+                    self._currentTime = 0
+
                     if /*!isInPIPMode && */self._exitOnEnd {
+                        isVideoEnded = true
                         NotificationCenter.default.post(name: .playerItemEnd, object: nil, userInfo: vId)
                     }
                 } else if rate == 0 {

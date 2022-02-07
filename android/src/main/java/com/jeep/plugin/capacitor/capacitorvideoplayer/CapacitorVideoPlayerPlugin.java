@@ -37,6 +37,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private Boolean isTV;
     private String fsPlayerId;
     private String mode;
+    private Boolean exitOnEnd = true;
     private FullscreenExoPlayerFragment fsFragment;
     private PickerVideoFragment pkFragment;
     private FilesUtils filesUtils;
@@ -92,6 +93,11 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 videoRate = mRate;
             }
         }
+        Boolean _exitOnEnd = true;
+        if (call.getData().has("exitOnEnd")) {
+            _exitOnEnd = call.getBoolean("exitOnEnd");
+        }
+        exitOnEnd = _exitOnEnd;
         if ("fullscreen".equals(mode)) {
             fsPlayerId = playerId;
             String url = call.getString("url");
@@ -135,6 +141,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                         call,
                         videoPath,
                         videoRate,
+                        exitOnEnd,
                         subTitlePath,
                         language,
                         subTitleOptions,
@@ -863,7 +870,19 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                         }
                         pkFragment = null;
                         if (videoId != -1) {
-                            createFullScreenFragment(call, videoPath, videoRate, null, null, null, isTV, fsPlayerId, true, videoId);
+                            createFullScreenFragment(
+                                call,
+                                videoPath,
+                                videoRate,
+                                exitOnEnd,
+                                null,
+                                null,
+                                null,
+                                isTV,
+                                fsPlayerId,
+                                true,
+                                videoId
+                            );
                         } else {
                             Toast.makeText(context, "No Video files found ", Toast.LENGTH_SHORT).show();
                             Map<String, Object> info = new HashMap<String, Object>() {
@@ -882,6 +901,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         final PluginCall call,
         String videoPath,
         Float videoRate,
+        Boolean exitOnEnd,
         String subTitle,
         String language,
         JSObject subTitleOptions,
@@ -894,6 +914,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             implementation.createFullScreenFragment(
                 videoPath,
                 videoRate,
+                exitOnEnd,
                 subTitle,
                 language,
                 subTitleOptions,

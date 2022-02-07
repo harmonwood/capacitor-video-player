@@ -76,6 +76,11 @@ export class CapacitorVideoPlayerWeb
         });
       }
       const rate: number = options.rate ? options.rate : 1.0;
+      let exitOnEnd = true;
+      if (Object.keys(options).includes('exitOnEnd')) {
+        const exitRet = options.exitOnEnd;
+        exitOnEnd = exitRet != null ? exitRet : true;
+      }
       const componentTag: string = options.componentTag
         ? options.componentTag
         : '';
@@ -95,6 +100,7 @@ export class CapacitorVideoPlayerWeb
         playerId,
         mode,
         rate,
+        exitOnEnd,
         componentTag,
         playerSize,
       );
@@ -554,6 +560,7 @@ export class CapacitorVideoPlayerWeb
     playerId: string,
     mode: string,
     rate: number,
+    exitOnEnd: boolean,
     componentTag: string,
     playerSize: IPlayerSize,
   ): Promise<any> {
@@ -609,6 +616,7 @@ export class CapacitorVideoPlayerWeb
         videoURL,
         playerId,
         rate,
+        exitOnEnd,
         videoContainer,
         2,
         playerSize.width,
@@ -621,6 +629,7 @@ export class CapacitorVideoPlayerWeb
         videoURL,
         'fullscreen',
         rate,
+        exitOnEnd,
         videoContainer,
         99995,
       );

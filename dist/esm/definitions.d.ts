@@ -114,6 +114,11 @@ export interface capVideoPlayerOptions {
      */
     rate?: number;
     /**
+     * Exit on VideoEnd
+     * default: true
+     */
+    exitOnEnd?: boolean;
+    /**
      * Component Tag or DOM Element Tag (React app)
      */
     componentTag?: string;

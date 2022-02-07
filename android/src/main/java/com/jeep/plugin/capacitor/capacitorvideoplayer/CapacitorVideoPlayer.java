@@ -19,6 +19,7 @@ public class CapacitorVideoPlayer {
     public FullscreenExoPlayerFragment createFullScreenFragment(
         String videoPath,
         Float videoRate,
+        Boolean exitOnEnd,
         String subTitle,
         String language,
         JSObject subTitleOptions,
@@ -31,6 +32,7 @@ public class CapacitorVideoPlayer {
 
         fsFragment.videoPath = videoPath;
         fsFragment.videoRate = videoRate;
+        fsFragment.exitOnEnd = exitOnEnd;
         fsFragment.subTitle = subTitle;
         fsFragment.language = language;
         fsFragment.subTitleOptions = subTitleOptions;

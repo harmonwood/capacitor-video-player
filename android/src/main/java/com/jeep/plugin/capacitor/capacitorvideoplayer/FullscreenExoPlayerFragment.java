@@ -78,6 +78,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public Boolean isTV;
     public Boolean isInternal;
     public Long videoId;
+    public Boolean exitOnEnd;
 
     private static final String TAG = FullscreenExoPlayerFragment.class.getName();
     public static final long UNKNOWN_TIME = -1L;
@@ -846,9 +847,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
                     player.seekTo(0);
                     player.setVolume(curVolume);
-                    releasePlayer();
-
-                    NotificationCenter.defaultCenter().postNotification("playerItemEnd", info);
+                    player.setPlayWhenReady(false);
+                    if (exitOnEnd) {
+                        releasePlayer();
+                        NotificationCenter.defaultCenter().postNotification("playerItemEnd", info);
+                    }
                     break;
                 default:
                     stateString = "UNKNOWN_STATE             -";

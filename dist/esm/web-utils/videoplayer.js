@@ -1,12 +1,13 @@
 import Hls from 'hls.js';
 export class VideoPlayer {
-    constructor(mode, url, playerId, rate, container, zIndex, width, height) {
+    constructor(mode, url, playerId, rate, exitOnEnd, container, zIndex, width, height) {
         this.pipMode = false;
         this._videoType = null;
         this._videoContainer = null;
         this._firstReadyToPlay = true;
         this._isEnded = false;
         this._videoRate = 1.0;
+        this._videoExitOnEnd = true;
         this._url = url;
         this._container = container;
         this._mode = mode;
@@ -16,6 +17,7 @@ export class VideoPlayer {
         this._videoRate = rate;
         this._zIndex = zIndex ? zIndex : 1;
         this._playerId = playerId;
+        this._videoExitOnEnd = exitOnEnd;
     }
     async initialize() {
         // get the video type
@@ -91,20 +93,26 @@ export class VideoPlayer {
         const isSet = await this._setPlayer();
         if (isSet) {
             this.videoEl.onended = () => {
-                if (this._mode === 'fullscreen') {
-                    this._closeFullscreen();
-                }
                 this._isEnded = true;
-                this._createEvent('Ended', this._playerId);
+                this.isPlaying = false;
+                if (this.videoEl) {
+                    this.videoEl.currentTime = 0;
+                }
+                if (this._videoExitOnEnd) {
+                    if (this._mode === 'fullscreen') {
+                        this._closeFullscreen();
+                    }
+                    this._createEvent('Ended', this._playerId);
+                }
             };
             this.videoEl.oncanplay = async () => {
                 if (this._firstReadyToPlay) {
                     this._createEvent('Ready', this._playerId);
                     if (this.videoEl != null) {
                         this.videoEl.muted = false;
-                        /*            if (this._mode === 'fullscreen') await this.videoEl.play();
+                        if (this._mode === 'fullscreen')
+                            await this.videoEl.play();
                         this._firstReadyToPlay = false;
-            */
                     }
                 }
             };
