@@ -19,6 +19,7 @@ open class FullScreenVideoPlayerView: UIView {
     private var _isLoaded: [String: Bool] = [:]
     private var _isBufferEmpty: [String: Bool] = [:]
     private var _exitOnEnd: Bool = true
+    private var _loopOnEnd: Bool = false
     private var _firstReadyToPlay: Bool = true
     private var _stUrl: URL?
     private var _stLanguage: String?
@@ -37,13 +38,14 @@ open class FullScreenVideoPlayerView: UIView {
 
     init(url: URL, rate: Float, stUrl: URL?, stLanguage: String?,
          stOptions: [String: Any]?, playerId: String,
-         exitOnEnd: Bool) {
+         exitOnEnd: Bool, loopOnEnd: Bool) {
         //self._videoPath = videoPath
         self._url = url
         self._stUrl = stUrl
         self._stLanguage = stLanguage
         self._stOptions = stOptions
         self._exitOnEnd = exitOnEnd
+        self._loopOnEnd = loopOnEnd
         self._videoId = playerId
         self._videoRate = rate
         self.videoPlayer = AVPlayerViewController()
@@ -245,10 +247,13 @@ open class FullScreenVideoPlayerView: UIView {
                     self.isPlaying = false
                     player.seek(to: CMTime.zero)
                     self._currentTime = 0
-
                     if /*!isInPIPMode && */self._exitOnEnd {
                         isVideoEnded = true
                         NotificationCenter.default.post(name: .playerItemEnd, object: nil, userInfo: vId)
+                    } else {
+                        if self._loopOnEnd {
+                            self.play()
+                        }
                     }
                 } else if rate == 0 {
                     if !isInPIPMode && !isInBackgroundMode && !isRateZero {

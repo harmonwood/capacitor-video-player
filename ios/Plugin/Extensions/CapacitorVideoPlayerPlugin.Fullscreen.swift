@@ -17,14 +17,14 @@ extension CapacitorVideoPlayerPlugin {
     // swiftlint:disable function_parameter_count
     func createVideoPlayerFullscreenView(
         call: CAPPluginCall, videoUrl: URL, rate: Float,
-        exitOnEnd: Bool, subTitleUrl: URL?,
+        exitOnEnd: Bool, loopOnEnd: Bool, subTitleUrl: URL?,
         subTitleLanguage: String?, subTitleOptions: [String: Any]?) {
         DispatchQueue.main.async { [weak self] in
             let playerId: String = self?.fsPlayerId ?? "fullscreen"
             if let fullscreenView = self?.implementation
                 .createFullscreenPlayer(
                     playerId: playerId, videoUrl: videoUrl,
-                    rate: rate, exitOnEnd: exitOnEnd,
+                    rate: rate, exitOnEnd: exitOnEnd, loopOnEnd: loopOnEnd,
                     subTitleUrl: subTitleUrl, language: subTitleLanguage,
                     options: subTitleOptions) {
                 self?.videoPlayerFullScreenView = fullscreenView

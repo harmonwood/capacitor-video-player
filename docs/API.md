@@ -20,6 +20,7 @@
 * [`getRate(...)`](#getrate)
 * [`stopAllPlayers()`](#stopallplayers)
 * [Interfaces](#interfaces)
+
 </docgen-index>
 * [Listeners](#listeners)
 
@@ -391,6 +392,7 @@ Stop all players playing
 | **`playerId`**        | <code>string</code>                                         | Id of DIV Element parent of the player                                                        |
 | **`rate`**            | <code>number</code>                                         | Initial playing rate                                                                          |
 | **`exitOnEnd`**       | <code>boolean</code>                                        | Exit on VideoEnd default: true                                                                |
+| **`loopOnEnd`**       | <code>boolean</code>                                        | Loop on VideoEnd when exitOnEnd false default: false                                          |
 | **`componentTag`**    | <code>string</code>                                         | Component Tag or DOM Element Tag (React app)                                                  |
 | **`width`**           | <code>number</code>                                         | Player Width (mode "embedded" only)                                                           |
 | **`height`**          | <code>number</code>                                         | Player height (mode "embedded" only)                                                          |

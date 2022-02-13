@@ -1,6 +1,6 @@
 import Hls from 'hls.js';
 export class VideoPlayer {
-    constructor(mode, url, playerId, rate, exitOnEnd, container, zIndex, width, height) {
+    constructor(mode, url, playerId, rate, exitOnEnd, loopOnEnd, container, zIndex, width, height) {
         this.pipMode = false;
         this._videoType = null;
         this._videoContainer = null;
@@ -8,6 +8,7 @@ export class VideoPlayer {
         this._isEnded = false;
         this._videoRate = 1.0;
         this._videoExitOnEnd = true;
+        this._videoLoopOnEnd = false;
         this._url = url;
         this._container = container;
         this._mode = mode;
@@ -18,6 +19,7 @@ export class VideoPlayer {
         this._zIndex = zIndex ? zIndex : 1;
         this._playerId = playerId;
         this._videoExitOnEnd = exitOnEnd;
+        this._videoLoopOnEnd = loopOnEnd;
     }
     async initialize() {
         // get the video type
@@ -92,7 +94,7 @@ export class VideoPlayer {
         // set the player
         const isSet = await this._setPlayer();
         if (isSet) {
-            this.videoEl.onended = () => {
+            this.videoEl.onended = async () => {
                 this._isEnded = true;
                 this.isPlaying = false;
                 if (this.videoEl) {
@@ -103,6 +105,11 @@ export class VideoPlayer {
                         this._closeFullscreen();
                     }
                     this._createEvent('Ended', this._playerId);
+                }
+                else {
+                    if (this._videoLoopOnEnd && this.videoEl != null) {
+                        await this.videoEl.play();
+                    }
                 }
             };
             this.videoEl.oncanplay = async () => {

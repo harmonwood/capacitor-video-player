@@ -1,3 +1,13 @@
+## 3.4.0-4 (2022-02-13)
+
+### Add Features
+
+ - Add `loopOnEnd` boolean parameter in `capVideoPlayerOptions`
+
+### Bug Fixes
+
+- Fix feat: move loopOnEnd to initPlayer issue#76
+
 ## 3.4.0-3 (2022-02-07)
 
 ### Add Features

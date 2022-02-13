@@ -15,6 +15,7 @@ enum CapacitorVideoPlayerError: Error {
                                              videoUrl: URL,
                                              rate: Float,
                                              exitOnEnd: Bool,
+                                             loopOnEnd: Bool,
                                              subTitleUrl: URL?,
                                              language: String?,
                                              options: [String: Any]?
@@ -24,16 +25,18 @@ enum CapacitorVideoPlayerError: Error {
         let videoPlayerFullScreenView = FullScreenVideoPlayerView(
             url: videoUrl, rate: rate, stUrl: subTitleUrl,
             stLanguage: language, stOptions: options,
-            playerId: playerId, exitOnEnd: exitOnEnd)
+            playerId: playerId, exitOnEnd: exitOnEnd, loopOnEnd: loopOnEnd)
         return videoPlayerFullScreenView
     }
     // swiftlint:enable function_parameter_count
 
-    @objc public func pickVideoFromInternal(rate: Float, exitOnEnd: Bool) ->
+    @objc public func pickVideoFromInternal(rate: Float, exitOnEnd: Bool,
+                                            loopOnEnd: Bool) ->
     VideoPickerViewController {
         let videoPickerViewController = VideoPickerViewController()
         videoPickerViewController.rate = rate
         videoPickerViewController.exitOnEnd = exitOnEnd
+        videoPickerViewController.loopOnEnd = loopOnEnd
         return videoPickerViewController
 
     }

@@ -81,6 +81,11 @@ export class CapacitorVideoPlayerWeb
         const exitRet = options.exitOnEnd;
         exitOnEnd = exitRet != null ? exitRet : true;
       }
+      let loopOnEnd = false;
+      if (Object.keys(options).includes('loopOnEnd') && !exitOnEnd) {
+        const loopRet = options.loopOnEnd;
+        loopOnEnd = loopRet != null ? loopRet : false;
+      }
       const componentTag: string = options.componentTag
         ? options.componentTag
         : '';
@@ -101,6 +106,7 @@ export class CapacitorVideoPlayerWeb
         mode,
         rate,
         exitOnEnd,
+        loopOnEnd,
         componentTag,
         playerSize,
       );
@@ -561,6 +567,7 @@ export class CapacitorVideoPlayerWeb
     mode: string,
     rate: number,
     exitOnEnd: boolean,
+    loopOnEnd: boolean,
     componentTag: string,
     playerSize: IPlayerSize,
   ): Promise<any> {
@@ -617,6 +624,7 @@ export class CapacitorVideoPlayerWeb
         playerId,
         rate,
         exitOnEnd,
+        loopOnEnd,
         videoContainer,
         2,
         playerSize.width,
@@ -630,6 +638,7 @@ export class CapacitorVideoPlayerWeb
         'fullscreen',
         rate,
         exitOnEnd,
+        loopOnEnd,
         videoContainer,
         99995,
       );

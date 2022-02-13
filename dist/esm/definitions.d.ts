@@ -119,6 +119,11 @@ export interface capVideoPlayerOptions {
      */
     exitOnEnd?: boolean;
     /**
+     * Loop on VideoEnd when exitOnEnd false
+     * default: false
+     */
+    loopOnEnd?: boolean;
+    /**
      * Component Tag or DOM Element Tag (React app)
      */
     componentTag?: string;

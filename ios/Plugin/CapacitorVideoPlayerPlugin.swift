@@ -19,6 +19,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
     var audioSession: AVAudioSession?
     var mode: String?
     var exitOnEnd: Bool = true
+    var loopOnEnd: Bool = false
     var fsPlayerId: String = "fullscreen"
     var videoRate: Float = 1.0
     var playObserver: Any?
@@ -90,10 +91,17 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
         if let sexitOnEnd = call.options["exitOnEnd"] as? Bool {
             exitOnEnd = sexitOnEnd
         }
+        var loopOnEnd: Bool = false
+        if let sloopOnEnd = call.options["loopOnEnd"] as? Bool {
+            if !exitOnEnd {
+                loopOnEnd = sloopOnEnd
+            }
+        }
         self.fsPlayerId = playerId
         self.mode = mode
         self.videoRate = mRate
         self.exitOnEnd = exitOnEnd
+        self.loopOnEnd = loopOnEnd
         if mode == "fullscreen" {
             guard let videoPath = call.options["url"] as? String else {
                 let error: String = "Must provide a video url"
@@ -117,7 +125,8 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                     if let videoPickerViewController =
                         self?.implementation.pickVideoFromInternal(
                             rate: self?.videoRate ?? 1.0,
-                            exitOnEnd: self?.exitOnEnd ?? true) {
+                            exitOnEnd: self?.exitOnEnd ?? true,
+                            loopOnEnd: self?.loopOnEnd ?? false) {
                         self?.bridge?.viewController?.present(
                             videoPickerViewController,
                             animated: true, completion: {return})
@@ -161,7 +170,8 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                 guard let call = self.call else { return }
                 self.createVideoPlayerFullscreenView(
                     call: call, videoUrl: url, rate: videoRate,
-                    exitOnEnd: exitOnEnd, subTitleUrl: subTitle,
+                    exitOnEnd: exitOnEnd, loopOnEnd: loopOnEnd,
+                    subTitleUrl: subTitle,
                     subTitleLanguage: subTitleLanguage,
                     subTitleOptions: subTitleOptions)
 

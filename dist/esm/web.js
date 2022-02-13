@@ -60,6 +60,11 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 const exitRet = options.exitOnEnd;
                 exitOnEnd = exitRet != null ? exitRet : true;
             }
+            let loopOnEnd = false;
+            if (Object.keys(options).includes('loopOnEnd') && !exitOnEnd) {
+                const loopRet = options.loopOnEnd;
+                loopOnEnd = loopRet != null ? loopRet : false;
+            }
             const componentTag = options.componentTag
                 ? options.componentTag
                 : '';
@@ -74,7 +79,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             if (mode === 'embedded') {
                 playerSize = this.checkSize(options);
             }
-            const result = await this._initializeVideoPlayer(url, playerId, mode, rate, exitOnEnd, componentTag, playerSize);
+            const result = await this._initializeVideoPlayer(url, playerId, mode, rate, exitOnEnd, loopOnEnd, componentTag, playerSize);
             return Promise.resolve({ result: result });
         }
         else {
@@ -521,7 +526,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         }
         return playerSize;
     }
-    async _initializeVideoPlayer(url, playerId, mode, rate, exitOnEnd, componentTag, playerSize) {
+    async _initializeVideoPlayer(url, playerId, mode, rate, exitOnEnd, loopOnEnd, componentTag, playerSize) {
         const videoURL = url
             ? url.indexOf('%2F') == -1
                 ? encodeURI(url)
@@ -565,11 +570,11 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             this.handlePlayerExit();
         });
         if (mode === 'embedded') {
-            this._players[playerId] = new VideoPlayer('embedded', videoURL, playerId, rate, exitOnEnd, videoContainer, 2, playerSize.width, playerSize.height);
+            this._players[playerId] = new VideoPlayer('embedded', videoURL, playerId, rate, exitOnEnd, loopOnEnd, videoContainer, 2, playerSize.width, playerSize.height);
             await this._players[playerId].initialize();
         }
         else if (mode === 'fullscreen') {
-            this._players['fullscreen'] = new VideoPlayer('fullscreen', videoURL, 'fullscreen', rate, exitOnEnd, videoContainer, 99995);
+            this._players['fullscreen'] = new VideoPlayer('fullscreen', videoURL, 'fullscreen', rate, exitOnEnd, loopOnEnd, videoContainer, 99995);
             await this._players['fullscreen'].initialize();
         }
         else {

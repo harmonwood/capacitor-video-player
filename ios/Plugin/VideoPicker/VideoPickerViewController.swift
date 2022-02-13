@@ -13,6 +13,7 @@ import UIKit
 open class VideoPickerViewController: UIViewController {
     private var _videoRate: Float = 1.0
     private var _exitOnEnd: Bool = true
+    private var _loopOnEnd: Bool = false
 
     // MARK: - Set-up rate
 
@@ -33,6 +34,17 @@ open class VideoPickerViewController: UIViewController {
         }
         set {
             self._exitOnEnd = newValue
+        }
+    }
+
+    // MARK: - Set-up loopOnEnd
+
+    var loopOnEnd: Bool {
+        get {
+            return self._loopOnEnd
+        }
+        set {
+            self._loopOnEnd = newValue
         }
     }
 
@@ -59,7 +71,8 @@ extension VideoPickerViewController: UIImagePickerControllerDelegate {
         }
         let vId: [String: Any] = ["videoUrl": url,
                                   "videoRate": rate,
-                                  "exitOnEnd": exitOnEnd]
+                                  "exitOnEnd": exitOnEnd,
+                                  "loopOnEnd": loopOnEnd]
         NotificationCenter.default.post(name: .videoPathInternalReady, object: nil, userInfo: vId)
     }
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {

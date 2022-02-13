@@ -79,11 +79,12 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public Boolean isInternal;
     public Long videoId;
     public Boolean exitOnEnd;
+    public Boolean loopOnEnd;
 
     private static final String TAG = FullscreenExoPlayerFragment.class.getName();
     public static final long UNKNOWN_TIME = -1L;
     private final List<String> supportedFormat = Arrays.asList(
-        new String[] { "mp4", "webm", "ogv", "3gp", "flv", "dash", "mpd", "m3u8", "ism", "ytube", "" }
+            new String[] { "mp4", "webm", "ogv", "3gp", "flv", "dash", "mpd", "m3u8", "ism", "ytube", "" }
     );
     private PlaybackStateListener playbackStateListener;
     private PlayerView playerView;
@@ -158,12 +159,12 @@ public class FullscreenExoPlayerFragment extends Fragment {
         linearLayout.setVisibility(View.INVISIBLE);
         playerView.setControllerShowTimeoutMs(3000);
         playerView.setControllerVisibilityListener(
-            new PlayerControlView.VisibilityListener() {
-                @Override
-                public void onVisibilityChange(int visibility) {
-                    linearLayout.setVisibility(visibility);
+                new PlayerControlView.VisibilityListener() {
+                    @Override
+                    public void onVisibilityChange(int visibility) {
+                        linearLayout.setVisibility(visibility);
+                    }
                 }
-            }
         );
         // Listening for events
         playbackStateListener = new PlaybackStateListener();
@@ -193,72 +194,72 @@ public class FullscreenExoPlayerFragment extends Fragment {
             }
 
             getActivity()
-                .runOnUiThread(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            // Set the onKey listener
-                            view.setFocusableInTouchMode(true);
-                            view.requestFocus();
-                            view.setOnKeyListener(
-                                new View.OnKeyListener() {
-                                    @Override
-                                    public boolean onKey(View v, int keyCode, KeyEvent event) {
-                                        if (event.getAction() == KeyEvent.ACTION_UP) {
-                                            long videoPosition = player.getCurrentPosition();
-                                            Log.v(TAG, "$$$$ onKey " + keyCode + " $$$$");
-                                            if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME) {
-                                                Log.v(TAG, "$$$$ Going to backpress $$$$");
-                                                backPressed();
-                                            } else if (isTV) {
-                                                switch (keyCode) {
-                                                    case KeyEvent.KEYCODE_DPAD_RIGHT:
-                                                        fastForward(videoPosition, 1);
-                                                        break;
-                                                    case KeyEvent.KEYCODE_DPAD_LEFT:
-                                                        rewind(videoPosition, 1);
-                                                        break;
-                                                    case KeyEvent.KEYCODE_DPAD_CENTER:
-                                                        play_pause();
-                                                        break;
-                                                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
-                                                        fastForward(videoPosition, 2);
-                                                        break;
-                                                    case KeyEvent.KEYCODE_MEDIA_REWIND:
-                                                        rewind(videoPosition, 2);
-                                                        break;
+                    .runOnUiThread(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Set the onKey listener
+                                    view.setFocusableInTouchMode(true);
+                                    view.requestFocus();
+                                    view.setOnKeyListener(
+                                            new View.OnKeyListener() {
+                                                @Override
+                                                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                                                    if (event.getAction() == KeyEvent.ACTION_UP) {
+                                                        long videoPosition = player.getCurrentPosition();
+                                                        Log.v(TAG, "$$$$ onKey " + keyCode + " $$$$");
+                                                        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME) {
+                                                            Log.v(TAG, "$$$$ Going to backpress $$$$");
+                                                            backPressed();
+                                                        } else if (isTV) {
+                                                            switch (keyCode) {
+                                                                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                                                    fastForward(videoPosition, 1);
+                                                                    break;
+                                                                case KeyEvent.KEYCODE_DPAD_LEFT:
+                                                                    rewind(videoPosition, 1);
+                                                                    break;
+                                                                case KeyEvent.KEYCODE_DPAD_CENTER:
+                                                                    play_pause();
+                                                                    break;
+                                                                case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                                                                    fastForward(videoPosition, 2);
+                                                                    break;
+                                                                case KeyEvent.KEYCODE_MEDIA_REWIND:
+                                                                    rewind(videoPosition, 2);
+                                                                    break;
+                                                            }
+                                                        }
+                                                        return true;
+                                                    } else {
+                                                        return false;
+                                                    }
                                                 }
                                             }
-                                            return true;
-                                        } else {
-                                            return false;
-                                        }
-                                    }
-                                }
-                            );
+                                    );
 
-                            // initialize the player
-                            initializePlayer();
+                                    // initialize the player
+                                    initializePlayer();
 
-                            closeBtn.setOnClickListener(
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        playerExit();
-                                    }
+                                    closeBtn.setOnClickListener(
+                                            new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    playerExit();
+                                                }
+                                            }
+                                    );
+                                    pipBtn.setOnClickListener(
+                                            new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    pictureInPictureMode();
+                                                }
+                                            }
+                                    );
                                 }
-                            );
-                            pipBtn.setOnClickListener(
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        pictureInPictureMode();
-                                    }
-                                }
-                            );
-                        }
-                    }
-                );
+                            }
+                    );
         } else {
             Log.d(TAG, "Video path wrong or type not supported");
             Toast.makeText(context, "Video path wrong or type not supported", Toast.LENGTH_SHORT).show();
@@ -271,10 +272,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
      */
     private void backPressed() {
         if (
-            !isInPictureInPictureMode &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
-            packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) &&
-            isPIPModeeEnabled
+                !isInPictureInPictureMode &&
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
+                        packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) &&
+                        isPIPModeeEnabled
         ) {
             pictureInPictureMode();
         } else {
@@ -303,7 +304,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
             linearLayout.setVisibility(View.INVISIBLE);
             // require android O or higher
             if (
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
             ) {
                 pictureInPictureParams = new PictureInPictureParams.Builder();
                 // setup height and width of the PIP window
@@ -397,6 +398,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
             currentWindow = player.getCurrentWindowIndex();
             mediaSessionConnector.setPlayer(null);
             mediaSession.setActive(false);
+            player.setRepeatMode(player.REPEAT_MODE_OFF);
             player.removeListener(playbackStateListener);
             player.release();
             player = null;
@@ -419,7 +421,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
         } else {
             isInPictureInPictureMode = false;
             if (
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
             ) {
                 playerView.setUseController(true);
             }
@@ -435,12 +437,12 @@ public class FullscreenExoPlayerFragment extends Fragment {
     @SuppressLint("InlinedApi")
     private void hideSystemUi() {
         if (playerView != null) playerView.setSystemUiVisibility(
-            View.SYSTEM_UI_FLAG_LOW_PROFILE |
-            View.SYSTEM_UI_FLAG_FULLSCREEN |
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
-            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                View.SYSTEM_UI_FLAG_LOW_PROFILE |
+                        View.SYSTEM_UI_FLAG_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
         );
     }
 
@@ -462,11 +464,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
             trackSelector = new DefaultTrackSelector(context, videoTrackSelectionFactory);
             LoadControl loadControl = new DefaultLoadControl();
             player =
-                new SimpleExoPlayer.Builder(context)
-                    .setTrackSelector(trackSelector)
-                    .setLoadControl(loadControl)
-                    .setBandwidthMeter(bandwidthMeter)
-                    .build();
+                    new SimpleExoPlayer.Builder(context)
+                            .setTrackSelector(trackSelector)
+                            .setLoadControl(loadControl)
+                            .setBandwidthMeter(bandwidthMeter)
+                            .build();
         }
 
         playerView.setPlayer(player);
@@ -487,6 +489,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
             player.setAudioAttributes(AudioAttributes.DEFAULT, true);
             player.addListener(playbackStateListener);
             player.prepare(mediaSource, false, false);
+            if (loopOnEnd) {
+                player.setRepeatMode(player.REPEAT_MODE_ONE);
+            } else {
+                player.setRepeatMode(player.REPEAT_MODE_OFF);
+            }
         }
         Map<String, Object> info = new HashMap<String, Object>() {
             {
@@ -522,10 +529,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
             background = Color.TRANSPARENT;
         }
         playerView
-            .getSubtitleView()
-            .setStyle(
-                new CaptionStyleCompat(foreground, background, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null)
-            );
+                .getSubtitleView()
+                .setStyle(
+                        new CaptionStyleCompat(foreground, background, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null)
+                );
         playerView.getSubtitleView().setFixedTextSize(TypedValue.COMPLEX_UNIT_DIP, stFontSize);
     }
 
@@ -558,21 +565,21 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private MediaSource buildHttpMediaSource() {
         MediaSource mediaSource = null;
         HttpDataSource.Factory httpDataSourceFactory = new DefaultHttpDataSourceFactory(
-            "jeep-exoplayer-plugin",
-            DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-            1800000,
-            true
+                "jeep-exoplayer-plugin",
+                DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+                1800000,
+                true
         );
 
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, httpDataSourceFactory);
 
         if (
-            vType.equals("mp4") ||
-            vType.equals("webm") ||
-            vType.equals("ogv") ||
-            vType.equals("3gp") ||
-            vType.equals("flv") ||
-            vType.equals("")
+                vType.equals("mp4") ||
+                        vType.equals("webm") ||
+                        vType.equals("ogv") ||
+                        vType.equals("3gp") ||
+                        vType.equals("flv") ||
+                        vType.equals("")
         ) {
             mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
         } else if (vType.equals("dash") || vType.equals("mpd")) {
@@ -611,10 +618,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
         List<String> colors = Arrays.asList(color.split(","));
         if (colors.size() == 4) {
             ret =
-                (Math.round(Float.parseFloat(colors.get(3).trim()) * 255) & 0xff) << 24 |
-                (Integer.parseInt(colors.get(0).trim()) & 0xff) << 16 |
-                (Integer.parseInt(colors.get(1).trim()) & 0xff) << 8 |
-                (Integer.parseInt(colors.get(2).trim()) & 0xff);
+                    (Math.round(Float.parseFloat(colors.get(3).trim()) * 255) & 0xff) << 24 |
+                            (Integer.parseInt(colors.get(0).trim()) & 0xff) << 16 |
+                            (Integer.parseInt(colors.get(1).trim()) & 0xff) << 8 |
+                            (Integer.parseInt(colors.get(2).trim()) & 0xff);
         }
         return ret;
     }
@@ -626,7 +633,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
         String mimeType = getMimeType(sturi);
         //Add subtitles
         SingleSampleMediaSource subtitleSource = new SingleSampleMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(sturi, Format.createTextSampleFormat(null, mimeType, Format.NO_VALUE, language, null), C.TIME_UNSET);
+                .createMediaSource(sturi, Format.createTextSampleFormat(null, mimeType, Format.NO_VALUE, language, null), C.TIME_UNSET);
 
         mediaSources[1] = subtitleSource;
 
@@ -733,8 +740,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
             linearLayout.setVisibility(View.INVISIBLE);
         }
         long seekPosition = player.getCurrentPosition() == UNKNOWN_TIME
-            ? 0
-            : Math.min(Math.max(0, timeSecond * 1000), player.getDuration());
+                ? 0
+                : Math.min(Math.max(0, timeSecond * 1000), player.getDuration());
         player.seekTo(seekPosition);
     }
 
