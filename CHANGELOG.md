@@ -1,3 +1,9 @@
+## 3.4.0 (2022-03-01)
+
+### Bug Fixes
+
+- Fix On Android, apps exit if you play a video, pause, and then resume the app issue#77
+
 ## 3.4.0-4 (2022-02-13)
 
 ### Add Features
