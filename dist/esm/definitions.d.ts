@@ -114,15 +114,20 @@ export interface capVideoPlayerOptions {
      */
     rate?: number;
     /**
-     * Exit on VideoEnd
+     * Exit on VideoEnd (iOS, Android)
      * default: true
      */
     exitOnEnd?: boolean;
     /**
-     * Loop on VideoEnd when exitOnEnd false
+     * Loop on VideoEnd when exitOnEnd false (iOS, Android)
      * default: false
      */
     loopOnEnd?: boolean;
+    /**
+     * Picture in Picture Enable (iOS, Android)
+     * default: true
+     */
+    pipEnabled?: boolean;
     /**
      * Component Tag or DOM Element Tag (React app)
      */

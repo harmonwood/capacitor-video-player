@@ -102,10 +102,15 @@ extension CapacitorVideoPlayerPlugin {
             NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
             return
         }
+        guard let pipEnabled = info["pipEnabled"] as? Bool else {
+            NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
+            return
+        }
         guard let call = self.call else { return }
         self.createVideoPlayerFullscreenView(
             call: call, videoUrl: videoUrl,
-            rate: videoRate, exitOnEnd: exitOnEnd, loopOnEnd: loopOnEnd, subTitleUrl: nil,
+            rate: videoRate, exitOnEnd: exitOnEnd, loopOnEnd: loopOnEnd,
+            pipEnabled: pipEnabled, subTitleUrl: nil,
             subTitleLanguage: nil, subTitleOptions: nil)
         return
     }

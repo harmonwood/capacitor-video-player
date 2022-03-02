@@ -20,6 +20,7 @@ open class FullScreenVideoPlayerView: UIView {
     private var _isBufferEmpty: [String: Bool] = [:]
     private var _exitOnEnd: Bool = true
     private var _loopOnEnd: Bool = false
+    private var _pipEnabled: Bool = true
     private var _firstReadyToPlay: Bool = true
     private var _stUrl: URL?
     private var _stLanguage: String?
@@ -36,9 +37,9 @@ open class FullScreenVideoPlayerView: UIView {
     var playerRateObserver: NSKeyValueObservation?
     var videoPlayerFrameObserver: NSKeyValueObservation?
 
-    init(url: URL, rate: Float, stUrl: URL?, stLanguage: String?,
-         stOptions: [String: Any]?, playerId: String,
-         exitOnEnd: Bool, loopOnEnd: Bool) {
+    init(url: URL, rate: Float, playerId: String, exitOnEnd: Bool,
+         loopOnEnd: Bool, pipEnabled: Bool, stUrl: URL?,
+         stLanguage: String?, stOptions: [String: Any]?) {
         //self._videoPath = videoPath
         self._url = url
         self._stUrl = stUrl
@@ -46,6 +47,7 @@ open class FullScreenVideoPlayerView: UIView {
         self._stOptions = stOptions
         self._exitOnEnd = exitOnEnd
         self._loopOnEnd = loopOnEnd
+        self._pipEnabled = pipEnabled
         self._videoId = playerId
         self._videoRate = rate
         self.videoPlayer = AVPlayerViewController()
@@ -128,7 +130,7 @@ open class FullScreenVideoPlayerView: UIView {
         self.player?.currentItem?.audioTimePitchAlgorithm = .timeDomain
         self.videoPlayer.player = self.player
         self.videoPlayer.allowsPictureInPicturePlayback = false
-        if isPIPModeAvailable {
+        if isPIPModeAvailable && self._pipEnabled {
             self.videoPlayer.allowsPictureInPicturePlayback = true
         }
 

@@ -1,3 +1,17 @@
+## 3.4.1-1 (2022-03-02)
+
+### Chores
+
+- Update to Capacitor 3.4.1
+
+### Add Features
+
+ - Add `pipEnable` boolean parameter in `capVideoPlayerOptions` (iOS, Android)
+
+### Bug Fixes
+
+ - Fix audio continue to play when tap on X in PIP window (Android)
+
 ## 3.4.0 (2022-03-01)
 
 ### Bug Fixes
@@ -8,7 +22,7 @@
 
 ### Add Features
 
- - Add `loopOnEnd` boolean parameter in `capVideoPlayerOptions`
+ - Add `loopOnEnd` boolean parameter in `capVideoPlayerOptions` (iOS, Android)
 
 ### Bug Fixes
 
@@ -18,7 +32,7 @@
 
 ### Add Features
 
- - Add `exitOnEnd` boolean parameter in `capVideoPlayerOptions`
+ - Add `exitOnEnd` boolean parameter in `capVideoPlayerOptions` (iOS, Android)
 
 ### Bug Fixes
 

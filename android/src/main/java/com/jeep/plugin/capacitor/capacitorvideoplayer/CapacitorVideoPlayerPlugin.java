@@ -39,6 +39,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private String mode;
     private Boolean exitOnEnd = true;
     private Boolean loopOnEnd = false;
+    private Boolean pipEnabled = true;
     private FullscreenExoPlayerFragment fsFragment;
     private PickerVideoFragment pkFragment;
     private FilesUtils filesUtils;
@@ -104,6 +105,11 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             _loopOnEnd = call.getBoolean("loopOnEnd");
         }
         if (!exitOnEnd) loopOnEnd = _loopOnEnd;
+        Boolean _pipEnabled = true;
+        if (call.getData().has("pipEnabled")) {
+            _pipEnabled = call.getBoolean("pipEnabled");
+        }
+        pipEnabled = _pipEnabled;
 
         if ("fullscreen".equals(mode)) {
             fsPlayerId = playerId;
@@ -150,6 +156,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                         videoRate,
                         exitOnEnd,
                         loopOnEnd,
+                        pipEnabled,
                         subTitlePath,
                         language,
                         subTitleOptions,
@@ -884,6 +891,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                                 videoRate,
                                 exitOnEnd,
                                 loopOnEnd,
+                                pipEnabled,
                                 null,
                                 null,
                                 null,
@@ -912,6 +920,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         Float videoRate,
         Boolean exitOnEnd,
         Boolean loopOnEnd,
+        Boolean pipEnabled,
         String subTitle,
         String language,
         JSObject subTitleOptions,
@@ -926,6 +935,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 videoRate,
                 exitOnEnd,
                 loopOnEnd,
+                pipEnabled,
                 subTitle,
                 language,
                 subTitleOptions,

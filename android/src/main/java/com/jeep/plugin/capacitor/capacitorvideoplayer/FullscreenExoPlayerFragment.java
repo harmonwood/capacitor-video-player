@@ -81,6 +81,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public Long videoId;
     public Boolean exitOnEnd;
     public Boolean loopOnEnd;
+    public Boolean pipEnabled;
 
     private static final String TAG = FullscreenExoPlayerFragment.class.getName();
     public static final long UNKNOWN_TIME = -1L;
@@ -153,7 +154,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
         Pbar = view.findViewById(R.id.indeterminateBar);
         closeBtn = view.findViewById(R.id.exo_close);
         pipBtn = view.findViewById(R.id.exo_pip);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || !pipEnabled) {
             pipBtn.setVisibility(View.GONE);
         }
         playerView.requestFocus();
@@ -357,18 +358,20 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public void onStop() {
         super.onStop();
         boolean isAppBackground = isApplicationSentToBackground(context);
-        if (!isAppBackground) {
-            if (Util.SDK_INT >= 24) {
-                if (player != null) {
-                    player.seekTo(0);
-                    player.setVolume(curVolume);
-                }
-                releasePlayer();
-            }
-        }
         if (isInPictureInPictureMode) {
             linearLayout.setVisibility(View.VISIBLE);
+            playerExit();
             getActivity().finishAndRemoveTask();
+        } else {
+            if (!isAppBackground) {
+                if (Util.SDK_INT >= 24) {
+                    if (player != null) {
+                        player.seekTo(0);
+                        player.setVolume(curVolume);
+                    }
+                    releasePlayer();
+                }
+            }
         }
     }
 
@@ -380,8 +383,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
         super.onPause();
 
         if (!isInPictureInPictureMode) {
-            if (player != null) player.setPlayWhenReady(false);
             if (Util.SDK_INT < 24) {
+                if (player != null) player.setPlayWhenReady(false);
                 releasePlayer();
             }
         } else {

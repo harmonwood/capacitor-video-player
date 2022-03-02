@@ -14,6 +14,7 @@ open class VideoPickerViewController: UIViewController {
     private var _videoRate: Float = 1.0
     private var _exitOnEnd: Bool = true
     private var _loopOnEnd: Bool = false
+    private var _pipEnabled: Bool = true
 
     // MARK: - Set-up rate
 
@@ -47,6 +48,16 @@ open class VideoPickerViewController: UIViewController {
             self._loopOnEnd = newValue
         }
     }
+    // MARK: - Set-up pipEnabled
+
+    var pipEnabled: Bool {
+        get {
+            return self._pipEnabled
+        }
+        set {
+            self._pipEnabled = newValue
+        }
+    }
 
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -72,13 +83,16 @@ extension VideoPickerViewController: UIImagePickerControllerDelegate {
         let vId: [String: Any] = ["videoUrl": url,
                                   "videoRate": rate,
                                   "exitOnEnd": exitOnEnd,
-                                  "loopOnEnd": loopOnEnd]
+                                  "loopOnEnd": loopOnEnd,
+                                  "pipEnabled": pipEnabled]
         NotificationCenter.default.post(name: .videoPathInternalReady, object: nil, userInfo: vId)
     }
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         let vId: [String: Any] = ["videoUrl": "",
                                   "videoRate": rate,
-                                  "exitOnEnd": exitOnEnd]
+                                  "exitOnEnd": exitOnEnd,
+                                  "loopOnEnd": loopOnEnd,
+                                  "pipEnabled": pipEnabled]
         NotificationCenter.default.post(name: .videoPathInternalReady, object: nil, userInfo: vId)
     }
 }

@@ -21,6 +21,7 @@ public class CapacitorVideoPlayer {
         Float videoRate,
         Boolean exitOnEnd,
         Boolean loopOnEnd,
+        Boolean pipEnabled,
         String subTitle,
         String language,
         JSObject subTitleOptions,
@@ -35,6 +36,7 @@ public class CapacitorVideoPlayer {
         fsFragment.videoRate = videoRate;
         fsFragment.exitOnEnd = exitOnEnd;
         fsFragment.loopOnEnd = loopOnEnd;
+        fsFragment.pipEnabled = pipEnabled;
         fsFragment.subTitle = subTitle;
         fsFragment.language = language;
         fsFragment.subTitleOptions = subTitleOptions;
