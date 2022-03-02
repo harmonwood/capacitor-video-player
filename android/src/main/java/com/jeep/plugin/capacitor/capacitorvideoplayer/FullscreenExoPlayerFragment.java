@@ -291,8 +291,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
                 put("dismiss", "1");
             }
         };
-        player.seekTo(0);
-        player.setVolume(curVolume);
+        if (player != null) {
+            player.seekTo(0);
+            player.setVolume(curVolume);
+        }
         releasePlayer();
         NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
     }
