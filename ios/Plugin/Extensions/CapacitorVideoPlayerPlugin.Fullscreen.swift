@@ -58,7 +58,7 @@ extension CapacitorVideoPlayerPlugin {
                     } catch let error as NSError {
                         print("Unable to activate audio session:  \(error.localizedDescription)")
                         call.resolve([ "result": false, "method": "createVideoPlayerFullScreenView",
-                                       "message": error])
+                                       "message": error.localizedDescription])
                         return
                     }
                 })
