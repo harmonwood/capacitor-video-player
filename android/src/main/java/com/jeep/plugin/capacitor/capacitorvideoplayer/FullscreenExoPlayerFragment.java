@@ -191,6 +191,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
         if (uri != null || isInternal) {
             // go fullscreen
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             if (savedInstanceState != null) {
                 mCurrentPosition = savedInstanceState.getInt(PLAYBACK_TIME);
             }
@@ -460,6 +461,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      */
     private void showSystemUI() {
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getActivity().getWindow().getDecorView().setSystemUiVisibility(View.VISIBLE);
     }
 

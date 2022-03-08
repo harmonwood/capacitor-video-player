@@ -1,3 +1,11 @@
+## 3.4.1-2 (2022-03-08)
+
+### Bug Fixes
+
+ - Fix issue#78 iOS
+ - Fix issue#79 Android
+ - Fix issue#80 Android
+ 
 ## 3.4.1-1 (2022-03-02)
 
 ### Chores

@@ -46,10 +46,9 @@ extension CapacitorVideoPlayerPlugin {
                     // Set the audio session category, mode, and options.
                     do {
                         try self?.audioSession?
-                            .setCategory(AVAudioSession.Category.playback,
-                                         mode: AVAudioSession.Mode.moviePlayback,
-                                         options: [.mixWithOthers, .allowAirPlay])
-                        // Activate the audio session.
+                            .setCategory(playback,
+                                         mode: .default,
+                                         options: [.mixWithOthers])
                         try self?.audioSession?.setActive(true)
                         call.resolve([ "result": true,
                                        "method": "createVideoPlayerFullScreenView",
