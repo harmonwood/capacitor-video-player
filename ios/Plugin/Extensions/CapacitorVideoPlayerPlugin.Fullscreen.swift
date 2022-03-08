@@ -46,7 +46,7 @@ extension CapacitorVideoPlayerPlugin {
                     // Set the audio session category, mode, and options.
                     do {
                         try self?.audioSession?
-                            .setCategory(playback,
+                            .setCategory(.playback,
                                          mode: .default,
                                          options: [.mixWithOthers])
                         try self?.audioSession?.setActive(true)
