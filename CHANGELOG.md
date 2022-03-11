@@ -1,3 +1,9 @@
+## 3.4.1-4 (2022-03-11)
+
+### Add Features
+
+ - Add `bkmodeEnabled` boolean parameter in `capVideoPlayerOptions` to enable/disable BackgroundMode (iOS)
+
 ## 3.4.1-3 (2022-03-08)
 
 ### Bug Fixes

@@ -21,6 +21,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
     var exitOnEnd: Bool = true
     var loopOnEnd: Bool = false
     var pipEnabled: Bool = true
+    var backModeEnabled: Bool = true
     var fsPlayerId: String = "fullscreen"
     var videoRate: Float = 1.0
     var playObserver: Any?
@@ -102,12 +103,18 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
         if let spipEnabled = call.options["pipEnabled"] as? Bool {
             pipEnabled = spipEnabled
         }
+        var bkModeEnabled: Bool = true
+        if let sbkModeEnabled = call.options["bkmodeEnabled"] as? Bool {
+            bkModeEnabled = sbkModeEnabled
+        }
         self.fsPlayerId = playerId
         self.mode = mode
         self.videoRate = mRate
         self.exitOnEnd = exitOnEnd
         self.loopOnEnd = loopOnEnd
         self.pipEnabled = pipEnabled
+        if !self.pipEnabled {isPIPModeAvailable = false}
+        self.backModeEnabled = bkModeEnabled
         if mode == "fullscreen" {
             guard let videoPath = call.options["url"] as? String else {
                 let error: String = "Must provide a video url"
@@ -133,7 +140,8 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                             rate: self?.videoRate ?? 1.0,
                             exitOnEnd: self?.exitOnEnd ?? true,
                             loopOnEnd: self?.loopOnEnd ?? false,
-                            pipEnabled: self?.pipEnabled ?? true) {
+                            pipEnabled: self?.pipEnabled ?? true,
+                            backModeEnabled: self?.backModeEnabled ?? true) {
                         self?.bridge?.viewController?.present(
                             videoPickerViewController,
                             animated: true, completion: {return})
@@ -178,7 +186,9 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                 self.createVideoPlayerFullscreenView(
                     call: call, videoUrl: url, rate: videoRate,
                     exitOnEnd: exitOnEnd, loopOnEnd: loopOnEnd,
-                    pipEnabled: pipEnabled, subTitleUrl: subTitle,
+                    pipEnabled: pipEnabled,
+                    backModeEnabled: backModeEnabled,
+                    subTitleUrl: subTitle,
                     subTitleLanguage: subTitleLanguage,
                     subTitleOptions: subTitleOptions)
 

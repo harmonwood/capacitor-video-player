@@ -87,16 +87,17 @@ extension CapacitorVideoPlayerPlugin {
             self.videoPlayerFullScreenView = nil
         }
         self.bridge?.viewController?.dismiss(animated: true, completion: {
-            do {
-                // DeActivate the audio session.
-                try self.audioSession?.setActive(false)
-                self.audioSession = nil
-            } catch {
-                let error: String = "playerFullscreenExit: Failed to deactivate " +
-                    "audio session category"
-                print(error)
+            if self.backModeEnabled {
+                do {
+                    // DeActivate the audio session.
+                    try self.audioSession?.setActive(false)
+                    self.audioSession = nil
+                } catch {
+                    let error: String = "playerFullscreenExit: Failed to "
+                        + "deactivate audio session category"
+                    print(error)
+                }
             }
-
         })
         return
     }

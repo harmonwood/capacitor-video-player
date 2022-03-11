@@ -15,6 +15,7 @@ open class VideoPickerViewController: UIViewController {
     private var _exitOnEnd: Bool = true
     private var _loopOnEnd: Bool = false
     private var _pipEnabled: Bool = true
+    private var _backModeEnabled: Bool = true
 
     // MARK: - Set-up rate
 
@@ -48,6 +49,7 @@ open class VideoPickerViewController: UIViewController {
             self._loopOnEnd = newValue
         }
     }
+
     // MARK: - Set-up pipEnabled
 
     var pipEnabled: Bool {
@@ -56,6 +58,17 @@ open class VideoPickerViewController: UIViewController {
         }
         set {
             self._pipEnabled = newValue
+        }
+    }
+
+    // MARK: - Set-up backModeEnabled
+
+    var backModeEnabled: Bool {
+        get {
+            return self._backModeEnabled
+        }
+        set {
+            self._backModeEnabled = newValue
         }
     }
 
@@ -84,7 +97,8 @@ extension VideoPickerViewController: UIImagePickerControllerDelegate {
                                   "videoRate": rate,
                                   "exitOnEnd": exitOnEnd,
                                   "loopOnEnd": loopOnEnd,
-                                  "pipEnabled": pipEnabled]
+                                  "pipEnabled": pipEnabled,
+                                  "backModeEnabled": backModeEnabled]
         NotificationCenter.default.post(name: .videoPathInternalReady, object: nil, userInfo: vId)
     }
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -92,8 +106,10 @@ extension VideoPickerViewController: UIImagePickerControllerDelegate {
                                   "videoRate": rate,
                                   "exitOnEnd": exitOnEnd,
                                   "loopOnEnd": loopOnEnd,
-                                  "pipEnabled": pipEnabled]
-        NotificationCenter.default.post(name: .videoPathInternalReady, object: nil, userInfo: vId)
+                                  "pipEnabled": pipEnabled,
+                                  "backModeEnabled": backModeEnabled]
+        NotificationCenter.default.post(name: .videoPathInternalReady,
+                                        object: nil, userInfo: vId)
     }
 }
 

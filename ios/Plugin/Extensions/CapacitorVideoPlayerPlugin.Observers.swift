@@ -14,55 +14,96 @@ extension CapacitorVideoPlayerPlugin {
 
     // MARK: - Add Observers
 
+    // swiftlint:disable function_body_length
     @objc func addObserversToNotificationCenter() {
         // add Observers
 
-        playObserver = NotificationCenter.default.addObserver(forName: .playerItemPlay, object: nil, queue: nil,
-                                                              using: playerItemPlay)
-        pauseObserver = NotificationCenter.default.addObserver(forName: .playerItemPause, object: nil, queue: nil,
-                                                               using: playerItemPause)
-        endObserver = NotificationCenter.default.addObserver(forName: .playerItemEnd, object: nil, queue: nil,
-                                                             using: playerItemEnd)
-        readyObserver = NotificationCenter.default.addObserver(forName: .playerItemReady, object: nil, queue: nil,
-                                                               using: playerItemReady)
-        fsDismissObserver = NotificationCenter.default.addObserver(forName: .playerFullscreenDismiss, object: nil,
-                                                                   queue: nil, using: playerFullscreenDismiss)
-        vpInternalObserver = NotificationCenter.default.addObserver(forName: .videoPathInternalReady, object: nil,
-                                                                    queue: nil, using: videoPathInternalReady)
+        playObserver = NotificationCenter.default
+            .addObserver(forName: .playerItemPlay, object: nil, queue: nil,
+                         using: playerItemPlay)
+        pauseObserver = NotificationCenter.default
+            .addObserver(forName: .playerItemPause, object: nil,
+                         queue: nil, using: playerItemPause)
+        endObserver = NotificationCenter.default
+            .addObserver(forName: .playerItemEnd, object: nil, queue: nil,
+                         using: playerItemEnd)
+        readyObserver = NotificationCenter.default
+            .addObserver(forName: .playerItemReady, object: nil,
+                         queue: nil, using: playerItemReady)
+        fsDismissObserver = NotificationCenter.default
+            .addObserver(forName: .playerFullscreenDismiss, object: nil,
+                         queue: nil, using: playerFullscreenDismiss)
+        vpInternalObserver = NotificationCenter.default
+            .addObserver(forName: .videoPathInternalReady, object: nil,
+                         queue: nil, using: videoPathInternalReady)
 
         willResignObserver =
-            NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil,
-                                                   queue: nil) { (_) in
-                if !isPIPModeAvailable && self.videoPlayerFullScreenView != nil {
+            NotificationCenter.default.addObserver(
+                forName: UIApplication.willResignActiveNotification,
+                object: nil, queue: nil) { (_) in
+                if !isInPIPMode &&
+                    self.videoPlayerFullScreenView != nil {
                     // release video tracks
-                    if let playerItem = self.videoPlayerFullScreenView?.playerItem {
-                        self.videoTrackEnable(playerItem: playerItem, enable: false)
+                    if let playerItem = self.videoPlayerFullScreenView?
+                        .playerItem {
+                        self.videoTrackEnable(playerItem: playerItem,
+                                              enable: false)
                     }
                 }
             }
         backgroundObserver =
-            NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil,
-                                                   queue: nil) { (_) in
-                isInBackgroundMode = true
-                if !isPIPModeAvailable && self.videoPlayerFullScreenView != nil {
-                    self.videoPlayerFullScreenView?.videoPlayer.player = nil
+            NotificationCenter.default.addObserver(
+                forName: UIApplication.didEnterBackgroundNotification,
+                object: nil, queue: nil) { (_) in
+                if self.backModeEnabled {
+                    isInBackgroundMode = true
+                    if !isInPIPMode &&
+                        self.videoPlayerFullScreenView != nil {
+                        self.videoPlayerFullScreenView?
+                            .videoPlayer.player = nil
+                    }
+                } else {
+                    if self.videoPlayerFullScreenView != nil {
+
+                        self.videoPlayerFullScreenView?
+                            .videoPlayer.player?.pause()
+                    }
                 }
             }
         foregroundObserver =
             NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil,
                                                    queue: OperationQueue.main) { (_) in
 
-                isInBackgroundMode = false
-                if !isPIPModeAvailable && self.bgPlayer != nil &&        self.videoPlayerFullScreenView != nil {
-                    //enable video track
-                    if let playerItem = self.videoPlayerFullScreenView?.playerItem {
-                        self.videoTrackEnable(playerItem: playerItem, enable: true)
+                if self.backModeEnabled {
+                    isInBackgroundMode = false
+                    if !isInPIPMode && self.bgPlayer != nil &&
+                        self.videoPlayerFullScreenView != nil {
+                        //enable video track
+                        if let playerItem =
+                            self.videoPlayerFullScreenView?.playerItem {
+                            self.videoTrackEnable(playerItem: playerItem,
+                                                  enable: true)
+                        }
+
+                        self.videoPlayerFullScreenView?
+                            .videoPlayer.player = self.bgPlayer
+                    }
+                } else {
+                    if self.videoPlayerFullScreenView != nil {
+
+                        if let playerItem =
+                            self.videoPlayerFullScreenView?.playerItem {
+                            self.videoTrackEnable(playerItem: playerItem,
+                                                  enable: true)
+                        }
+                        self.videoPlayerFullScreenView?
+                            .videoPlayer.player?.play()
                     }
 
-                    self.videoPlayerFullScreenView?.videoPlayer.player = self.bgPlayer
                 }
             }
     }
+    // swiftlint:enable function_body_length
 
     // MARK: - videoTrackEnable
 
@@ -85,33 +126,45 @@ extension CapacitorVideoPlayerPlugin {
     func videoPathInternalReady(notification: Notification) {
         self.bridge?.viewController?.dismiss(animated: true, completion: {
         })
-        guard let info = notification.userInfo as? [String: Any] else { return }
+        guard let info = notification.userInfo as? [String: Any]
+        else { return }
         guard let videoUrl = info["videoUrl"] as? URL else {
-            NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
+            NotificationCenter.default.post(
+                name: .playerFullscreenDismiss, object: nil)
             return
         }
         guard let videoRate = info["videoRate"] as? Float else {
-            NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
+            NotificationCenter.default.post(
+                name: .playerFullscreenDismiss, object: nil)
             return
         }
         guard let exitOnEnd = info["exitOnEnd"] as? Bool else {
-            NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
+            NotificationCenter.default.post(
+                name: .playerFullscreenDismiss, object: nil)
             return
         }
         guard let loopOnEnd = info["loopOnEnd"] as? Bool else {
-            NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
+            NotificationCenter.default.post(
+                name: .playerFullscreenDismiss, object: nil)
             return
         }
         guard let pipEnabled = info["pipEnabled"] as? Bool else {
-            NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
+            NotificationCenter.default.post(
+                name: .playerFullscreenDismiss, object: nil)
+            return
+        }
+        guard let backModeEnabled = info["backModeEnabled"] as? Bool else {
+            NotificationCenter.default.post(
+                name: .playerFullscreenDismiss, object: nil)
             return
         }
         guard let call = self.call else { return }
+
         self.createVideoPlayerFullscreenView(
             call: call, videoUrl: videoUrl,
             rate: videoRate, exitOnEnd: exitOnEnd, loopOnEnd: loopOnEnd,
-            pipEnabled: pipEnabled, subTitleUrl: nil,
-            subTitleLanguage: nil, subTitleOptions: nil)
+            pipEnabled: pipEnabled, backModeEnabled: backModeEnabled,
+            subTitleUrl: nil, subTitleLanguage: nil, subTitleOptions: nil)
         return
     }
 

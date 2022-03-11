@@ -394,6 +394,7 @@ Stop all players playing
 | **`exitOnEnd`**       | <code>boolean</code>                                        | Exit on VideoEnd (iOS, Android) default: true                                                 |
 | **`loopOnEnd`**       | <code>boolean</code>                                        | Loop on VideoEnd when exitOnEnd false (iOS, Android) default: false                           |
 | **`pipEnabled`**      | <code>boolean</code>                                        | Picture in Picture Enable (iOS, Android) default: true                                        |
+| **`bkmodeEnabled`**   | <code>boolean</code>                                        | Background Mode Enable (iOS, Android) default: true                                           |
 | **`componentTag`**    | <code>string</code>                                         | Component Tag or DOM Element Tag (React app)                                                  |
 | **`width`**           | <code>number</code>                                         | Player Width (mode "embedded" only)                                                           |
 | **`height`**          | <code>number</code>                                         | Player height (mode "embedded" only)                                                          |

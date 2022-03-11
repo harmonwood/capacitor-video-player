@@ -129,6 +129,11 @@ export interface capVideoPlayerOptions {
      */
     pipEnabled?: boolean;
     /**
+     * Background Mode Enable (iOS, Android)
+     * default: true
+     */
+    bkmodeEnabled?: boolean;
+    /**
      * Component Tag or DOM Element Tag (React app)
      */
     componentTag?: string;
