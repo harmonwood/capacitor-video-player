@@ -82,6 +82,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public Boolean exitOnEnd;
     public Boolean loopOnEnd;
     public Boolean pipEnabled;
+    public Boolean bkModeEnabled;
 
     private static final String TAG = FullscreenExoPlayerFragment.class.getName();
     public static final long UNKNOWN_TIME = -1L;
@@ -114,7 +115,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private boolean isInPictureInPictureMode = false;
     private TrackSelector trackSelector;
     // Current playback position (in milliseconds).
-    private int mCurrentPosition = 0;
+    private int mCurrentPosition;
     private int mDuration;
     private static final int videoStep = 15000;
 
@@ -348,6 +349,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
         if (Util.SDK_INT >= 24) {
             if (playerView != null) {
                 initializePlayer();
+
+                if (player.getCurrentPosition() != 0) {
+                    firstReadyToPlay = false;
+                    play();
+                }
             } else {
                 getActivity().finishAndRemoveTask();
             }
@@ -360,13 +366,14 @@ public class FullscreenExoPlayerFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        boolean isAppBackground = isApplicationSentToBackground(context);
+        boolean isAppBackground = false;
+        if (bkModeEnabled) isAppBackground = isApplicationSentToBackground(context);
         if (isInPictureInPictureMode) {
             linearLayout.setVisibility(View.VISIBLE);
             playerExit();
             getActivity().finishAndRemoveTask();
         } else {
-            if (!isAppBackground) {
+            /*          if (!isAppBackground) {
                 if (Util.SDK_INT >= 24) {
                     if (player != null) {
                         player.seekTo(0);
@@ -375,6 +382,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
                     releasePlayer();
                 }
             }
+*/
         }
     }
 
@@ -384,17 +392,25 @@ public class FullscreenExoPlayerFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        boolean isAppBackground = false;
+        if (bkModeEnabled) isAppBackground = isApplicationSentToBackground(context);
 
         if (!isInPictureInPictureMode) {
             if (Util.SDK_INT < 24) {
                 if (player != null) player.setPlayWhenReady(false);
                 releasePlayer();
+            } else {
+                if (isAppBackground) {
+                    if (player != null) play();
+                } else {
+                    pause();
+                }
             }
         } else {
             if (linearLayout.getVisibility() == View.VISIBLE) {
                 linearLayout.setVisibility(View.INVISIBLE);
             }
-            if (player != null) play();
+            if ((isInPictureInPictureMode || isAppBackground) && player != null) play();
         }
     }
 
@@ -722,7 +738,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * Pause the player
      */
     public void pause() {
-        player.setPlayWhenReady(false);
+        if (player != null) player.setPlayWhenReady(false);
     }
 
     /**

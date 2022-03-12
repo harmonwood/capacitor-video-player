@@ -40,6 +40,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private Boolean exitOnEnd = true;
     private Boolean loopOnEnd = false;
     private Boolean pipEnabled = true;
+    private Boolean bkModeEnabled = true;
     private FullscreenExoPlayerFragment fsFragment;
     private PickerVideoFragment pkFragment;
     private FilesUtils filesUtils;
@@ -110,6 +111,11 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             _pipEnabled = call.getBoolean("pipEnabled");
         }
         pipEnabled = _pipEnabled;
+        Boolean _bkModeEnabled = true;
+        if (call.getData().has("bkmodeEnabled")) {
+            _bkModeEnabled = call.getBoolean("bkmodeEnabled");
+        }
+        bkModeEnabled = _bkModeEnabled;
 
         if ("fullscreen".equals(mode)) {
             fsPlayerId = playerId;
@@ -157,6 +163,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                         exitOnEnd,
                         loopOnEnd,
                         pipEnabled,
+                        bkModeEnabled,
                         subTitlePath,
                         language,
                         subTitleOptions,
@@ -892,6 +899,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                                 exitOnEnd,
                                 loopOnEnd,
                                 pipEnabled,
+                                bkModeEnabled,
                                 null,
                                 null,
                                 null,
@@ -921,6 +929,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         Boolean exitOnEnd,
         Boolean loopOnEnd,
         Boolean pipEnabled,
+        Boolean bkModeEnabled,
         String subTitle,
         String language,
         JSObject subTitleOptions,
@@ -936,6 +945,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 exitOnEnd,
                 loopOnEnd,
                 pipEnabled,
+                bkModeEnabled,
                 subTitle,
                 language,
                 subTitleOptions,
