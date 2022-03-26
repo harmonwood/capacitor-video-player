@@ -1,3 +1,13 @@
+## 3.4.2-1 (2022-03-26)
+
+### Chores
+
+- Update to Capacitor 3.4.2
+
+### Bug Fixes
+
+ - Fix application crashes sometimes on stop issue#84 Android
+
 ## 3.4.1 (2022-03-12)
 
 ### Add Features

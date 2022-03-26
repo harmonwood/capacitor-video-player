@@ -949,9 +949,12 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public boolean isApplicationSentToBackground(final Context context) {
         int pid = android.os.Process.myPid();
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningAppProcessInfo appProcess : am.getRunningAppProcesses()) {
-            if (appProcess.pid == pid) {
-                return true;
+        List<ActivityManager.RunningAppProcessInfo> procInfos = am.getRunningAppProcesses();
+        if (procInfos != null) {
+            for (ActivityManager.RunningAppProcessInfo appProcess : procInfos) {
+                if (appProcess.pid == pid) {
+                    return true;
+                }
             }
         }
         return false;
