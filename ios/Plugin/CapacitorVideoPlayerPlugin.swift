@@ -37,7 +37,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
 
     override public func load() {
         self.addObserversToNotificationCenter()
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.pad),
+        if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad),
            #available(iOS 13.0, *) {
             isPIPModeAvailable = true
         } else if #available(iOS 14.0, *) {
