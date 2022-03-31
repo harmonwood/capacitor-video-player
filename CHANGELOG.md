@@ -1,3 +1,9 @@
+## 3.4.2-2 (2022-03-31)
+
+### Bug Fixes
+
+ - Fix error when trying to create a product archive in Xcode issue#85
+
 ## 3.4.2-1 (2022-03-26)
 
 ### Chores
