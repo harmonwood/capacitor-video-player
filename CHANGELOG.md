@@ -1,3 +1,10 @@
+## 3.4.2 (2022-04-12)
+
+### Bug Fixes
+
+ - Fix Notification center ConcurrentModificationException issue#86
+
+
 ## 3.4.2-2 (2022-03-31)
 
 ### Bug Fixes
