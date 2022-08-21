@@ -22,6 +22,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
     var loopOnEnd: Bool = false
     var pipEnabled: Bool = true
     var backModeEnabled: Bool = true
+    var headers: [String: String]?
     var fsPlayerId: String = "fullscreen"
     var videoRate: Float = 1.0
     var playObserver: Any?
@@ -99,6 +100,10 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                 loopOnEnd = sloopOnEnd
             }
         }
+        var headers: [String: String]?
+        if let sheaders = call.options["headers"] as? [String: String] {
+            headers = sheaders
+        }
         var pipEnabled: Bool = true
         if let spipEnabled = call.options["pipEnabled"] as? Bool {
             pipEnabled = spipEnabled
@@ -113,6 +118,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
         self.exitOnEnd = exitOnEnd
         self.loopOnEnd = loopOnEnd
         self.pipEnabled = pipEnabled
+        self.headers = headers
         if !self.pipEnabled {isPIPModeAvailable = false}
         self.backModeEnabled = bkModeEnabled
         if mode == "fullscreen" {
@@ -190,7 +196,8 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                     backModeEnabled: backModeEnabled,
                     subTitleUrl: subTitle,
                     subTitleLanguage: subTitleLanguage,
-                    subTitleOptions: subTitleOptions)
+                    subTitleOptions: subTitleOptions,
+                    headers: headers)
 
             }
         } else {

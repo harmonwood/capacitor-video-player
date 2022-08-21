@@ -19,6 +19,7 @@ enum CapacitorVideoPlayerError: Error {
                                              pipEnabled: Bool,
                                              subTitleUrl: URL?,
                                              language: String?,
+                                             headers: [String: String]?,
                                              options: [String: Any]?
 
     ) -> FullScreenVideoPlayerView {
@@ -27,7 +28,7 @@ enum CapacitorVideoPlayerError: Error {
             url: videoUrl, rate: rate, playerId: playerId,
             exitOnEnd: exitOnEnd, loopOnEnd: loopOnEnd,
             pipEnabled: pipEnabled, stUrl: subTitleUrl,
-            stLanguage: language, stOptions: options)
+            stLanguage: language, stHeaders: headers, stOptions: options)
         return videoPlayerFullScreenView
     }
     // swiftlint:enable function_parameter_count
