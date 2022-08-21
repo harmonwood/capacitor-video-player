@@ -63,6 +63,7 @@ import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.Notifications.NotificationCenter;
+import org.json.JSONException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -76,6 +77,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public String subTitle;
     public String language;
     public JSObject subTitleOptions;
+    public JSObject headers;
     public Boolean isTV;
     public Boolean isInternal;
     public Long videoId;
@@ -597,6 +599,20 @@ public class FullscreenExoPlayerFragment extends Fragment {
             1800000,
             true
         );
+
+        // If headers is not null we pass them to the HttpDataSourceFactory
+        if (headers != null) {
+            // We map the headers(JSObject) to a Map<String, String>
+            Map<String, String> headersMap = new HashMap<String, String>();
+            for(int i = 0; i < headers.names().length(); i++){
+              try {
+                headersMap.put(headers.names().getString(i), headers.get(headers.names().getString(i)).toString());
+              } catch (JSONException e) {
+                e.printStackTrace();
+              }
+            }
+            httpDataSourceFactory.getDefaultRequestProperties().set(headersMap);
+        }
 
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, httpDataSourceFactory);
 
