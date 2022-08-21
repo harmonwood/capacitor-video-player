@@ -148,6 +148,11 @@ export interface capVideoPlayerOptions {
    * Player height (mode "embedded" only)
    */
   height?: number;
+  /**
+   * Headers for the request (iOS, Android)
+   * by Manuel García Marín (https://github.com/PhantomPainX)
+   */
+  headers?: { [key: string]: string };
 }
 export interface capVideoPlayerIdOptions {
   /**
