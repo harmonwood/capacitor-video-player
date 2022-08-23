@@ -85,6 +85,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public Boolean loopOnEnd;
     public Boolean pipEnabled;
     public Boolean bkModeEnabled;
+    public String title;
+    public String smallTitle;
+    public String mainColor;
+    public String spinnerColor;
 
     private static final String TAG = FullscreenExoPlayerFragment.class.getName();
     public static final long UNKNOWN_TIME = -1L;
@@ -108,6 +112,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private ImageButton pipBtn;
     private ConstraintLayout constLayout;
     private LinearLayout linearLayout;
+    private TextView header_tv;
+    private TextView header_below;
+    private DefaultTimeBar exo_progress;
     private Context context;
     private boolean isMuted = false;
     private float curVolume = (float) 0.5;
@@ -153,8 +160,25 @@ public class FullscreenExoPlayerFragment extends Fragment {
         constLayout = view.findViewById(R.id.fsExoPlayer);
         linearLayout = view.findViewById(R.id.linearLayout);
         playerView = view.findViewById(R.id.videoViewId);
-
+        header_tv = view.findViewById(R.id.header_tv);
+        header_below = view.findViewById(R.id.header_below);
         Pbar = view.findViewById(R.id.indeterminateBar);
+        exo_progress = view.findViewById(R.id.exo_progress);
+
+        if (title != "") {
+          header_tv.setText(title);
+        }
+        if (smallTitle != "") {
+          header_below.setText(smallTitle);
+        }
+        if (spinnerColor != "") {
+          Pbar.getIndeterminateDrawable().setColorFilter(Color.parseColor(spinnerColor), android.graphics.PorterDuff.Mode.MULTIPLY);
+        }
+        if (mainColor != "") {
+          exo_progress.setPlayedColor(Color.parseColor(mainColor));
+          exo_progress.setScrubberColor(Color.parseColor(mainColor));
+        }
+
         closeBtn = view.findViewById(R.id.exo_close);
         pipBtn = view.findViewById(R.id.exo_pip);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || !pipEnabled) {

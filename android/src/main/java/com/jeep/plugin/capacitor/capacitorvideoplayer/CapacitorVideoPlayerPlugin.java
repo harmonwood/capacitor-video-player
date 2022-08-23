@@ -49,6 +49,10 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private PluginCall call;
     private Float rateList[] = { 0.25f, 0.5f, 0.75f, 1f, 2f, 4f };
     private Float videoRate = 1f;
+    private String title;
+    private String smallTitle;
+    private String mainColor;
+    private String spinnerColor;
 
     @Override
     public void load() {
@@ -143,12 +147,32 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             if (call.getData().has("headers")) {
                 headers = call.getObject("headers");
             }
+            String title = "";
+            if (call.getData().has("title")) {
+              title = call.getString("title");
+            }
+            String smallTitle = "";
+            if (call.getData().has("smallTitle")) {
+              smallTitle = call.getString("smallTitle");
+            }
+            String mainColor = "";
+            if (call.getData().has("mainColor")) {
+              mainColor = call.getString("mainColor");
+            }
+            String spinnerColor = "";
+            if (call.getData().has("spinnerColor")) {
+              spinnerColor = call.getString("spinnerColor");
+            }
 
             AddObserversToNotificationCenter();
             Log.v(TAG, "display url: " + url);
             Log.v(TAG, "display subtitle: " + subtitle);
             Log.v(TAG, "display language: " + language);
             Log.v(TAG, "headers: " + headers);
+            Log.v(TAG, "title: " + title);
+            Log.v(TAG, "smallTitle: " + smallTitle);
+            Log.v(TAG, "mainColor: " + mainColor);
+            Log.v(TAG, "spinnerColor: " + spinnerColor);
             if (url.equals("internal")) {
                 createPickerVideoFragment(call);
             } else {
@@ -175,6 +199,10 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                         language,
                         subTitleOptions,
                         headers,
+                        title,
+                        smallTitle,
+                        mainColor,
+                        spinnerColor,
                         isTV,
                         playerId,
                         false,
@@ -912,6 +940,10 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                                 null,
                                 null,
                                 headers,
+                                title,
+                                smallTitle,
+                                mainColor,
+                                spinnerColor,
                                 isTV,
                                 fsPlayerId,
                                 true,
@@ -943,6 +975,10 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         String language,
         JSObject subTitleOptions,
         JSObject headers,
+        String title,
+        String smallTitle,
+        String mainColor,
+        String spinnerColor,
         Boolean isTV,
         String playerId,
         Boolean isInternal,
@@ -960,6 +996,10 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 language,
                 subTitleOptions,
                 headers,
+                title,
+                smallTitle,
+                mainColor,
+                spinnerColor,
                 isTV,
                 playerId,
                 isInternal,
