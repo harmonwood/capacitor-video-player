@@ -68,6 +68,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONException;
+import android.widget.TextView;
+import com.google.android.exoplayer2.ui.DefaultTimeBar;
 
 public class FullscreenExoPlayerFragment extends Fragment {
 
