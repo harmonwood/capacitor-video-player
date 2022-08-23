@@ -600,8 +600,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
             true
         );
 
-        // If headers is not null we pass them to the HttpDataSourceFactory
-        if (headers != null) {
+        // If headers is not null and has data we pass them to the HttpDataSourceFactory
+        if (headers != null && headers.length() > 0) {
             // We map the headers(JSObject) to a Map<String, String>
             Map<String, String> headersMap = new HashMap<String, String>();
             for(int i = 0; i < headers.names().length(); i++){
