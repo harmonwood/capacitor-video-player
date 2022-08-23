@@ -398,6 +398,7 @@ Stop all players playing
 | **`componentTag`**    | <code>string</code>                                         | Component Tag or DOM Element Tag (React app)                                                  |
 | **`width`**           | <code>number</code>                                         | Player Width (mode "embedded" only)                                                           |
 | **`height`**          | <code>number</code>                                         | Player height (mode "embedded" only)                                                          |
+| **`headers`**         | <code>Any (string: string)</code>                          | Headers to be pass to video player (iOS, Android only)                                         |
 
 
 #### SubTitleOptions
