@@ -63,11 +63,11 @@ import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.Notifications.NotificationCenter;
-import org.json.JSONException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONException;
 
 public class FullscreenExoPlayerFragment extends Fragment {
 
@@ -604,12 +604,12 @@ public class FullscreenExoPlayerFragment extends Fragment {
         if (headers != null && headers.length() > 0) {
             // We map the headers(JSObject) to a Map<String, String>
             Map<String, String> headersMap = new HashMap<String, String>();
-            for(int i = 0; i < headers.names().length(); i++){
-              try {
-                headersMap.put(headers.names().getString(i), headers.get(headers.names().getString(i)).toString());
-              } catch (JSONException e) {
-                e.printStackTrace();
-              }
+            for (int i = 0; i < headers.names().length(); i++) {
+                try {
+                    headersMap.put(headers.names().getString(i), headers.get(headers.names().getString(i)).toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
             httpDataSourceFactory.getDefaultRequestProperties().set(headersMap);
         }

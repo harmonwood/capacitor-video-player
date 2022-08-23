@@ -53,7 +53,7 @@ open class FullScreenVideoPlayerView: UIView {
         self._videoRate = rate
         self._stHeaders = stHeaders
         self.videoPlayer = AVPlayerViewController()
-        
+
         if stHeaders != nil {
             self.videoAsset = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": stHeaders])
         } else {

@@ -141,7 +141,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
 
             JSObject headers = new JSObject();
             if (call.getData().has("headers")) {
-              headers = call.getObject("headers");
+                headers = call.getObject("headers");
             }
 
             AddObserversToNotificationCenter();

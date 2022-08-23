@@ -1,3 +1,13 @@
+## 3.7.0 (2022-08-23)
+
+### Chores
+
+- Update to Capacitor 3.7.0
+
+### Add Features
+
+ - Headers support for iOS and Android #101
+
 ## 3.4.2 (2022-04-12)
 
 ### Bug Fixes
