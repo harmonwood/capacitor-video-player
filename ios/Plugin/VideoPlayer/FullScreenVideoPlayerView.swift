@@ -24,6 +24,7 @@ open class FullScreenVideoPlayerView: UIView {
     private var _firstReadyToPlay: Bool = true
     private var _stUrl: URL?
     private var _stLanguage: String?
+    private var _stHeaders: [String: String]?
     private var _stOptions: [String: Any]?
     private var _videoRate: Float
 
@@ -39,7 +40,7 @@ open class FullScreenVideoPlayerView: UIView {
 
     init(url: URL, rate: Float, playerId: String, exitOnEnd: Bool,
          loopOnEnd: Bool, pipEnabled: Bool, stUrl: URL?,
-         stLanguage: String?, stOptions: [String: Any]?) {
+         stLanguage: String?, stHeaders: [String: String]?, stOptions: [String: Any]?) {
         //self._videoPath = videoPath
         self._url = url
         self._stUrl = stUrl
@@ -50,8 +51,15 @@ open class FullScreenVideoPlayerView: UIView {
         self._pipEnabled = pipEnabled
         self._videoId = playerId
         self._videoRate = rate
+        self._stHeaders = stHeaders
         self.videoPlayer = AVPlayerViewController()
-        self.videoAsset = AVURLAsset(url: url)
+        
+        if stHeaders != nil {
+            self.videoAsset = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": stHeaders])
+        } else {
+            self.videoAsset = AVURLAsset(url: url)
+        }
+
         self.isPlaying = false
         super.init(frame: .zero)
         self.initialize()

@@ -164,7 +164,7 @@ extension CapacitorVideoPlayerPlugin {
             call: call, videoUrl: videoUrl,
             rate: videoRate, exitOnEnd: exitOnEnd, loopOnEnd: loopOnEnd,
             pipEnabled: pipEnabled, backModeEnabled: backModeEnabled,
-            subTitleUrl: nil, subTitleLanguage: nil, subTitleOptions: nil)
+            subTitleUrl: nil, subTitleLanguage: nil, subTitleOptions: nil, headers: nil)
         return
     }
 

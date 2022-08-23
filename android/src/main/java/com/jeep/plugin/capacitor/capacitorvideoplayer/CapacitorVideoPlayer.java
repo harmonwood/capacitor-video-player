@@ -26,6 +26,7 @@ public class CapacitorVideoPlayer {
         String subTitle,
         String language,
         JSObject subTitleOptions,
+        JSObject headers,
         Boolean isTV,
         String playerId,
         Boolean isInternal,
@@ -42,6 +43,7 @@ public class CapacitorVideoPlayer {
         fsFragment.subTitle = subTitle;
         fsFragment.language = language;
         fsFragment.subTitleOptions = subTitleOptions;
+        fsFragment.headers = headers;
         fsFragment.isTV = isTV;
         fsFragment.playerId = playerId;
         fsFragment.isInternal = isInternal;
