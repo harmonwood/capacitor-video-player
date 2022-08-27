@@ -19,7 +19,7 @@
   <a href="https://www.npmjs.com/package/capacitor-video-player"><img src="https://img.shields.io/npm/dw/capacitor-video-player?style=flat-square" /></a>
   <a href="https://www.npmjs.com/package/capacitor-video-player"><img src="https://img.shields.io/npm/v/capacitor-video-player?style=flat-square" /></a>
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-<a href="#contributors-"><img src="https://img.shields.io/badge/all%20contributors-5-orange?style=flat-square" /></a>
+<a href="#contributors-"><img src="https://img.shields.io/badge/all%20contributors-6-orange?style=flat-square" /></a>
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 </p>
 
@@ -155,6 +155,9 @@ No configuration required for this plugin
 | initPlayer (url application/files) | ✅      | ✅  | ❌       | ❌  |
 | initPlayer (subtitles)             | ✅      | ✅  | ❌       | ❌  |
 | initPlayer (headers)               | ✅      | ✅  | ❌       | ❌  |
+| initPlayer (title)                 | ✅      | ❌  | ❌       | ❌  |
+| initPlayer (smallTitle)            | ✅      | ❌  | ❌       | ❌  |
+| initPlayer (accentColor)           | ✅      | ❌  | ❌       | ❌  |
 | isPlaying                          | ✅      | ✅  | ✅       | ✅  |
 | play                               | ✅      | ✅  | ✅       | ✅  |
 | pause                              | ✅      | ✅  | ✅       | ✅  |
