@@ -17,7 +17,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:use_controller="false"/>
+        app:rewind_increment="10000"
+        app:fastforward_increment="10000"
+        app:use_controller="false"
+        app:controller_layout_id="@layout/exoplayer_layout_youtube"/>
 
     <ProgressBar
         android:id="@+id/indeterminateBar"
@@ -27,6 +30,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:indeterminateTint="#FFFFFF"
         />
 
     <LinearLayout
@@ -40,26 +44,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/exo_close"
-            style="@style/ExoMediaButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@android:color/transparent"
-            android:scaleX="1.5"
-            android:scaleY="1.5"
-            android:src="@drawable/ic_close_white" />
-
-        <ImageButton
-            android:id="@+id/exo_pip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:scaleX="1.5"
-            android:scaleY="1.5"
-            style="@style/ExoMediaButton"
-            android:background="@android:color/transparent"
-            android:src ="@drawable/ic_pip_white"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

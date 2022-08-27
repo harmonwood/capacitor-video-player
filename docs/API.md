@@ -399,6 +399,9 @@ Stop all players playing
 | **`width`**           | <code>number</code>                                         | Player Width (mode "embedded" only)                                                             |
 | **`height`**          | <code>number</code>                                         | Player height (mode "embedded" only)                                                            |
 | **`headers`**         | <code>{ [key: string]: string; }</code>                     | Headers for the request (iOS, Android) by Manuel García Marín (https://github.com/PhantomPainX) |
+| **`title`**           | <code>string</code>                                         | Title shown in the video player (Android) by Manuel García Marín (https://github.com/PhantomPainX) |
+| **`smallTitle`**      | <code>string</code>                                         | Title shown below the main title (Android) by Manuel García Marín (https://github.com/PhantomPainX) |
+| **`accentColor`**     | <code>string</code>                                         | Color of the Progress bar and Spinner (HEX Color) (default #FFFFFF) (Android) by Manuel García Marín (https://github.com/PhantomPainX) |
 
 
 #### SubTitleOptions

@@ -152,7 +152,26 @@ export interface capVideoPlayerOptions {
    * Headers for the request (iOS, Android)
    * by Manuel García Marín (https://github.com/PhantomPainX)
    */
-  headers?: { [key: string]: string };
+  headers?: { 
+      [key: string]: string
+  };
+  /**
+   * Title shown in the player (Android)
+   * by Manuel García Marín (https://github.com/PhantomPainX)
+   */
+  title?: string;
+  /**
+   * Subtitle shown below the title in the player (Android)
+   * by Manuel García Marín (https://github.com/PhantomPainX)
+   */
+  smallTitle?: string;
+  /**
+   * ExoPlayer Progress Bar and Spinner color (Android)
+    * by Manuel García Marín (https://github.com/PhantomPainX)
+    * Must be a valid hex color code
+    * default: #FFFFFF
+   */
+  accentColor?: string;
 }
 export interface capVideoPlayerIdOptions {
   /**
