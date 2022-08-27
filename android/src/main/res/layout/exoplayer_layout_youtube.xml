@@ -4,7 +4,7 @@
   xmlns:tool="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="#99000000"
+  android:background="#59000000"
   android:visibility="visible"
   app:layout_constraintEnd_toEndOf="parent"
   app:layout_constraintStart_toStartOf="parent"
@@ -16,8 +16,9 @@
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginRight="5dp"
-    android:paddingTop="5dp"
-    app:layout_constraintEnd_toStartOf="@+id/exo_pip"
+    android:paddingTop="10dp"
+    android:paddingLeft="10dp"
+    app:layout_constraintEnd_toStartOf="@+id/right_buttons"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
 
@@ -28,7 +29,7 @@
       android:layout_gravity="center"
       android:ellipsize="end"
       android:maxLines="2"
-      android:paddingLeft="35dp"
+      android:paddingLeft="30dp"
       android:textColor="@color/white"
       android:textSize="18sp"
       app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +45,7 @@
       android:layout_gravity="center"
       android:ellipsize="end"
       android:maxLines="2"
-      android:paddingLeft="35dp"
+      android:paddingLeft="30dp"
       android:textColor="@color/white"
       android:textSize="12sp"
       app:layout_constraintStart_toStartOf="parent"
@@ -58,35 +59,49 @@
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-
-      android:paddingLeft="10dp"
-      android:paddingTop="5dp"
-
+      android:scaleY="1.4"
+      android:scaleX="1.4"
       android:background="@android:color/transparent"
       android:ellipsize="end"
 
-      android:src="@drawable/ic_cross_white"
+      android:src="@drawable/ic_arrow_left"
       app:layout_constraintStart_toStartOf="@id/header_tv"
-      tool:ignore="MissingConstraints"
-
-      tool:layout_editor_absoluteX="313dp"
-      tool:layout_editor_absoluteY="2dp" />
+      tool:ignore="MissingConstraints" />
 
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 
-  <ImageButton
-    android:id="@+id/exo_pip"
+  <LinearLayout
+    android:id="@+id/right_buttons"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
+    android:layout_marginTop="10dp"
+    android:layout_marginEnd="10dp"
+    android:orientation="horizontal"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintEnd_toEndOf="parent">
 
-    android:background="?attr/selectableItemBackgroundBorderless"
-    android:paddingTop="5dp"
-    android:paddingRight="10dp"
-    android:src="@drawable/ic_pip_white"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    <ImageButton
+      android:id="@+id/exo_pip"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:background="?attr/selectableItemBackgroundBorderless"
+      android:src="@drawable/ic_pip_white"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+      android:id="@+id/exo_resize"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:layout_marginLeft="15dp"
+      android:background="?attr/selectableItemBackgroundBorderless"
+      android:src="@drawable/ic_expand"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+  </LinearLayout>
+
 
   <androidx.constraintlayout.widget.Barrier
     android:id="@+id/barrier_left"
@@ -168,7 +183,7 @@
       app:layout_constraintBottom_toBottomOf="@id/exo_progress"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="@+id/exo_progress"
-      tool:text="dssdd" />
+      tool:text="00:00" />
 
     <com.google.android.exoplayer2.ui.DefaultTimeBar
       android:id="@+id/exo_progress"
@@ -197,29 +212,7 @@
       app:layout_constraintBottom_toBottomOf="@id/exo_progress"
       app:layout_constraintStart_toEndOf="@+id/exo_progress"
       app:layout_constraintTop_toTopOf="@+id/exo_progress"
-      tool:text="dssdd" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-      android:id="@+id/exo_go_live"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:background="@drawable/bg_round_rect_white_50"
-      android:gravity="center"
-      android:minWidth="50dp"
-      android:minHeight="25dp"
-      android:minEms="4"
-      android:paddingLeft="15dp"
-      android:paddingTop="6dp"
-      android:paddingRight="15dp"
-      android:paddingBottom="6dp"
-      android:textColor="@color/white"
-      android:textSize="14sp"
-      android:visibility="gone"
-      app:layout_constraintBottom_toBottomOf="@id/exo_progress"
-      app:layout_constraintStart_toEndOf="@+id/exo_progress"
-      app:layout_constraintTop_toTopOf="@+id/exo_progress"
-      tool:text="dssdd" />
+      tool:text="00:00" />
 
   </LinearLayout>
 

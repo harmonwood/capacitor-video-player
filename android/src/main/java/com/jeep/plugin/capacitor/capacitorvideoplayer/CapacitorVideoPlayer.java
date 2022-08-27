@@ -29,8 +29,7 @@ public class CapacitorVideoPlayer {
         JSObject headers,
         String title,
         String smallTitle,
-        String mainColor,
-        String spinnerColor,
+        String accentColor,
         Boolean isTV,
         String playerId,
         Boolean isInternal,
@@ -50,8 +49,7 @@ public class CapacitorVideoPlayer {
         fsFragment.headers = headers;
         fsFragment.title = title;
         fsFragment.smallTitle = smallTitle;
-        fsFragment.mainColor = mainColor;
-        fsFragment.spinnerColor = spinnerColor;
+        fsFragment.accentColor = accentColor;
         fsFragment.isTV = isTV;
         fsFragment.playerId = playerId;
         fsFragment.isInternal = isInternal;
