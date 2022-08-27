@@ -382,26 +382,26 @@ Stop all players playing
 
 #### capVideoPlayerOptions
 
-| Prop                  | Type                                                        | Description                                                                                     |
-| --------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| **`mode`**            | <code>string</code>                                         | Player mode - "fullscreen" - "embedded" (Web only)                                              |
-| **`url`**             | <code>string</code>                                         | The url of the video to play                                                                    |
-| **`subtitle`**        | <code>string</code>                                         | The url of subtitle associated with the video                                                   |
-| **`language`**        | <code>string</code>                                         | The language of subtitle see https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers   |
-| **`subtitleOptions`** | <code><a href="#subtitleoptions">SubTitleOptions</a></code> | SubTitle Options                                                                                |
-| **`playerId`**        | <code>string</code>                                         | Id of DIV Element parent of the player                                                          |
-| **`rate`**            | <code>number</code>                                         | Initial playing rate                                                                            |
-| **`exitOnEnd`**       | <code>boolean</code>                                        | Exit on VideoEnd (iOS, Android) default: true                                                   |
-| **`loopOnEnd`**       | <code>boolean</code>                                        | Loop on VideoEnd when exitOnEnd false (iOS, Android) default: false                             |
-| **`pipEnabled`**      | <code>boolean</code>                                        | Picture in Picture Enable (iOS, Android) default: true                                          |
-| **`bkmodeEnabled`**   | <code>boolean</code>                                        | Background Mode Enable (iOS, Android) default: true                                             |
-| **`componentTag`**    | <code>string</code>                                         | Component Tag or DOM Element Tag (React app)                                                    |
-| **`width`**           | <code>number</code>                                         | Player Width (mode "embedded" only)                                                             |
-| **`height`**          | <code>number</code>                                         | Player height (mode "embedded" only)                                                            |
-| **`headers`**         | <code>{ [key: string]: string; }</code>                     | Headers for the request (iOS, Android) by Manuel García Marín (https://github.com/PhantomPainX) |
-| **`title`**           | <code>string</code>                                         | Title shown in the video player (Android) by Manuel García Marín (https://github.com/PhantomPainX) |
-| **`smallTitle`**      | <code>string</code>                                         | Title shown below the main title (Android) by Manuel García Marín (https://github.com/PhantomPainX) |
-| **`accentColor`**     | <code>string</code>                                         | Color of the Progress bar and Spinner (HEX Color) (default #FFFFFF) (Android) by Manuel García Marín (https://github.com/PhantomPainX) |
+| Prop                  | Type                                                        | Description                                                                                                                                                 |
+| --------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`mode`**            | <code>string</code>                                         | Player mode - "fullscreen" - "embedded" (Web only)                                                                                                          |
+| **`url`**             | <code>string</code>                                         | The url of the video to play                                                                                                                                |
+| **`subtitle`**        | <code>string</code>                                         | The url of subtitle associated with the video                                                                                                               |
+| **`language`**        | <code>string</code>                                         | The language of subtitle see https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers                                                               |
+| **`subtitleOptions`** | <code><a href="#subtitleoptions">SubTitleOptions</a></code> | SubTitle Options                                                                                                                                            |
+| **`playerId`**        | <code>string</code>                                         | Id of DIV Element parent of the player                                                                                                                      |
+| **`rate`**            | <code>number</code>                                         | Initial playing rate                                                                                                                                        |
+| **`exitOnEnd`**       | <code>boolean</code>                                        | Exit on VideoEnd (iOS, Android) default: true                                                                                                               |
+| **`loopOnEnd`**       | <code>boolean</code>                                        | Loop on VideoEnd when exitOnEnd false (iOS, Android) default: false                                                                                         |
+| **`pipEnabled`**      | <code>boolean</code>                                        | Picture in Picture Enable (iOS, Android) default: true                                                                                                      |
+| **`bkmodeEnabled`**   | <code>boolean</code>                                        | Background Mode Enable (iOS, Android) default: true                                                                                                         |
+| **`componentTag`**    | <code>string</code>                                         | Component Tag or DOM Element Tag (React app)                                                                                                                |
+| **`width`**           | <code>number</code>                                         | Player Width (mode "embedded" only)                                                                                                                         |
+| **`height`**          | <code>number</code>                                         | Player height (mode "embedded" only)                                                                                                                        |
+| **`headers`**         | <code>{ [key: string]: string; }</code>                     | Headers for the request (iOS, Android) by Manuel García Marín (https://github.com/PhantomPainX)                                                             |
+| **`title`**           | <code>string</code>                                         | Title shown in the player (Android) by Manuel García Marín (https://github.com/PhantomPainX)                                                                |
+| **`smallTitle`**      | <code>string</code>                                         | Subtitle shown below the title in the player (Android) by Manuel García Marín (https://github.com/PhantomPainX)                                             |
+| **`accentColor`**     | <code>string</code>                                         | ExoPlayer Progress Bar and Spinner color (Android) by Manuel García Marín (https://github.com/PhantomPainX) Must be a valid hex color code default: #FFFFFF |
 
 
 #### SubTitleOptions

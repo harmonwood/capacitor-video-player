@@ -34,6 +34,12 @@
 
 The master release has been upgraded to `@capacitor/core@3.3.1`.
 
+🚨 Since release 3.7.1 ->> 🚨
+
+New Android Layout by Manuel García Marín (https://github.com/PhantomPainX)
+
+🚨 Since release 3.7.1 <<- 🚨
+
 🚨 Since release 3.3.1 ->> 🚨
 
 the PIP (Picture in Picture) mode has been added to the Android (API >= N) and iOS (iPad - iOS >= 13, iPhone - iOS >= 14) plugins. Is it accessible by clicking on the PiP button next to the Close button on the top-left window corner.

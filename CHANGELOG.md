@@ -1,3 +1,8 @@
+## 3.7.1 (2022-08-27)
+
+ - (Android) New layout, features and some fixes #106 by Manuel García Marín (https://github.com/PhantomPainX)
+
+
 ## 3.7.0 (2022-08-23)
 
 ### Chores
