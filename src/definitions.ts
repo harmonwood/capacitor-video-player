@@ -171,7 +171,7 @@ export interface capVideoPlayerOptions {
     * Must be a valid hex color code
     * default: #FFFFFF
    */
-  mainColor?: string;
+  accentColor?: string;
 }
 export interface capVideoPlayerIdOptions {
   /**
