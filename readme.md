@@ -164,6 +164,7 @@ No configuration required for this plugin
 | initPlayer (title)                 | ✅      | ❌  | ❌       | ❌  |
 | initPlayer (smallTitle)            | ✅      | ❌  | ❌       | ❌  |
 | initPlayer (accentColor)           | ✅      | ❌  | ❌       | ❌  |
+| initPlayer (chromecast)            | ✅      | ❌  | ❌       | ❌  |
 | isPlaying                          | ✅      | ✅  | ✅       | ✅  |
 | play                               | ✅      | ✅  | ✅       | ✅  |
 | pause                              | ✅      | ✅  | ✅       | ✅  |

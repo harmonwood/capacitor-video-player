@@ -59,8 +59,8 @@
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:scaleY="1.4"
-      android:scaleX="1.4"
+      android:scaleY="1.1"
+      android:scaleX="1.1"
       android:background="@android:color/transparent"
       android:ellipsize="end"
 
@@ -71,6 +71,7 @@
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 
+
   <LinearLayout
     android:id="@+id/right_buttons"
     android:layout_width="wrap_content"
@@ -80,6 +81,14 @@
     android:orientation="horizontal"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintEnd_toEndOf="parent">
+
+    <androidx.mediarouter.app.MediaRouteButton
+      android:id="@+id/media_route_button"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_weight="1"
+      android:mediaRouteTypes="user"
+      android:visibility="gone" />
 
     <ImageButton
       android:id="@+id/exo_pip"
@@ -95,7 +104,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:layout_marginLeft="15dp"
+      android:layout_marginLeft="10dp"
       android:background="?attr/selectableItemBackgroundBorderless"
       android:src="@drawable/ic_expand"
       app:layout_constraintEnd_toEndOf="parent"
@@ -159,6 +168,34 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent" />
 
+  <LinearLayout
+    android:id="@+id/cast_info"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp"
+    android:layout_marginBottom="30dp"
+    android:orientation="horizontal"
+    app:layout_constraintBottom_toBottomOf="@+id/videoTimeContainer"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent">
+
+    <androidx.appcompat.widget.AppCompatTextView
+      android:id="@+id/cast_message"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:maxLines="2"
+      android:textColor="@color/white"
+      android:textSize="18sp"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintWidth_max="wrap"
+      app:layout_constraintWidth_percent="0.9"
+      android:visibility="gone"
+      android:text="Casting Video" />
+
+  </LinearLayout>
 
   <LinearLayout
     android:id="@+id/videoTimeContainer"

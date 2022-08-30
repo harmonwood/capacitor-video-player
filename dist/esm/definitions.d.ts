@@ -169,6 +169,12 @@ export interface capVideoPlayerOptions {
       * default: #FFFFFF
      */
     accentColor?: string;
+    /**
+     * Chromecast enable/disable (Android)
+     * by Manuel García Marín (https://github.com/PhantomPainX)
+     * default: true
+     */
+    chromecast?: boolean;
 }
 export interface capVideoPlayerIdOptions {
     /**

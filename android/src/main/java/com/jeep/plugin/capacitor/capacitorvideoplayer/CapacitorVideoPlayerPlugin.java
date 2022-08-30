@@ -52,6 +52,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private String title;
     private String smallTitle;
     private String accentColor;
+    private Boolean chromecast;
 
     @Override
     public void load() {
@@ -158,6 +159,10 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             if (call.getData().has("accentColor")) {
               accentColor = call.getString("accentColor");
             }
+            Boolean chromecast = true;
+            if (call.getData().has("chromecast")) {
+              chromecast = call.getBoolean("chromecast");
+            }
 
             AddObserversToNotificationCenter();
             Log.v(TAG, "display url: " + url);
@@ -167,6 +172,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             Log.v(TAG, "title: " + title);
             Log.v(TAG, "smallTitle: " + smallTitle);
             Log.v(TAG, "accentColor: " + accentColor);
+            Log.v(TAG, "chromecast: " + chromecast);
             if (url.equals("internal")) {
                 createPickerVideoFragment(call);
             } else {
@@ -196,6 +202,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                         title,
                         smallTitle,
                         accentColor,
+                        chromecast,
                         isTV,
                         playerId,
                         false,
@@ -936,6 +943,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                                 title,
                                 smallTitle,
                                 accentColor,
+                                chromecast,
                                 isTV,
                                 fsPlayerId,
                                 true,
@@ -970,6 +978,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         String title,
         String smallTitle,
         String accentColor,
+        Boolean chromecast,
         Boolean isTV,
         String playerId,
         Boolean isInternal,
@@ -990,6 +999,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 title,
                 smallTitle,
                 accentColor,
+                chromecast,
                 isTV,
                 playerId,
                 isInternal,
