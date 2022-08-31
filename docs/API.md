@@ -136,23 +136,33 @@ Cast title will be the same as title and smallTitle, if these are not added, the
 
 Since 3.7.2, you need to add few things in your Android project to get the plugin working.
 
-build.gradle (app)
+- build.gradle (app)
 
+```java
 dependencies {
     ...
     implementation 'com.google.android.gms:play-services-cast-framework:21.1.0'
 }
-AndroidManifest.xml
+```
 
-<activity>
+ - AndroidManifest.xml
+
+```java
+<application>
     ...
     <meta-data
         android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
         android:value="com.google.android.exoplayer2.ext.cast.DefaultCastOptionsProvider" />
-</activity>
-MainActivity.java
+</application>
+```
+
+ - MainActivity.java
+
+```java
+import android.os.Bundle;
 
 import com.google.android.gms.cast.framework.CastContext;
+
 
 public class MainActivity extends BridgeActivity {
   @Override
@@ -161,6 +171,7 @@ public class MainActivity extends BridgeActivity {
     CastContext.getSharedInstance(this);
   }
 }
+```
 
 ## Methods
 

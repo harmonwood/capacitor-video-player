@@ -574,7 +574,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
 
         if self.mode == "fullscreen" && self.fsPlayerId == playerId {
             if let playerView = self.videoPlayerFullScreenView {
-//34567890123456789012345678901234567890
+                //34567890123456789012345678901234567890
                 DispatchQueue.main.async {
                     playerView.setRate(rate: self.videoRate)
                     call.resolve([ "result": true, "method": "setRate",
