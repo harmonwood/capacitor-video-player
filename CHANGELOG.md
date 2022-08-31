@@ -1,3 +1,10 @@
+## 3.7.3 (2022-08-31)
+
+### Bug Fixes
+
+ - API.md Android Quirks
+ - iOS - Swiping Video Off Screen Does Not Destroy The Video #105
+
 ## 3.7.2 (2022-08-31)
 
 ### Chores
