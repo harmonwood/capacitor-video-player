@@ -38,6 +38,8 @@ Android Only by Manuel García Marín (https://github.com/PhantomPainX)
  - Update to Exoplayer 2.16.0 
  - Add ChromeCast Support 
 
+see [Chromecast Support](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/API.md#chromecast-support)
+
 🚨 Since release 3.7.2 <<- 🚨
 
 🚨 Since release 3.7.1 ->> 🚨
