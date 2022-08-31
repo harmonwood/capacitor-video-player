@@ -149,19 +149,19 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             }
             String title = "";
             if (call.getData().has("title")) {
-              title = call.getString("title");
+                title = call.getString("title");
             }
             String smallTitle = "";
             if (call.getData().has("smallTitle")) {
-              smallTitle = call.getString("smallTitle");
+                smallTitle = call.getString("smallTitle");
             }
             String accentColor = "";
             if (call.getData().has("accentColor")) {
-              accentColor = call.getString("accentColor");
+                accentColor = call.getString("accentColor");
             }
             Boolean chromecast = true;
             if (call.getData().has("chromecast")) {
-              chromecast = call.getBoolean("chromecast");
+                chromecast = call.getBoolean("chromecast");
             }
 
             AddObserversToNotificationCenter();

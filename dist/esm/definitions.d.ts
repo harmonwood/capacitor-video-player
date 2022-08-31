@@ -164,9 +164,9 @@ export interface capVideoPlayerOptions {
     smallTitle?: string;
     /**
      * ExoPlayer Progress Bar and Spinner color (Android)
-      * by Manuel García Marín (https://github.com/PhantomPainX)
-      * Must be a valid hex color code
-      * default: #FFFFFF
+     * by Manuel García Marín (https://github.com/PhantomPainX)
+     * Must be a valid hex color code
+     * default: #FFFFFF
      */
     accentColor?: string;
     /**

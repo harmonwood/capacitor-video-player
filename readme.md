@@ -32,7 +32,13 @@
 
 ## LATEST FOR CAPACITOR 3 (Master)
 
-The master release has been upgraded to `@capacitor/core@3.3.1`.
+🚨 Since release 3.7.2 ->> 🚨
+
+Android Only by Manuel García Marín (https://github.com/PhantomPainX)
+ - Update to Exoplayer 2.16.0 
+ - Add ChromeCast Support 
+
+🚨 Since release 3.7.2 <<- 🚨
 
 🚨 Since release 3.7.1 ->> 🚨
 
@@ -203,7 +209,7 @@ No configuration required for this plugin
 
 - [react-video-player-app-starter](https://github.com/jepiqueau/react-video-player-app-starter/blob/0.0.5)
 
-### Application Starter 3.0.0 🚧
+### Application Starter 3.0.0
 
 - [angular-video-player-app-starter](https://github.com/jepiqueau/angular-videoplayer-app-starter)
 
@@ -219,7 +225,7 @@ No configuration required for this plugin
 
 - [see usage 2.4.7](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/Usage_2.4.7.md)
 
-## Usage 3.0.0 🚧
+## Usage 3.0.0 
 
 - [see capacitor documentation](https://capacitor.ionicframework.com/docs/getting-started/with-ionic)
 

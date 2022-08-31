@@ -1,3 +1,13 @@
+## 3.7.2 (2022-08-31)
+
+### Chores
+
+ - (Android) Exoplayer 2.16.0 by Manuel García Marín (https://github.com/PhantomPainX)
+
+### Added Features
+
+ - (Android) Add Chromecast features
+
 ## 3.7.1 (2022-08-27)
 
  - (Android) New layout, features and some fixes #106 by Manuel García Marín (https://github.com/PhantomPainX)

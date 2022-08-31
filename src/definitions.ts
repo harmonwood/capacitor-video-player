@@ -152,8 +152,8 @@ export interface capVideoPlayerOptions {
    * Headers for the request (iOS, Android)
    * by Manuel García Marín (https://github.com/PhantomPainX)
    */
-  headers?: { 
-      [key: string]: string
+  headers?: {
+    [key: string]: string;
   };
   /**
    * Title shown in the player (Android)
