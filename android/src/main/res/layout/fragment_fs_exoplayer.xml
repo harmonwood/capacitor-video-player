@@ -17,8 +17,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:rewind_increment="10000"
-        app:fastforward_increment="10000"
         app:use_controller="false"
         app:controller_layout_id="@layout/exoplayer_layout_youtube"/>
 

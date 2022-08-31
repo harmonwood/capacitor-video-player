@@ -7,7 +7,6 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.media.PlaybackParams;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,7 +36,6 @@ import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -47,10 +45,8 @@ import com.google.android.exoplayer2.source.SingleSampleMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
-import com.google.android.exoplayer2.text.CaptionStyleCompat;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
@@ -58,8 +54,6 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
-import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.Notifications.NotificationCenter;
@@ -71,6 +65,16 @@ import org.json.JSONException;
 import android.widget.TextView;
 import com.google.android.exoplayer2.ui.DefaultTimeBar;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+import com.google.android.gms.cast.framework.CastButtonFactory;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastState;
+import com.google.android.exoplayer2.trackselection.ExoTrackSelection;
+import com.google.android.exoplayer2.ui.CaptionStyleCompat;
+import com.google.android.exoplayer2.ext.cast.CastPlayer;
+import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.MediaMetadata;
+import androidx.mediarouter.app.MediaRouteButton;
 
 public class FullscreenExoPlayerFragment extends Fragment {
 
@@ -91,6 +95,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
   public String title;
   public String smallTitle;
   public String accentColor;
+  public Boolean chromecast;
 
   private static final String TAG = FullscreenExoPlayerFragment.class.getName();
   public static final long UNKNOWN_TIME = -1L;
@@ -100,7 +105,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
   private PlaybackStateListener playbackStateListener;
   private PlayerView playerView;
   private String vType = null;
-  private static SimpleExoPlayer player;
+  private static ExoPlayer player;
   private boolean playWhenReady = true;
   private boolean firstReadyToPlay = true;
   private boolean isEnded = false;
@@ -118,6 +123,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
   private TextView header_tv;
   private TextView header_below;
   private DefaultTimeBar exo_progress;
+  private TextView cast_message;
   private Context context;
   private boolean isMuted = false;
   private float curVolume = (float) 0.5;
@@ -129,7 +135,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
   // Current playback position (in milliseconds).
   private int mCurrentPosition;
   private int mDuration;
-  private static final int videoStep = 15000;
+  private static final int videoStep = 10000;
 
   // Tag for the instance state bundle.
   private static final String PLAYBACK_TIME = "play_time";
@@ -150,6 +156,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
   private Integer resizeStatus = AspectRatioFrameLayout.RESIZE_MODE_FIT;
   private Toast toastMessage;
+  private MediaRouteButton mediaRouteButton;
+  private CastContext castContext;
+  private CastPlayer castPlayer;
+  private MediaItem mediaItem;
 
   /**
    * Create Fragment View
@@ -171,6 +181,80 @@ public class FullscreenExoPlayerFragment extends Fragment {
     Pbar = view.findViewById(R.id.indeterminateBar);
     exo_progress = view.findViewById(R.id.exo_progress);
     resizeBtn = view.findViewById(R.id.exo_resize);
+    cast_message = view.findViewById(R.id.cast_message);
+
+    castContext = CastContext.getSharedInstance(getContext());
+
+    mediaRouteButton = view.findViewById(R.id.media_route_button);
+    castPlayer = new CastPlayer(CastContext.getSharedInstance(context));
+
+    if (!chromecast) {
+      mediaRouteButton.setVisibility(View.GONE);
+    } else {
+      CastButtonFactory.setUpMediaRouteButton(context, mediaRouteButton);
+
+      if (castContext.getCastState() != CastState.NO_DEVICES_AVAILABLE)
+        mediaRouteButton.setVisibility(View.VISIBLE);
+
+      castContext.addCastStateListener(state -> {
+        if (state == CastState.NO_DEVICES_AVAILABLE) {
+          mediaRouteButton.setVisibility(View.GONE);
+        } else {
+          if (mediaRouteButton.getVisibility() == View.GONE) {
+            mediaRouteButton.setVisibility(View.VISIBLE);
+          }
+        }
+      });
+
+      String castTitle = "";
+      if (title != "") {
+        castTitle = title;
+        if (smallTitle != "")
+          castTitle = title + " (" + smallTitle + ")";
+      } else {
+        if (smallTitle != "")
+          castTitle = smallTitle;
+      }
+
+      MediaMetadata movieMetadata = new MediaMetadata.Builder()
+        .setTitle(castTitle)
+        .build();
+
+      mediaItem = new MediaItem.Builder()
+        .setUri(videoPath)
+        .setMimeType(MimeTypes.VIDEO_UNKNOWN)
+        .setMediaMetadata(movieMetadata)
+        .build();
+
+      castPlayer.setSessionAvailabilityListener(new SessionAvailabilityListener() {
+        @Override
+        public void onCastSessionAvailable() {
+          final Long videoPosition = player.getCurrentPosition();
+          if (pipEnabled) {
+            pipBtn.setClickable(false);
+          }
+          resizeBtn.setClickable(false);
+          player.setPlayWhenReady(false);
+          cast_message.setVisibility(View.VISIBLE);
+          playerView.setPlayer(castPlayer);
+          castPlayer.setMediaItem(mediaItem, videoPosition);
+          Toast.makeText(context, "Casting started", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onCastSessionUnavailable() {
+          final Long videoPosition = castPlayer.getCurrentPosition();
+          if (pipEnabled) {
+            pipBtn.setClickable(true);
+          }
+          resizeBtn.setClickable(true);
+          cast_message.setVisibility(View.GONE);
+          playerView.setPlayer(player);
+          player.setPlayWhenReady(true);
+          player.seekTo(videoPosition);
+        }
+      });
+    }
 
     if (title != "") {
       header_tv.setText(title);
@@ -412,11 +496,14 @@ public class FullscreenExoPlayerFragment extends Fragment {
     super.onStart();
     if (Util.SDK_INT >= 24) {
       if (playerView != null) {
-        initializePlayer();
+        // If cast is playing then it doesn't start the local player once get backs from background
+        if (!castPlayer.isCastSessionAvailable()) {
+          initializePlayer();
 
-        if (player.getCurrentPosition() != 0) {
-          firstReadyToPlay = false;
-          play();
+          if (player.getCurrentPosition() != 0) {
+            firstReadyToPlay = false;
+            play();
+          }
         }
       } else {
         getActivity().finishAndRemoveTask();
@@ -451,6 +538,15 @@ public class FullscreenExoPlayerFragment extends Fragment {
   }
 
   /**
+   * Perform onDestroy Action
+   */
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    releasePlayer();
+  }
+
+  /**
    * Perform onPause Action
    */
   @Override
@@ -465,7 +561,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
         releasePlayer();
       } else {
         if (isAppBackground) {
-          if (player != null) play();
+          if (player != null) {
+            if (player.isPlaying())
+              play();
+          }
         } else {
           pause();
         }
@@ -494,6 +593,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
       player = null;
       showSystemUI();
       resetVariables();
+      castPlayer.release();
     }
   }
 
@@ -551,11 +651,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
   private void initializePlayer() {
     if (player == null) {
       DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter.Builder(context).build();
-      TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory();
+      ExoTrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory();
       trackSelector = new DefaultTrackSelector(context, videoTrackSelectionFactory);
       LoadControl loadControl = new DefaultLoadControl();
       player =
-        new SimpleExoPlayer.Builder(context)
+        new ExoPlayer.Builder(context)
+          .setSeekBackIncrementMs(10000)
+          .setSeekForwardIncrementMs(10000)
           .setTrackSelector(trackSelector)
           .setLoadControl(loadControl)
           .setBandwidthMeter(bandwidthMeter)
@@ -655,12 +757,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
    */
   private MediaSource buildHttpMediaSource() {
     MediaSource mediaSource = null;
-    HttpDataSource.Factory httpDataSourceFactory = new DefaultHttpDataSourceFactory(
-      "jeep-exoplayer-plugin",
-      DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-      1800000,
-      true
-    );
+
+
+    DefaultHttpDataSource.Factory httpDataSourceFactory = new DefaultHttpDataSource.Factory();
+    httpDataSourceFactory.setUserAgent("jeep-exoplayer-plugin");
+    httpDataSourceFactory.setConnectTimeoutMs(DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS);
+    httpDataSourceFactory.setReadTimeoutMs(1800000);
+    httpDataSourceFactory.setAllowCrossProtocolRedirects(true);
 
     // If headers is not null and has data we pass them to the HttpDataSourceFactory
     if (headers != null && headers.length() > 0) {
@@ -673,7 +776,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
           e.printStackTrace();
         }
       }
-      httpDataSourceFactory.getDefaultRequestProperties().set(headersMap);
+      httpDataSourceFactory.setDefaultRequestProperties(headersMap);
     }
 
     DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, httpDataSourceFactory);
@@ -737,8 +840,16 @@ public class FullscreenExoPlayerFragment extends Fragment {
     mediaSources[0] = mediaSource;
     String mimeType = getMimeType(sturi);
     //Add subtitles
+
+    MediaItem.SubtitleConfiguration subConfig = new MediaItem.SubtitleConfiguration.Builder(sturi)
+      .setMimeType(mimeType)
+      .setUri(sturi)
+      .setSelectionFlags(Format.NO_VALUE)
+      .setLanguage(language)
+      .build();
+
     SingleSampleMediaSource subtitleSource = new SingleSampleMediaSource.Factory(dataSourceFactory)
-      .createMediaSource(sturi, Format.createTextSampleFormat(null, mimeType, Format.NO_VALUE, language, null), C.TIME_UNSET);
+      .createMediaSource(subConfig, C.TIME_UNSET);
 
     mediaSources[1] = subtitleSource;
 
