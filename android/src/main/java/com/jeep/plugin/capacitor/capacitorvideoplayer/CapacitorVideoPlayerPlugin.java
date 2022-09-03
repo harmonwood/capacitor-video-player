@@ -1,5 +1,6 @@
 package com.jeep.plugin.capacitor.capacitorvideoplayer;
 
+import android.Manifest;
 import android.app.UiModeManager;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -11,10 +12,13 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import com.getcapacitor.Bridge;
 import com.getcapacitor.JSObject;
+import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.getcapacitor.annotation.Permission;
+import com.getcapacitor.annotation.PermissionCallback;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.Notifications.MyRunnable;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.Notifications.NotificationCenter;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.PickerVideo.PickerVideoFragment;
@@ -23,8 +27,16 @@ import com.jeep.plugin.capacitor.capacitorvideoplayer.Utilities.FragmentUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-@CapacitorPlugin(name = "CapacitorVideoPlayer")
+@CapacitorPlugin(
+    name = "CapacitorVideoPlayer",
+    permissions = { @Permission(alias = CapacitorVideoPlayerPlugin.MEDIAVIDEO, strings = { Manifest.permission.READ_EXTERNAL_STORAGE }) }
+)
 public class CapacitorVideoPlayerPlugin extends Plugin {
+
+    // Permission alias constants
+    private static final String PERMISSION_DENIED_ERROR = "Unable to access media videos, user denied permission request";
+
+    static final String MEDIAVIDEO = "video";
 
     private CapacitorVideoPlayer implementation;
     private static final String TAG = "CapacitorVideoPlayer";
@@ -52,7 +64,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private String title;
     private String smallTitle;
     private String accentColor;
-    private Boolean chromecast;
+    private Boolean chromecast = true;
 
     @Override
     public void load() {
@@ -63,6 +75,15 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         this.fragmentUtils = new FragmentUtils(getBridge());
     }
 
+    @PermissionCallback
+    private void videosPermissionsCallback(PluginCall call) {
+        if (getPermissionState(MEDIAVIDEO) == PermissionState.GRANTED) {
+            initPlayer(call);
+        } else {
+            call.reject(PERMISSION_DENIED_ERROR);
+        }
+    }
+
     @PluginMethod
     public void echo(PluginCall call) {
         String value = call.getString("value");
@@ -70,6 +91,16 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         JSObject ret = new JSObject();
         ret.put("value", implementation.echo(value));
         call.resolve(ret);
+    }
+
+    private boolean isVideosPermissions() {
+        // required for build version >= 29
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (getPermissionState(MEDIAVIDEO) != PermissionState.GRANTED) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @PluginMethod
@@ -143,27 +174,31 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 subTitleOptions = call.getObject("subtitleOptions");
             }
 
-            JSObject headers = new JSObject();
+            JSObject _headers = new JSObject();
             if (call.getData().has("headers")) {
-                headers = call.getObject("headers");
+                _headers = call.getObject("headers");
             }
-            String title = "";
+            headers = _headers;
+            String _title = "";
             if (call.getData().has("title")) {
-                title = call.getString("title");
+                _title = call.getString("title");
             }
-            String smallTitle = "";
+            title = _title;
+            String _smallTitle = "";
             if (call.getData().has("smallTitle")) {
-                smallTitle = call.getString("smallTitle");
+                _smallTitle = call.getString("smallTitle");
             }
-            String accentColor = "";
+            smallTitle = _smallTitle;
+            String _accentColor = "";
             if (call.getData().has("accentColor")) {
-                accentColor = call.getString("accentColor");
+                _accentColor = call.getString("accentColor");
             }
-            Boolean chromecast = true;
+            accentColor = _accentColor;
+            Boolean _chromecast = true;
             if (call.getData().has("chromecast")) {
-                chromecast = call.getBoolean("chromecast");
+                _chromecast = call.getBoolean("chromecast");
             }
-
+            chromecast = _chromecast;
             AddObserversToNotificationCenter();
             Log.v(TAG, "display url: " + url);
             Log.v(TAG, "display subtitle: " + subtitle);
@@ -173,51 +208,61 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             Log.v(TAG, "smallTitle: " + smallTitle);
             Log.v(TAG, "accentColor: " + accentColor);
             Log.v(TAG, "chromecast: " + chromecast);
-            if (url.equals("internal")) {
-                createPickerVideoFragment(call);
-            } else {
-                // get the videoPath
-                videoPath = filesUtils.getFilePath(url);
-                // get the subTitlePath if any
-                if (subtitle != null && subtitle.length() > 0) {
-                    subTitlePath = filesUtils.getFilePath(subtitle);
-                } else {
-                    subTitlePath = null;
+            if (url.equals("internal") || url.contains("DCIM")) {
+                // Check for permissions to access media video files
+                if (!isVideosPermissions()) {
+                    this.bridge.saveCall(call);
+                    requestAllPermissions(call, "videosPermissionsCallback");
                 }
-                Log.v(TAG, "*** calculated videoPath: " + videoPath);
-                Log.v(TAG, "*** calculated subTitlePath: " + subTitlePath);
-                if (videoPath != null) {
-                    createFullScreenFragment(
-                        call,
-                        videoPath,
-                        videoRate,
-                        exitOnEnd,
-                        loopOnEnd,
-                        pipEnabled,
-                        bkModeEnabled,
-                        subTitlePath,
-                        language,
-                        subTitleOptions,
-                        headers,
-                        title,
-                        smallTitle,
-                        accentColor,
-                        chromecast,
-                        isTV,
-                        playerId,
-                        false,
-                        null
-                    );
+            }
+            if (isVideosPermissions()) {
+                // Got Permissions ;
+                if (url.equals("internal")) {
+                    createPickerVideoFragment(call);
                 } else {
-                    Map<String, Object> info = new HashMap<String, Object>() {
-                        {
-                            put("dismiss", "1");
-                        }
-                    };
-                    NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
-                    ret.put("message", "initPlayer command failed: Video file not found");
-                    call.resolve(ret);
-                    return;
+                    // get the videoPath
+                    videoPath = filesUtils.getFilePath(url);
+                    // get the subTitlePath if any
+                    if (subtitle != null && subtitle.length() > 0) {
+                        subTitlePath = filesUtils.getFilePath(subtitle);
+                    } else {
+                        subTitlePath = null;
+                    }
+                    Log.v(TAG, "*** calculated videoPath: " + videoPath);
+                    Log.v(TAG, "*** calculated subTitlePath: " + subTitlePath);
+                    if (videoPath != null) {
+                        createFullScreenFragment(
+                            call,
+                            videoPath,
+                            videoRate,
+                            exitOnEnd,
+                            loopOnEnd,
+                            pipEnabled,
+                            bkModeEnabled,
+                            subTitlePath,
+                            language,
+                            subTitleOptions,
+                            headers,
+                            title,
+                            smallTitle,
+                            accentColor,
+                            chromecast,
+                            isTV,
+                            playerId,
+                            false,
+                            null
+                        );
+                    } else {
+                        Map<String, Object> info = new HashMap<String, Object>() {
+                            {
+                                put("dismiss", "1");
+                            }
+                        };
+                        NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
+                        ret.put("message", "initPlayer command failed: Video file not found");
+                        call.resolve(ret);
+                        return;
+                    }
                 }
             }
         } else if ("embedded".equals(mode)) {
@@ -928,6 +973,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                         }
                         pkFragment = null;
                         if (videoId != -1) {
+                            Log.v(TAG, "§§§§ Notification videoPathInternalReady chromecast: " + chromecast);
                             createFullScreenFragment(
                                 call,
                                 videoPath,
@@ -984,6 +1030,8 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         Boolean isInternal,
         Long videoId
     ) {
+        Log.v(TAG, "§§§§ createFullScreenFragment chromecast: " + chromecast);
+
         fsFragment =
             implementation.createFullScreenFragment(
                 videoPath,

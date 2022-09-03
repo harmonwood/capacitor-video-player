@@ -1,3 +1,13 @@
+## 3.7.4 (2022-09-03)
+
+### Bug Fixes
+
+ - The latest version doesn't play video files from the local device storage #89
+
+### Add Features
+
+ - add permission request for reading media file for API > 28
+ 
 ## 3.7.3 (2022-08-31)
 
 ### Bug Fixes

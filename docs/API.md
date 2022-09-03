@@ -57,7 +57,7 @@
 - iOS & Android Plugin only
   . `internal`
 
-### from Internal folder
+### from DCIM folder
 
 - Android Plugin 
   . `file:///sdcard/DCIM/Camera/YOUR_VIDEO` 
@@ -104,7 +104,15 @@
   . `application/files/video.vtt` is corresponding to :
   **/data/Containers/Data/Applications/YOUR_APPLICATION/Documents/files/video.vtt**
 
-### from Internal (Not supported)
+### from Internal (Gallery, DCIM)
+
+- Android plugin
+  .for API higher than 28 add the following in the app manifest file
+
+  ```
+      <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+  ```
+  and you will be prompted for authorization to access media files. 
 
 ## Chromecast Support
 
