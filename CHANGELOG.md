@@ -1,3 +1,9 @@
+## 4.0.1 (2022-09-04)
+
+### Chores
+
+- Update to Capacitor 4.0.1
+
 ## 3.7.4 (2022-09-03)
 
 ### Bug Fixes

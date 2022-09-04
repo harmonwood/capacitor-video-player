@@ -2,7 +2,7 @@
 <h3 align="center">Video Player</h3>
 <p align="center"><strong><code>capacitor-video-player</code></strong></p>
 <br>
-<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 3 </strong></p><br>
+<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 4 </strong></p><br>
 <p align="center">
   Capacitor Video Player Plugin is a custom Native Capacitor plugin to play a video 
 <br>
@@ -29,8 +29,9 @@
 | ----------------- | ----------------------------------------- | ------ |
 | Quéau Jean Pierre | [jepiqueau](https://github.com/jepiqueau) |        |
 
+## LATEST FOR CAPACITOR 4 (Master)
 
-## LATEST FOR CAPACITOR 3 (Master)
+## FOR CAPACITOR 3 (v3.7.4)
 
 🚨 Since release 3.7.2 ->> 🚨
 
