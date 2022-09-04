@@ -31,6 +31,11 @@
 
 ## LATEST FOR CAPACITOR 4 (Master)
 
+WARNING do not use the 4.0.1 there is a bug with permissions
+the normal videos not requiring permissions are not displayed
+
+Fix in 4.1.0-1
+
 ## FOR CAPACITOR 3 (v3.7.4)
 
 🚨 Since release 3.7.2 ->> 🚨

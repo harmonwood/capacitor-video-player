@@ -1,3 +1,13 @@
+## 4.1.0-1 (2022-09-04)
+
+### Chores
+
+- Update to Capacitor 4.1.0
+
+### Bug Fixes
+
+ - Android Fix bug in initPlayer with permissions
+
 ## 4.0.1 (2022-09-04)
 
 ### Chores
