@@ -36,7 +36,7 @@ the normal videos not requiring permissions are not displayed
 
 Fix in 4.1.0-1
 
-## FOR CAPACITOR 3 (v3.7.4)
+## LAST3 FOR CAPACITOR 3 (3.7.x)
 
 🚨 Since release 3.7.2 ->> 🚨
 
@@ -81,6 +81,14 @@ The plugin follows the guidelines from the `Capacitor Team`,
 meaning that it will not work in IE11 without additional JavaScript transformations, e.g. with [Babel](https://babeljs.io/).
 
 ## Installation
+
+### Release 3.7.5
+
+  ```bash
+  npm install --save capacitor-video-player@last3
+  npx cap sync
+  npx cap sync @capacitor-community/electron
+  ```
 
 ### Release 2.4.7
 

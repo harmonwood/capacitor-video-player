@@ -14,6 +14,12 @@
 
 - Update to Capacitor 4.0.1
 
+## 3.7.5 (2022-09-05)
+
+### Bug Fixes
+
+ - Android Fix bug in initPlayer with permissions
+
 ## 3.7.4 (2022-09-03)
 
 ### Bug Fixes
