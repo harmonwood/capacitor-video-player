@@ -65,6 +65,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private String smallTitle;
     private String accentColor;
     private Boolean chromecast = true;
+    private Boolean isPermissions = false;
 
     @Override
     public void load() {
@@ -78,6 +79,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     @PermissionCallback
     private void videosPermissionsCallback(PluginCall call) {
         if (getPermissionState(MEDIAVIDEO) == PermissionState.GRANTED) {
+            isPermissions = true;
             initPlayer(call);
         } else {
             call.reject(PERMISSION_DENIED_ERROR);
@@ -214,8 +216,10 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                     this.bridge.saveCall(call);
                     requestAllPermissions(call, "videosPermissionsCallback");
                 }
+            } else {
+                isPermissions = true;
             }
-            if (isVideosPermissions()) {
+            if (isPermissions) {
                 // Got Permissions ;
                 if (url.equals("internal")) {
                     createPickerVideoFragment(call);
