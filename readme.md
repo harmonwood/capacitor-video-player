@@ -30,7 +30,7 @@
 | Quéau Jean Pierre | [jepiqueau](https://github.com/jepiqueau) |        |
 
 
-## LATEST FOR CAPACITOR 3 (Master)
+## LATEST FOR CAPACITOR 3 (3.7.x)
 
 🚨 Since release 3.7.2 ->> 🚨
 
