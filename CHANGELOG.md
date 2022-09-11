@@ -1,3 +1,9 @@
+## 4.1.0 (2022-09-11)
+
+### Bug Fixes
+
+ - Android Fix bug in getVideoType Error 1 issue#108
+
 ## 4.1.0-1 (2022-09-04)
 
 ### Chores

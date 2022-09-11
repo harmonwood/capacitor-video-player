@@ -1085,26 +1085,30 @@ public class FullscreenExoPlayerFragment extends Fragment {
      */
     private String getVideoType(Uri uri) {
         String ret = null;
-        String lastSegment = uri.getLastPathSegment();
+        Object obj = uri.getLastPathSegment();
+        String lastSegment = (obj == null) ? "" : uri.getLastPathSegment();
         for (String type : supportedFormat) {
             if (ret != null) break;
-            if (lastSegment.contains(type)) ret = type;
+            if(lastSegment.length() > 0 && lastSegment.contains(type)) ret = type;
             if (ret == null) {
                 List<String> segments = uri.getPathSegments();
-                String segment;
-                if (segments.get(segments.size() - 1).equals("manifest")) {
+                if(segments.size() > 0) {
+                  String segment;
+                  if (segments.get(segments.size() - 1).equals("manifest")) {
                     segment = segments.get(segments.size() - 2);
-                } else {
+                  } else {
                     segment = segments.get(segments.size() - 1);
-                }
-                for (String sType : supportedFormat) {
+                  }
+                  for (String sType : supportedFormat) {
                     if (segment.contains(sType)) {
-                        ret = sType;
-                        break;
+                      ret = sType;
+                      break;
                     }
+                  }
                 }
             }
         }
+        ret = (ret != null) ? ret : "";
         return ret;
     }
 
