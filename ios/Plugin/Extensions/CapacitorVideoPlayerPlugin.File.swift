@@ -50,8 +50,8 @@ extension CapacitorVideoPlayerPlugin {
                 return dict
             }
         }
-        if String(filePath.prefix(29)) == "file:///var/mobile/Containers" {
-
+        if String(filePath.prefix(6)) == "file:/" {
+          if String(filePath.prefix(38)) != "file:///var/mobile/Media/DCIM/100APPLE" {
             let appPath: String = NSSearchPathForDirectoriesInDomains(.applicationDirectory,
                                                                       .userDomainMask,
                                                                       true)[0]
@@ -63,8 +63,7 @@ extension CapacitorVideoPlayerPlugin {
             if let uPath = URL(string: pathArray[0]) {
                 let fPath = (uPath.appendingPathComponent("Application")
                                 .appendingPathComponent(appId)
-                                .appendingPathComponent(
-                                    String(fPathArray[1].dropFirst(38)))
+                                .appendingPathComponent(String(fPathArray[1].dropFirst(38)))
                 ).absoluteString
                 if !isFileExists(filePath: fPath) {
                     print("*** file does not exist at path \n \(fPath) \n***")
@@ -79,34 +78,35 @@ extension CapacitorVideoPlayerPlugin {
                 dict["message"] = "file path not correct"
             }
             return dict
-        }
-        if String(filePath.prefix(38)) == "file:///var/mobile/Media/DCIM/100APPLE" {
-            let appPath: String = NSSearchPathForDirectoriesInDomains(.applicationDirectory,
-                                                                      .userDomainMask,
-                                                                      true)[0]
-            // get the appId from the appPath
-            let pathArray = appPath.components(separatedBy: "Containers")
-            let fPathArray = filePath.components(separatedBy: "mobile/")
+          } else {
+              let appPath: String = NSSearchPathForDirectoriesInDomains(.applicationDirectory,
+                                                                        .userDomainMask,
+                                                                        true)[0]
+              // get the appId from the appPath
+              let pathArray = appPath.components(separatedBy: "Containers")
+              let fPathArray = filePath.components(separatedBy: "mobile/")
 
-            if let uPath = URL(string: pathArray[0]) {
-                let fPath = (uPath.appendingPathComponent(
-                                String(fPathArray[1]))
-                ).absoluteString
-                if !isFileExists(filePath: fPath) {
-                    print("*** file does not exist at path \n \(fPath) \n***")
-                    let info: [String: Any] = ["dismiss": true]
-                    self.notifyListeners("jeepCapVideoPlayerExit", data: info,
-                                         retainUntilConsumed: true)
-                    dict["message"] = "file does not exist"
-                    return dict
-                }
-                dict["url"] = URL(fileURLWithPath: fPath)
-                return dict
-            } else {
-                dict["message"] = "file path not correct"
-            }
-            return dict
+              if let uPath = URL(string: pathArray[0]) {
+                  let fPath = (uPath.appendingPathComponent(
+                                  String(fPathArray[1]))
+                  ).absoluteString
+                  if !isFileExists(filePath: fPath) {
+                      print("*** file does not exist at path \n \(fPath) \n***")
+                      let info: [String: Any] = ["dismiss": true]
+                      self.notifyListeners("jeepCapVideoPlayerExit", data: info,
+                                           retainUntilConsumed: true)
+                      dict["message"] = "file does not exist"
+                      return dict
+                  }
+                  dict["url"] = URL(fileURLWithPath: fPath)
+                  return dict
+              } else {
+                  dict["message"] = "file path not correct"
+              }
+              return dict
+          }
         }
+
         dict["message"] = "filePath not implemented"
         return dict
     }
