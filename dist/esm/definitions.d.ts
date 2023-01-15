@@ -176,7 +176,7 @@ export interface capVideoPlayerOptions {
      */
     chromecast?: boolean;
     /**
-     * Artwork to be shown in Chromecast player
+     * Artwork url to be shown in Chromecast player
      * by Manuel García Marín (https://github.com/PhantomPainX)
      * default: ""
      */

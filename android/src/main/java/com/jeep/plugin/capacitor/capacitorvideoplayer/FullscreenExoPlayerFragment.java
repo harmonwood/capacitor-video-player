@@ -213,10 +213,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
         exo_rew = view.findViewById(R.id.exo_rew);
         exo_ffwd = view.findViewById(R.id.exo_ffwd);
         cast_image = view.findViewById(R.id.cast_image);
+        mediaRouteButton = view.findViewById(R.id.media_route_button);
 
         castContext = CastContext.getSharedInstance(getContext());
 
-        mediaRouteButton = view.findViewById(R.id.media_route_button);
         castPlayer = new CastPlayer(CastContext.getSharedInstance(context));
 
         if (!chromecast) {
@@ -607,6 +607,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private void pictureInPictureMode() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
             styledPlayerView.setUseController(false);
+            styledPlayerView.setControllerAutoShow(false);
             linearLayout.setVisibility(View.INVISIBLE);
             // require android O or higher
             if (
