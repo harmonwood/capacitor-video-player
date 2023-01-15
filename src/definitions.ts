@@ -152,8 +152,8 @@ export interface capVideoPlayerOptions {
    * Headers for the request (iOS, Android)
    * by Manuel García Marín (https://github.com/PhantomPainX)
    */
-  headers?: { 
-      [key: string]: string
+  headers?: {
+    [key: string]: string;
   };
   /**
    * Title shown in the player (Android)
@@ -178,6 +178,12 @@ export interface capVideoPlayerOptions {
    * default: true
    */
   chromecast?: boolean;
+  /**
+   * Artwork to be shown in Chromecast player
+   * by Manuel García Marín (https://github.com/PhantomPainX)
+   * default: ""
+   */
+  artwork?: string;
 }
 export interface capVideoPlayerIdOptions {
   /**

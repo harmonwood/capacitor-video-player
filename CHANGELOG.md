@@ -1,3 +1,58 @@
+## 4.1.0 (2022-09-11)
+
+### Bug Fixes
+
+ - Android Fix bug in getVideoType Error 1 issue#108
+
+## 4.1.0-1 (2022-09-04)
+
+### Chores
+
+- Update to Capacitor 4.1.0
+
+### Bug Fixes
+
+ - Android Fix bug in initPlayer with permissions
+
+## 4.0.1 (2022-09-04)
+
+### Chores
+
+- Update to Capacitor 4.0.1
+
+## 3.7.5 (2022-09-05)
+
+### Bug Fixes
+
+ - Android Fix bug in initPlayer with permissions
+
+## 3.7.4 (2022-09-03)
+
+### Bug Fixes
+
+ - The latest version doesn't play video files from the local device storage #89
+
+### Add Features
+
+ - add permission request for reading media file for API > 28
+ 
+## 3.7.3 (2022-08-31)
+
+### Bug Fixes
+
+ - API.md Android Quirks
+ - iOS - Swiping Video Off Screen Does Not Destroy The Video #105
+
+## 3.7.2 (2022-08-31)
+
+### Chores
+
+ - (Android) Exoplayer 2.16.0 by Manuel García Marín (https://github.com/PhantomPainX)
+
+### Added Features
+
+ - (Android) Add Chromecast features
+
 ## 3.7.1 (2022-08-27)
 
  - (Android) New layout, features and some fixes #106 by Manuel García Marín (https://github.com/PhantomPainX)

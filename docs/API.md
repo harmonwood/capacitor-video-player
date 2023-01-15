@@ -57,7 +57,7 @@
 - iOS & Android Plugin only
   . `internal`
 
-### from Internal folder
+### from DCIM folder
 
 - Android Plugin 
   . `file:///sdcard/DCIM/Camera/YOUR_VIDEO` 
@@ -104,7 +104,84 @@
   . `application/files/video.vtt` is corresponding to :
   **/data/Containers/Data/Applications/YOUR_APPLICATION/Documents/files/video.vtt**
 
-### from Internal (Not supported)
+### from Internal (Gallery, DCIM)
+
+- Android plugin
+  .for API higher than 28 add the following in the app manifest file
+
+  ```
+      <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+  ```
+  and you will be prompted for authorization to access media files. 
+
+## Chromecast Support
+
+  Android Only
+
+### Chromecast explanation
+
+The cast option is enabled by default, otherwise you can disable it with the option chromecast = false in InitPlayer options.
+
+Cast button will only be available if your cast devices are connected in the same WIFI network, if not, the button won't be visible.
+
+Some videos won't work with Cast, as not every video format is supported.
+
+When you start casting, the video controllers will be available to control your cast. If you exist the app or close the video, the cast will end automatically.
+
+Cast title will be the same as title and smallTitle, if these are not added, then it will be blank
+
+    String castTitle = "";
+     if (title != "") {
+       castTitle = title;
+       if (smallTitle != "")
+         castTitle = title + " (" + smallTitle + ")";
+     } else {
+       if (smallTitle != "")
+         castTitle = smallTitle;
+     }
+
+### Android Quirks
+
+Since 3.7.2, you need to add few things in your Android project to get the plugin working.
+
+- build.gradle (app)
+
+```java
+dependencies {
+    ...
+    implementation 'com.google.android.gms:play-services-cast-framework:21.1.0'
+}
+```
+
+ - AndroidManifest.xml
+
+```java
+<application>
+    ...
+    <meta-data
+        android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+        android:value="com.google.android.exoplayer2.ext.cast.DefaultCastOptionsProvider" />
+</application>
+```
+
+ - MainActivity.java
+
+```java
+import android.os.Bundle;
+
+import com.google.android.gms.cast.framework.CastContext;
+
+
+public class MainActivity extends BridgeActivity {
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    CastContext.getSharedInstance(this);
+  }
+}
+```
+
+## Methods
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
@@ -401,8 +478,8 @@ Stop all players playing
 | **`headers`**         | <code>{ [key: string]: string; }</code>                     | Headers for the request (iOS, Android) by Manuel García Marín (https://github.com/PhantomPainX)                                                             |
 | **`title`**           | <code>string</code>                                         | Title shown in the player (Android) by Manuel García Marín (https://github.com/PhantomPainX)                                                                |
 | **`smallTitle`**      | <code>string</code>                                         | Subtitle shown below the title in the player (Android) by Manuel García Marín (https://github.com/PhantomPainX)                                             |
-| **`accentColor`**     | <code>string</code>                                         | ExoPlayer Progress Bar and Spinner color (Android) by Manuel García Marín (https://github.com/PhantomPainX) Must be a valid hex color code (default: #FFFFFF) |
-| **`chromecast`**      | <code>boolean</code>                                        | Chromecast enable/disable (Android) by Manuel García Marín (https://github.com/PhantomPainX) (default: true) |
+| **`accentColor`**     | <code>string</code>                                         | ExoPlayer Progress Bar and Spinner color (Android) by Manuel García Marín (https://github.com/PhantomPainX) Must be a valid hex color code default: #FFFFFF |
+| **`chromecast`**      | <code>boolean</code>                                        | Chromecast enable/disable (Android) by Manuel García Marín (https://github.com/PhantomPainX) default: true                                                  |
 
 
 #### SubTitleOptions

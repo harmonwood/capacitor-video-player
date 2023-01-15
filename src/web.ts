@@ -19,7 +19,8 @@ export interface IPlayerSize {
 
 export class CapacitorVideoPlayerWeb
   extends WebPlugin
-  implements CapacitorVideoPlayerPlugin {
+  implements CapacitorVideoPlayerPlugin
+{
   private _players: any = [];
 
   async echo(options: { value: string }): Promise<capVideoPlayerResult> {
@@ -577,10 +578,8 @@ export class CapacitorVideoPlayerWeb
         : url
       : (null as any);
     if (videoURL === null) return Promise.resolve(false);
-    const videoContainer: HTMLDivElement | null = await this._getContainerElement(
-      playerId,
-      componentTag,
-    );
+    const videoContainer: HTMLDivElement | null =
+      await this._getContainerElement(playerId, componentTag);
     if (videoContainer === null)
       return Promise.resolve({
         method: 'initPlayer',
