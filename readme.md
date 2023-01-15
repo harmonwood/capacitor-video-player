@@ -2,7 +2,7 @@
 <h3 align="center">Video Player</h3>
 <p align="center"><strong><code>capacitor-video-player</code></strong></p>
 <br>
-<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 3 </strong></p><br>
+<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 4 </strong></p><br>
 <p align="center">
   Capacitor Video Player Plugin is a custom Native Capacitor plugin to play a video 
 <br>
@@ -29,10 +29,24 @@
 | ----------------- | ----------------------------------------- | ------ |
 | Quéau Jean Pierre | [jepiqueau](https://github.com/jepiqueau) |        |
 
+## LATEST FOR CAPACITOR 4 (Master)
 
-## LATEST FOR CAPACITOR 3 (Master)
+WARNING do not use the 4.0.1 there is a bug with permissions
+the normal videos not requiring permissions are not displayed
 
-The master release has been upgraded to `@capacitor/core@3.3.1`.
+Fix in 4.1.0-1
+
+## LAST3 FOR CAPACITOR 3 (3.7.x)
+
+🚨 Since release 3.7.2 ->> 🚨
+
+Android Only by Manuel García Marín (https://github.com/PhantomPainX)
+ - Update to Exoplayer 2.16.0 
+ - Add ChromeCast Support 
+
+see [Chromecast Support](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/API.md#chromecast-support)
+
+🚨 Since release 3.7.2 <<- 🚨
 
 🚨 Since release 3.7.1 ->> 🚨
 
@@ -67,6 +81,14 @@ The plugin follows the guidelines from the `Capacitor Team`,
 meaning that it will not work in IE11 without additional JavaScript transformations, e.g. with [Babel](https://babeljs.io/).
 
 ## Installation
+
+### Release 3.7.5
+
+  ```bash
+  npm install --save capacitor-video-player@last3
+  npx cap sync
+  npx cap sync @capacitor-community/electron
+  ```
 
 ### Release 2.4.7
 
@@ -203,7 +225,7 @@ No configuration required for this plugin
 
 - [react-video-player-app-starter](https://github.com/jepiqueau/react-video-player-app-starter/blob/0.0.5)
 
-### Application Starter 3.0.0 🚧
+### Application Starter 3.0.0
 
 - [angular-video-player-app-starter](https://github.com/jepiqueau/angular-videoplayer-app-starter)
 
@@ -219,7 +241,7 @@ No configuration required for this plugin
 
 - [see usage 2.4.7](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/Usage_2.4.7.md)
 
-## Usage 3.0.0 🚧
+## Usage 3.0.0 
 
 - [see capacitor documentation](https://capacitor.ionicframework.com/docs/getting-started/with-ionic)
 

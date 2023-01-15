@@ -9,6 +9,7 @@
 import UIKit
 import AVKit
 
+// swiftlint:disable file_length
 // swiftlint:disable type_body_length
 open class FullScreenVideoPlayerView: UIView {
     private var _url: URL
@@ -37,6 +38,7 @@ open class FullScreenVideoPlayerView: UIView {
     var itemStatusObserver: NSKeyValueObservation?
     var playerRateObserver: NSKeyValueObservation?
     var videoPlayerFrameObserver: NSKeyValueObservation?
+    var videoPlayerMoveObserver: NSKeyValueObservation?
 
     init(url: URL, rate: Float, playerId: String, exitOnEnd: Bool,
          loopOnEnd: Bool, pipEnabled: Bool, stUrl: URL?,
@@ -54,8 +56,8 @@ open class FullScreenVideoPlayerView: UIView {
         self._stHeaders = stHeaders
         self.videoPlayer = AVPlayerViewController()
 
-        if stHeaders != nil {
-            self.videoAsset = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": stHeaders])
+        if let headers = self._stHeaders {
+            self.videoAsset = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": headers])
         } else {
             self.videoAsset = AVURLAsset(url: url)
         }
@@ -137,6 +139,11 @@ open class FullScreenVideoPlayerView: UIView {
         self.player = AVPlayer(playerItem: playerItem)
         self.player?.currentItem?.audioTimePitchAlgorithm = .timeDomain
         self.videoPlayer.player = self.player
+        if #available(iOS 13.0, *) {
+            self.videoPlayer.isModalInPresentation = true
+        } else {
+            // Fallback on earlier versions
+        }
         self.videoPlayer.allowsPictureInPicturePlayback = false
         if isPIPModeAvailable && self._pipEnabled {
             self.videoPlayer.allowsPictureInPicturePlayback = true
@@ -284,13 +291,28 @@ open class FullScreenVideoPlayerView: UIView {
                      changeHandler: {(_, _) in
                         if !isInPIPMode {
                             if self.videoPlayer.isBeingDismissed && !isVideoEnded {
+                                print("$$$$$ in frame observer")
 
                                 NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
                             }
                         }
 
                      })
+        self.videoPlayerMoveObserver = self.videoPlayer
+            .observe(\.view.center, options: [.new, .old],
+                     changeHandler: {(_, _) in
+                        if !isInPIPMode {
+                            if self.videoPlayer.isBeingDismissed && !isVideoEnded {
+                                print("$$$$$ in move observer")
+
+                                NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
+                            }
+
+                        }
+
+                     })
     }
+
     // swiftlint:enable function_body_length
     // swiftlint:enable cyclomatic_complexity
 
@@ -391,3 +413,4 @@ open class FullScreenVideoPlayerView: UIView {
 }
 
 // swiftlint:enable type_body_length
+// swiftlint:enable file_length

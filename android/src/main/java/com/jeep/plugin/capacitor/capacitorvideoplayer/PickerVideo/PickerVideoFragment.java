@@ -69,13 +69,21 @@ public class PickerVideoFragment extends Fragment {
     }
 
     private void loadVideos() {
-        String[] projection = { MediaStore.Video.Media._ID, MediaStore.Video.Media.DISPLAY_NAME, MediaStore.Video.Media.DURATION };
+        String[] projection = {
+            MediaStore.Video.Media._ID,
+            MediaStore.Video.Media.DISPLAY_NAME,
+            MediaStore.Video.Media.DURATION,
+            MediaStore.Video.Media.DATE_ADDED
+        };
         String sortOrder = MediaStore.Video.Media.DATE_ADDED + " DESC";
+        Uri collection;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            collection = MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL);
+        } else {
+            collection = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        }
 
-        Cursor cursor = getActivity()
-            .getApplication()
-            .getContentResolver()
-            .query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection, null, null, sortOrder);
+        Cursor cursor = getActivity().getApplication().getContentResolver().query(collection, projection, null, null, sortOrder);
         if (cursor != null) {
             int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID);
             int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME);
@@ -86,7 +94,7 @@ public class PickerVideoFragment extends Fragment {
                 String title = cursor.getString(titleColumn);
                 int duration = cursor.getInt(durationColumn);
 
-                Uri data = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
+                Uri data = ContentUris.withAppendedId(collection, id);
 
                 String duration_formatted;
                 int sec = (duration / 1000) % 60;

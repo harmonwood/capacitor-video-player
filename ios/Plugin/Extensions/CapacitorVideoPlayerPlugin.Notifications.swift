@@ -16,7 +16,7 @@ extension CapacitorVideoPlayerPlugin {
 
     @objc func playerItemPlay(notification: Notification) {
         guard let info = notification.userInfo as? [String: Any] else { return }
-        DispatchQueue.main.async{
+        DispatchQueue.main.async {
             self.notifyListeners("jeepCapVideoPlayerPlay", data: info, retainUntilConsumed: true)
             return
         }
