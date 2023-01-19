@@ -398,7 +398,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
             !isInPictureInPictureMode &&
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
             packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) &&
-            isPIPModeeEnabled
+            isPIPModeeEnabled &&
+            pipEnabled
         ) {
             pictureInPictureMode();
         } else {
