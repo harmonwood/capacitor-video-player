@@ -1,3 +1,15 @@
+## 4.6.1 (2023-01-22)
+
+### Chores
+
+ - Update to Capacitor 4.6.1
+ - Update to hls.js 1.3.1 (Web)
+ - Update to Exoplayer 2.18.1 (Android)
+
+### Bug Fixes
+
+ - PR Exoplayer v2.18.1 and some updates - fixes #114 from PhantomPainX [Notes from PhantomPainX](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/Notes_Exoplayer2.18.1.md)
+
 ## 4.1.0 (2022-09-11)
 
 ### Bug Fixes

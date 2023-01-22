@@ -204,7 +204,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             chromecast = _chromecast;
             String _artwork = "";
             if (call.getData().has("artwork")) {
-              _artwork = call.getString("artwork");
+                _artwork = call.getString("artwork");
             }
             artwork = _artwork;
             AddObserversToNotificationCenter();
@@ -224,7 +224,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                     requestAllPermissions(call, "videosPermissionsCallback");
                 }
             } else {
-              isPermissions = true;
+                isPermissions = true;
             }
             if (isPermissions) {
                 // Got Permissions ;

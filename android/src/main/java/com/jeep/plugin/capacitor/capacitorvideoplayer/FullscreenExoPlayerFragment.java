@@ -77,7 +77,6 @@ import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.Notifications.NotificationCenter;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -87,7 +86,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import org.json.JSONException;
 
 public class FullscreenExoPlayerFragment extends Fragment {
@@ -237,35 +235,22 @@ public class FullscreenExoPlayerFragment extends Fragment {
             );
 
             if (artwork != "") {
+                MediaMetadata movieMetadata = new MediaMetadata.Builder()
+                    .setTitle(title)
+                    .setSubtitle(smallTitle)
+                    .setArtworkUri(Uri.parse(artwork))
+                    .build();
+                mediaItem =
+                    new MediaItem.Builder().setUri(videoPath).setMimeType(MimeTypes.VIDEO_UNKNOWN).setMediaMetadata(movieMetadata).build();
 
-              MediaMetadata movieMetadata = new MediaMetadata.Builder()
-                .setTitle(title)
-                .setSubtitle(smallTitle)
-                .setArtworkUri(Uri.parse(artwork))
-                .build();
-              mediaItem =
-                new MediaItem.Builder()
-                  .setUri(videoPath)
-                  .setMimeType(MimeTypes.VIDEO_UNKNOWN)
-                  .setMediaMetadata(movieMetadata)
-                  .build();
-
-              new setCastImage().execute();
+                new setCastImage().execute();
             } else {
-              MediaMetadata movieMetadata = new MediaMetadata.Builder()
-                .setTitle(title)
-                .setSubtitle(smallTitle)
-                .build();
-              mediaItem =
-                new MediaItem.Builder()
-                  .setUri(videoPath)
-                  .setMimeType(MimeTypes.VIDEO_UNKNOWN)
-                  .setMediaMetadata(movieMetadata)
-                  .build();
+                MediaMetadata movieMetadata = new MediaMetadata.Builder().setTitle(title).setSubtitle(smallTitle).build();
+                mediaItem =
+                    new MediaItem.Builder().setUri(videoPath).setMimeType(MimeTypes.VIDEO_UNKNOWN).setMediaMetadata(movieMetadata).build();
             }
 
-
-             castPlayer.setSessionAvailabilityListener(
+            castPlayer.setSessionAvailabilityListener(
                 new SessionAvailabilityListener() {
                     @Override
                     public void onCastSessionAvailable() {
@@ -299,30 +284,30 @@ public class FullscreenExoPlayerFragment extends Fragment {
                 }
             );
 
-          castPlayer.addListener(
-            new Player.Listener() {
-              @Override
-              public void onPlayerStateChanged(boolean playWhenReady, int state) {
-                Map<String, Object> info = new HashMap<String, Object>() {
-                  {
-                    put("fromPlayerId", playerId);
-                    put("currentTime", String.valueOf(player.getCurrentPosition() / 1000));
-                  }
-                };
-                switch (state) {
-                  case CastPlayer.STATE_READY:
-                    if (castPlayer.isPlaying()) {
-                      NotificationCenter.defaultCenter().postNotification("playerItemPlay", info);
-                    } else {
-                      NotificationCenter.defaultCenter().postNotification("playerItemPause", info);
+            castPlayer.addListener(
+                new Player.Listener() {
+                    @Override
+                    public void onPlayerStateChanged(boolean playWhenReady, int state) {
+                        Map<String, Object> info = new HashMap<String, Object>() {
+                            {
+                                put("fromPlayerId", playerId);
+                                put("currentTime", String.valueOf(player.getCurrentPosition() / 1000));
+                            }
+                        };
+                        switch (state) {
+                            case CastPlayer.STATE_READY:
+                                if (castPlayer.isPlaying()) {
+                                    NotificationCenter.defaultCenter().postNotification("playerItemPlay", info);
+                                } else {
+                                    NotificationCenter.defaultCenter().postNotification("playerItemPause", info);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
                     }
-                    break;
-                  default:
-                    break;
                 }
-              }
-            }
-          );
+            );
         }
 
         if (title != "") {
@@ -343,88 +328,90 @@ public class FullscreenExoPlayerFragment extends Fragment {
         styledPlayerView.requestFocus();
         linearLayout.setVisibility(View.INVISIBLE);
         styledPlayerView.setControllerShowTimeoutMs(3000);
-        styledPlayerView.setControllerVisibilityListener(new StyledPlayerView.ControllerVisibilityListener() {
-          @Override
-          public void onVisibilityChanged(int visibility) {
-            linearLayout.setVisibility(visibility);
-          }
-        });
-
-        listener = new Player.Listener() {
-            @Override
-            public void onPlayerStateChanged(boolean playWhenReady, int state) {
-
-              String stateString;
-              Map<String, Object> info = new HashMap<String, Object>() {
-                {
-                  put("fromPlayerId", playerId);
-                  put("currentTime", String.valueOf(player.getCurrentPosition() / 1000));
+        styledPlayerView.setControllerVisibilityListener(
+            new StyledPlayerView.ControllerVisibilityListener() {
+                @Override
+                public void onVisibilityChanged(int visibility) {
+                    linearLayout.setVisibility(visibility);
                 }
-              };
-
-              switch (state) {
-                case ExoPlayer.STATE_IDLE:
-                  stateString = "ExoPlayer.STATE_IDLE      -";
-                  Toast.makeText(context, "Intenta con otra fuente por favor", Toast.LENGTH_SHORT).show();
-                  playerExit();
-                  break;
-                case ExoPlayer.STATE_BUFFERING:
-                  stateString = "ExoPlayer.STATE_BUFFERING -";
-                  Pbar.setVisibility(View.VISIBLE);
-                  break;
-                case ExoPlayer.STATE_READY:
-                  stateString = "ExoPlayer.STATE_READY     -";
-                  Pbar.setVisibility(View.GONE);
-                  styledPlayerView.setUseController(true);
-                  linearLayout.setVisibility(View.INVISIBLE);
-                  Log.v(TAG, "**** in ExoPlayer.STATE_READY firstReadyToPlay " + firstReadyToPlay);
-
-                  if (firstReadyToPlay) {
-                    firstReadyToPlay = false;
-                    NotificationCenter.defaultCenter().postNotification("playerItemReady", info);
-                    play();
-                    Log.v(TAG, "**** in ExoPlayer.STATE_READY firstReadyToPlay player.isPlaying" + player.isPlaying());
-                    player.seekTo(currentWindow, playbackPosition);
-                  } else {
-                    Log.v(TAG, "**** in ExoPlayer.STATE_READY isPlaying " + player.isPlaying());
-                    if (player.isPlaying()) {
-                      Log.v(TAG, "**** in ExoPlayer.STATE_READY going to notify playerItemPlay ");
-                      NotificationCenter.defaultCenter().postNotification("playerItemPlay", info);
-
-                      resizeBtn.setVisibility(View.VISIBLE);
-
-                      mediaRouteButtonColorWhite(mediaRouteButton);
-                      if (castContext.getCastState() != CastState.NO_DEVICES_AVAILABLE)
-                        mediaRouteButton.setVisibility(View.VISIBLE);
-
-
-                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && pipEnabled) {
-                        pipBtn.setVisibility(View.VISIBLE);
-                      }
-                    } else {
-                      Log.v(TAG, "**** in ExoPlayer.STATE_READY going to notify playerItemPause ");
-                      NotificationCenter.defaultCenter().postNotification("playerItemPause", info);
-                    }
-                  }
-                  break;
-                case ExoPlayer.STATE_ENDED:
-                  stateString = "ExoPlayer.STATE_ENDED     -";
-                  Log.v(TAG, "**** in ExoPlayer.STATE_ENDED going to notify playerItemEnd ");
-
-                  player.seekTo(0);
-                  player.setVolume(curVolume);
-                  player.setPlayWhenReady(false);
-                  if (exitOnEnd) {
-                    releasePlayer();
-                    NotificationCenter.defaultCenter().postNotification("playerItemEnd", info);
-                  }
-                  break;
-                default:
-                  stateString = "UNKNOWN_STATE             -";
-                  break;
-              }
             }
-        };
+        );
+
+        listener =
+            new Player.Listener() {
+                @Override
+                public void onPlayerStateChanged(boolean playWhenReady, int state) {
+                    String stateString;
+                    Map<String, Object> info = new HashMap<String, Object>() {
+                        {
+                            put("fromPlayerId", playerId);
+                            put("currentTime", String.valueOf(player.getCurrentPosition() / 1000));
+                        }
+                    };
+
+                    switch (state) {
+                        case ExoPlayer.STATE_IDLE:
+                            stateString = "ExoPlayer.STATE_IDLE      -";
+                            Toast.makeText(context, "Intenta con otra fuente por favor", Toast.LENGTH_SHORT).show();
+                            playerExit();
+                            break;
+                        case ExoPlayer.STATE_BUFFERING:
+                            stateString = "ExoPlayer.STATE_BUFFERING -";
+                            Pbar.setVisibility(View.VISIBLE);
+                            break;
+                        case ExoPlayer.STATE_READY:
+                            stateString = "ExoPlayer.STATE_READY     -";
+                            Pbar.setVisibility(View.GONE);
+                            styledPlayerView.setUseController(true);
+                            linearLayout.setVisibility(View.INVISIBLE);
+                            Log.v(TAG, "**** in ExoPlayer.STATE_READY firstReadyToPlay " + firstReadyToPlay);
+
+                            if (firstReadyToPlay) {
+                                firstReadyToPlay = false;
+                                NotificationCenter.defaultCenter().postNotification("playerItemReady", info);
+                                play();
+                                Log.v(TAG, "**** in ExoPlayer.STATE_READY firstReadyToPlay player.isPlaying" + player.isPlaying());
+                                player.seekTo(currentWindow, playbackPosition);
+                            } else {
+                                Log.v(TAG, "**** in ExoPlayer.STATE_READY isPlaying " + player.isPlaying());
+                                if (player.isPlaying()) {
+                                    Log.v(TAG, "**** in ExoPlayer.STATE_READY going to notify playerItemPlay ");
+                                    NotificationCenter.defaultCenter().postNotification("playerItemPlay", info);
+
+                                    resizeBtn.setVisibility(View.VISIBLE);
+
+                                    mediaRouteButtonColorWhite(mediaRouteButton);
+                                    if (castContext.getCastState() != CastState.NO_DEVICES_AVAILABLE) mediaRouteButton.setVisibility(
+                                        View.VISIBLE
+                                    );
+
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && pipEnabled) {
+                                        pipBtn.setVisibility(View.VISIBLE);
+                                    }
+                                } else {
+                                    Log.v(TAG, "**** in ExoPlayer.STATE_READY going to notify playerItemPause ");
+                                    NotificationCenter.defaultCenter().postNotification("playerItemPause", info);
+                                }
+                            }
+                            break;
+                        case ExoPlayer.STATE_ENDED:
+                            stateString = "ExoPlayer.STATE_ENDED     -";
+                            Log.v(TAG, "**** in ExoPlayer.STATE_ENDED going to notify playerItemEnd ");
+
+                            player.seekTo(0);
+                            player.setVolume(curVolume);
+                            player.setPlayWhenReady(false);
+                            if (exitOnEnd) {
+                                releasePlayer();
+                                NotificationCenter.defaultCenter().postNotification("playerItemEnd", info);
+                            }
+                            break;
+                        default:
+                            stateString = "UNKNOWN_STATE             -";
+                            break;
+                    }
+                }
+            };
 
         if (isTV) {
             Toast.makeText(context, "Device is a TV ", Toast.LENGTH_SHORT).show();
@@ -534,41 +521,42 @@ public class FullscreenExoPlayerFragment extends Fragment {
         return view;
     }
 
-  /**
-   * Sets the cast image in playerView when it is connected to a cast device
-   */
-  private class setCastImage extends AsyncTask<Void,Void,Bitmap>{
-    protected Bitmap doInBackground(Void... params) {
-      final String image = artwork;
-      if (image != "") {
-        try {
-          URL url = new URL(image);
-          HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-          connection.setDoInput(true);
-          connection.connect();
-          InputStream input = connection.getInputStream();
-          Bitmap myBitmap = BitmapFactory.decodeStream(input);
-          return myBitmap;
-        } catch (IOException e) {
-          e.printStackTrace();
-          return null;
-        }
-      } else {
-        return null;
-      }
-    }
+    /**
+     * Sets the cast image in playerView when it is connected to a cast device
+     */
+    private class setCastImage extends AsyncTask<Void, Void, Bitmap> {
 
-    @Override
-    protected void onPostExecute(Bitmap result) {
-      cast_image.setImageBitmap(result);
+        protected Bitmap doInBackground(Void... params) {
+            final String image = artwork;
+            if (image != "") {
+                try {
+                    URL url = new URL(image);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setDoInput(true);
+                    connection.connect();
+                    InputStream input = connection.getInputStream();
+                    Bitmap myBitmap = BitmapFactory.decodeStream(input);
+                    return myBitmap;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            cast_image.setImageBitmap(result);
+        }
     }
-  }
 
     /**
      * Perform backPressed Action
      */
     private void backPressed() {
-      playerExit();
+        playerExit();
     }
 
     private void resizePressed() {
@@ -803,7 +791,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
                     .setLoadControl(loadControl)
                     .setBandwidthMeter(bandwidthMeter)
                     .build();
-
         }
 
         styledPlayerView.setPlayer(player);
@@ -1169,15 +1156,20 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * @param button
      */
     private void mediaRouteButtonColorWhite(MediaRouteButton button) {
-      if (button == null) return;
-      Context castContext = new ContextThemeWrapper(getContext(), androidx.mediarouter.R.style.Theme_MediaRouter);
+        if (button == null) return;
+        Context castContext = new ContextThemeWrapper(getContext(), androidx.mediarouter.R.style.Theme_MediaRouter);
 
-      TypedArray a = castContext.obtainStyledAttributes(null, androidx.mediarouter.R.styleable.MediaRouteButton, androidx.mediarouter.R.attr.mediaRouteButtonStyle, 0);
-      Drawable drawable = a.getDrawable(androidx.mediarouter.R.styleable.MediaRouteButton_externalRouteEnabledDrawable);
-      a.recycle();
-      DrawableCompat.setTint(drawable, getContext().getResources().getColor(R.color.white));
-      drawable.setState(button.getDrawableState());
-      button.setRemoteIndicatorDrawable(drawable);
+        TypedArray a = castContext.obtainStyledAttributes(
+            null,
+            androidx.mediarouter.R.styleable.MediaRouteButton,
+            androidx.mediarouter.R.attr.mediaRouteButtonStyle,
+            0
+        );
+        Drawable drawable = a.getDrawable(androidx.mediarouter.R.styleable.MediaRouteButton_externalRouteEnabledDrawable);
+        a.recycle();
+        DrawableCompat.setTint(drawable, getContext().getResources().getColor(R.color.white));
+        drawable.setState(button.getDrawableState());
+        button.setRemoteIndicatorDrawable(drawable);
     }
 
     /**
@@ -1186,32 +1178,32 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * @return video type
      */
     private String getVideoType(Uri uri) {
-      String ret = null;
-      Object obj = uri.getLastPathSegment();
-      String lastSegment = (obj == null) ? "" : uri.getLastPathSegment();
-      for (String type : supportedFormat) {
-        if (ret != null) break;
-        if(lastSegment.length() > 0 && lastSegment.contains(type)) ret = type;
-        if (ret == null) {
-          List<String> segments = uri.getPathSegments();
-          if(segments.size() > 0) {
-            String segment;
-            if (segments.get(segments.size() - 1).equals("manifest")) {
-              segment = segments.get(segments.size() - 2);
-            } else {
-              segment = segments.get(segments.size() - 1);
+        String ret = null;
+        Object obj = uri.getLastPathSegment();
+        String lastSegment = (obj == null) ? "" : uri.getLastPathSegment();
+        for (String type : supportedFormat) {
+            if (ret != null) break;
+            if (lastSegment.length() > 0 && lastSegment.contains(type)) ret = type;
+            if (ret == null) {
+                List<String> segments = uri.getPathSegments();
+                if (segments.size() > 0) {
+                    String segment;
+                    if (segments.get(segments.size() - 1).equals("manifest")) {
+                        segment = segments.get(segments.size() - 2);
+                    } else {
+                        segment = segments.get(segments.size() - 1);
+                    }
+                    for (String sType : supportedFormat) {
+                        if (segment.contains(sType)) {
+                            ret = sType;
+                            break;
+                        }
+                    }
+                }
             }
-            for (String sType : supportedFormat) {
-              if (segment.contains(sType)) {
-                ret = sType;
-                break;
-              }
-            }
-          }
         }
-      }
-      ret = (ret != null) ? ret : "";
-      return ret;
+        ret = (ret != null) ? ret : "";
+        return ret;
     }
 
     /**

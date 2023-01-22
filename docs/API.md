@@ -470,7 +470,7 @@ Stop all players playing
 | **`smallTitle`**      | <code>string</code>                                         | Subtitle shown below the title in the player (Android) by Manuel García Marín (https://github.com/PhantomPainX)                                             |
 | **`accentColor`**     | <code>string</code>                                         | ExoPlayer Progress Bar and Spinner color (Android) by Manuel García Marín (https://github.com/PhantomPainX) Must be a valid hex color code default: #FFFFFF |
 | **`chromecast`**      | <code>boolean</code>                                        | Chromecast enable/disable (Android) by Manuel García Marín (https://github.com/PhantomPainX) default: true                                                  |
-| **`artwork`**      | <code>string</code>                                            | Artwork url to be shown in Chromecast player (Android) by Manuel García Marín (https://github.com/PhantomPainX)                                             |
+| **`artwork`**         | <code>string</code>                                         | Artwork url to be shown in Chromecast player by Manuel García Marín (https://github.com/PhantomPainX) default: ""                                           |
 
 
 #### SubTitleOptions
