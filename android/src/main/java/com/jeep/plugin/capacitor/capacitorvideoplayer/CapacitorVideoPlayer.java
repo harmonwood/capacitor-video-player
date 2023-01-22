@@ -31,6 +31,7 @@ public class CapacitorVideoPlayer {
         String smallTitle,
         String accentColor,
         Boolean chromecast,
+        String artwork,
         Boolean isTV,
         String playerId,
         Boolean isInternal,
@@ -52,6 +53,7 @@ public class CapacitorVideoPlayer {
         fsFragment.smallTitle = smallTitle;
         fsFragment.accentColor = accentColor;
         fsFragment.chromecast = chromecast;
+        fsFragment.artwork = artwork;
         fsFragment.isTV = isTV;
         fsFragment.playerId = playerId;
         fsFragment.isInternal = isInternal;

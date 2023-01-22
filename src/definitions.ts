@@ -178,6 +178,12 @@ export interface capVideoPlayerOptions {
    * default: true
    */
   chromecast?: boolean;
+  /**
+   * Artwork url to be shown in Chromecast player
+   * by Manuel García Marín (https://github.com/PhantomPainX)
+   * default: ""
+   */
+  artwork?: string;
 }
 export interface capVideoPlayerIdOptions {
   /**

@@ -126,19 +126,9 @@ Cast button will only be available if your cast devices are connected in the sam
 
 Some videos won't work with Cast, as not every video format is supported.
 
-When you start casting, the video controllers will be available to control your cast. If you exist the app or close the video, the cast will end automatically.
+When you start casting, the video controllers will be available to control your cast. If you exit the app or close the video, the cast will end automatically.
 
 Cast title will be the same as title and smallTitle, if these are not added, then it will be blank
-
-    String castTitle = "";
-     if (title != "") {
-       castTitle = title;
-       if (smallTitle != "")
-         castTitle = title + " (" + smallTitle + ")";
-     } else {
-       if (smallTitle != "")
-         castTitle = smallTitle;
-     }
 
 ### Android Quirks
 
@@ -149,7 +139,7 @@ Since 3.7.2, you need to add few things in your Android project to get the plugi
 ```java
 dependencies {
     ...
-    implementation 'com.google.android.gms:play-services-cast-framework:21.1.0'
+    implementation 'com.google.android.gms:play-services-cast-framework:21.2.0'
 }
 ```
 
@@ -176,7 +166,7 @@ public class MainActivity extends BridgeActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    CastContext.getSharedInstance(this);
+    CastContext.getSharedInstance(this); // <--- add this
   }
 }
 ```
@@ -480,6 +470,7 @@ Stop all players playing
 | **`smallTitle`**      | <code>string</code>                                         | Subtitle shown below the title in the player (Android) by Manuel García Marín (https://github.com/PhantomPainX)                                             |
 | **`accentColor`**     | <code>string</code>                                         | ExoPlayer Progress Bar and Spinner color (Android) by Manuel García Marín (https://github.com/PhantomPainX) Must be a valid hex color code default: #FFFFFF |
 | **`chromecast`**      | <code>boolean</code>                                        | Chromecast enable/disable (Android) by Manuel García Marín (https://github.com/PhantomPainX) default: true                                                  |
+| **`artwork`**      | <code>string</code>                                            | Artwork url to be shown in Chromecast player (Android) by Manuel García Marín (https://github.com/PhantomPainX)                                             |
 
 
 #### SubTitleOptions

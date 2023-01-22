@@ -7,18 +7,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
+    android:keepScreenOn="true"
     tools:context="com.jeep.plugin.capacitor.capacitorvideoplayer.FullscreenExoPlayerFragment">
 
-    <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/videoViewId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:use_controller="false"
-        app:controller_layout_id="@layout/exoplayer_layout_youtube"/>
+    <com.google.android.exoplayer2.ui.StyledPlayerView
+      android:id="@+id/videoViewId"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:use_controller="true"
+      app:show_buffering="always"
+      app:animation_enabled="false"
+      android:animateLayoutChanges="true"
+      app:controller_layout_id="@layout/exo_playback_control_view"/>
 
     <ProgressBar
         android:id="@+id/indeterminateBar"

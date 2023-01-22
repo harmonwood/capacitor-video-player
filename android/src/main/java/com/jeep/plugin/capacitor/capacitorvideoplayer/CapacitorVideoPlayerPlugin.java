@@ -65,6 +65,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private String smallTitle;
     private String accentColor;
     private Boolean chromecast = true;
+    private String artwork;
     private Boolean isPermissions = false;
 
     @Override
@@ -201,6 +202,11 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 _chromecast = call.getBoolean("chromecast");
             }
             chromecast = _chromecast;
+            String _artwork = "";
+            if (call.getData().has("artwork")) {
+              _artwork = call.getString("artwork");
+            }
+            artwork = _artwork;
             AddObserversToNotificationCenter();
             Log.v(TAG, "display url: " + url);
             Log.v(TAG, "display subtitle: " + subtitle);
@@ -210,6 +216,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             Log.v(TAG, "smallTitle: " + smallTitle);
             Log.v(TAG, "accentColor: " + accentColor);
             Log.v(TAG, "chromecast: " + chromecast);
+            Log.v(TAG, "artwork: " + artwork);
             if (url.equals("internal") || url.contains("DCIM")) {
                 // Check for permissions to access media video files
                 if (!isVideosPermissions()) {
@@ -251,6 +258,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                             smallTitle,
                             accentColor,
                             chromecast,
+                            artwork,
                             isTV,
                             playerId,
                             false,
@@ -994,6 +1002,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                                 smallTitle,
                                 accentColor,
                                 chromecast,
+                                artwork,
                                 isTV,
                                 fsPlayerId,
                                 true,
@@ -1029,6 +1038,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         String smallTitle,
         String accentColor,
         Boolean chromecast,
+        String artwork,
         Boolean isTV,
         String playerId,
         Boolean isInternal,
@@ -1052,6 +1062,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 smallTitle,
                 accentColor,
                 chromecast,
+                artwork,
                 isTV,
                 playerId,
                 isInternal,

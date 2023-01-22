@@ -15,100 +15,135 @@
     android:id="@+id/layout_header_view"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_marginRight="5dp"
-    android:paddingTop="10dp"
-    android:paddingLeft="10dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginEnd="20dp"
+    android:orientation="horizontal"
     app:layout_constraintEnd_toStartOf="@+id/right_buttons"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
 
+    <ImageButton
+      android:id="@+id/exo_close"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
+      android:layout_gravity="center"
+      android:background="?actionBarItemBackground"
+      android:ellipsize="end"
+      android:scaleX="1.3"
+      android:scaleY="1.3"
+      android:src="@drawable/ic_arrow_left"
+      tool:ignore="MissingConstraints"
+      android:contentDescription="Back button"/>
+
     <androidx.appcompat.widget.AppCompatTextView
       android:id="@+id/header_tv"
-      android:layout_width="0dp"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:ellipsize="end"
       android:maxLines="2"
-      android:paddingLeft="30dp"
+      android:paddingStart="50dp"
+
+      android:text="Main text title"
       android:textColor="@color/white"
       android:textSize="18sp"
-      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintBottom_toTopOf="@id/header_below"
+      app:layout_constraintStart_toEndOf="@id/exo_close"
       app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintWidth_max="wrap"
-      app:layout_constraintWidth_percent="0.9"
-      android:text="" />
+
+      app:layout_constraintWidth_max="wrap" />
 
     <androidx.appcompat.widget.AppCompatTextView
       android:id="@+id/header_below"
-      android:layout_width="0dp"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:ellipsize="end"
       android:maxLines="2"
-      android:paddingLeft="30dp"
+      android:paddingStart="50dp"
+      android:text="Subtitle"
       android:textColor="@color/white"
       android:textSize="12sp"
-      app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/header_tv"
+      app:layout_constraintStart_toEndOf="@id/exo_close"
       app:layout_constraintWidth_max="wrap"
-      app:layout_constraintWidth_percent="0.9"
-      android:text="" />
-
-    <ImageButton
-      android:id="@+id/exo_close"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:scaleY="1.1"
-      android:scaleX="1.1"
-      android:background="@android:color/transparent"
-      android:ellipsize="end"
-
-      android:src="@drawable/ic_arrow_left"
-      app:layout_constraintStart_toStartOf="@id/header_tv"
-      tool:ignore="MissingConstraints" />
+      app:layout_constraintWidth_percent="0.9" />
 
 
   </androidx.constraintlayout.widget.ConstraintLayout>
-
 
   <LinearLayout
     android:id="@+id/right_buttons"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
-    android:layout_marginEnd="10dp"
-    android:orientation="horizontal"
     app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintEnd_toEndOf="parent">
+    app:layout_constraintEnd_toEndOf="@id/lock_layout"
+    app:layout_constraintStart_toEndOf="@id/layout_header_view">
 
     <androidx.mediarouter.app.MediaRouteButton
       android:id="@+id/media_route_button"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
       android:layout_weight="1"
       android:mediaRouteTypes="user"
-      android:visibility="gone" />
+      android:background="?actionBarItemBackground"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toStartOf="@id/exo_pip"
+      android:visibility="gone"/>
 
     <ImageButton
       android:id="@+id/exo_pip"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:background="?attr/selectableItemBackgroundBorderless"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
+      android:background="?actionBarItemBackground"
       android:src="@drawable/ic_pip_white"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
+      app:layout_constraintEnd_toStartOf="@id/exo_resize"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toEndOf="@id/media_route_button"
+      app:layout_constraintBottom_toBottomOf="parent"
+      android:visibility="gone"
+      android:contentDescription="Picture in picture button"/>
 
     <ImageButton
       android:id="@+id/exo_resize"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
       android:layout_gravity="center"
-      android:layout_marginLeft="10dp"
-      android:background="?attr/selectableItemBackgroundBorderless"
+      android:background="?actionBarItemBackground"
       android:src="@drawable/ic_expand"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toEndOf="@id/exo_pip"
+      app:layout_constraintBottom_toBottomOf="parent"
+      android:visibility="gone"
+      android:contentDescription="Resize button"/>
+
+  </LinearLayout>
+
+  <LinearLayout
+    android:id="@+id/lock_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toEndOf="@id/right_buttons">
+
+    <ImageButton
+      android:id="@+id/player_lock"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
+      android:layout_gravity="center"
+      android:background="?actionBarItemBackground"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toEndOf="parent"
+      app:layout_constraintBottom_toBottomOf="parent"
+      android:src="@drawable/ic_outline_lock"
+      android:visibility="gone"
+      android:contentDescription="Lock button"/>
   </LinearLayout>
 
 
@@ -127,7 +162,8 @@
     android:visibility="visible"
     app:layout_constraintBottom_toBottomOf="@id/exo_play"
     app:layout_constraintRight_toLeftOf="@+id/barrier_left"
-    app:layout_constraintTop_toTopOf="@id/exo_play" />
+    app:layout_constraintTop_toTopOf="@id/exo_play"
+    android:background="?actionBarItemBackground"/>
 
   <ImageButton
     android:id="@+id/exo_ffwd"
@@ -137,7 +173,8 @@
     android:visibility="visible"
     app:layout_constraintBottom_toBottomOf="@id/exo_play"
     app:layout_constraintLeft_toRightOf="@+id/barrier_right"
-    app:layout_constraintTop_toTopOf="@id/exo_play" />
+    app:layout_constraintTop_toTopOf="@id/exo_play"
+    android:background="?actionBarItemBackground"/>
 
   <androidx.constraintlayout.widget.Barrier
     android:id="@+id/barrier_right"
@@ -155,7 +192,8 @@
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    app:layout_constraintTop_toTopOf="parent"
+    android:background="?actionBarItemBackground"/>
 
   <ImageButton
     android:id="@+id/exo_pause"
@@ -166,17 +204,18 @@
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    app:layout_constraintTop_toTopOf="parent"
+    android:background="?actionBarItemBackground"/>
 
   <LinearLayout
     android:id="@+id/cast_info"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="20dp"
+    android:layout_marginBottom="10dp"
     android:layout_marginEnd="20dp"
-    android:layout_marginBottom="30dp"
     android:orientation="horizontal"
-    app:layout_constraintBottom_toBottomOf="@+id/videoTimeContainer"
+    app:layout_constraintBottom_toTopOf="@+id/videoTimeContainer"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent">
 
@@ -187,6 +226,7 @@
       android:layout_gravity="center"
       android:maxLines="2"
       android:textColor="@color/white"
+      android:layout_marginEnd="10dp"
       android:textSize="18sp"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
@@ -195,7 +235,46 @@
       android:visibility="gone"
       android:text="Casting Video" />
 
+    <LinearLayout
+      android:id="@+id/quality"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintStart_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/layout_header_view">
+
+      <ImageView
+        android:id="@+id/quality_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_baseline_lq"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/header_below"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_max="wrap"/>
+
+      <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/resolution_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="1280x720p"
+        android:paddingStart="3dp"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/header_below"
+        app:layout_constraintStart_toEndOf="@id/quality_icon"
+        app:layout_constraintWidth_max="wrap"
+        app:layout_constraintWidth_percent="0.9" />
+
+    </LinearLayout>
+
   </LinearLayout>
+
 
   <LinearLayout
     android:id="@+id/videoTimeContainer"
@@ -214,7 +293,6 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:minWidth="50dp"
       android:textColor="@color/white"
       android:textSize="14sp"
       app:layout_constraintBottom_toBottomOf="@id/exo_progress"
@@ -227,10 +305,7 @@
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:layout_marginStart="7dp"
-      android:layout_marginLeft="7dp"
-      android:layout_marginEnd="7dp"
-      android:layout_marginRight="7dp"
+
       android:layout_weight="1"
       app:buffered_color="@color/white_50"
       app:played_color="#FFFFFF"
@@ -243,7 +318,6 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center_vertical"
       android:gravity="right"
-      android:minWidth="50dp"
       android:textColor="@color/white"
       android:textSize="14sp"
       app:layout_constraintBottom_toBottomOf="@id/exo_progress"
@@ -258,7 +332,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    app:layout_constraintGuide_begin="20dp" />
+    app:layout_constraintGuide_begin="10dp" />
 
   <androidx.constraintlayout.widget.Guideline
     android:id="@+id/guideline2"
@@ -266,6 +340,22 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     app:layout_constraintGuide_begin="20dp" />
+
+  <!-- add horizontal end guide line -->
+  <androidx.constraintlayout.widget.Guideline
+    android:id="@+id/guideline3"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    app:layout_constraintGuide_end="10dp" />
+
+  <!-- add vertical end guide line -->
+  <androidx.constraintlayout.widget.Guideline
+    android:id="@+id/guideline4"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintGuide_end="20dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

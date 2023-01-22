@@ -6,8 +6,13 @@ import android.app.PictureInPictureParams;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,19 +27,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.mediarouter.app.MediaRouteButton;
 import com.getcapacitor.JSObject;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.MediaMetadata;
@@ -59,7 +66,7 @@ import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.CaptionStyleCompat;
 import com.google.android.exoplayer2.ui.DefaultTimeBar;
 import com.google.android.exoplayer2.ui.PlayerControlView;
-import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
@@ -70,10 +77,17 @@ import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.Notifications.NotificationCenter;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
 import org.json.JSONException;
 
 public class FullscreenExoPlayerFragment extends Fragment {
@@ -96,14 +110,15 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public String smallTitle;
     public String accentColor;
     public Boolean chromecast;
+    public String artwork;
 
     private static final String TAG = FullscreenExoPlayerFragment.class.getName();
     public static final long UNKNOWN_TIME = -1L;
     private final List<String> supportedFormat = Arrays.asList(
         new String[] { "mp4", "webm", "ogv", "3gp", "flv", "dash", "mpd", "m3u8", "ism", "ytube", "" }
     );
-    private PlaybackStateListener playbackStateListener;
-    private PlayerView playerView;
+    private Player.Listener listener;
+    private StyledPlayerView styledPlayerView;
     private String vType = null;
     private static ExoPlayer player;
     private boolean playWhenReady = true;
@@ -118,12 +133,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private ImageButton closeBtn;
     private ImageButton pipBtn;
     private ImageButton resizeBtn;
+    private ImageButton lockBtn;
     private ConstraintLayout constLayout;
     private LinearLayout linearLayout;
     private TextView header_tv;
     private TextView header_below;
+    private static ImageView cast_image;
     private DefaultTimeBar exo_progress;
-    private TextView cast_message;
     private Context context;
     private boolean isMuted = false;
     private float curVolume = (float) 0.5;
@@ -155,11 +171,21 @@ public class FullscreenExoPlayerFragment extends Fragment {
     };
 
     private Integer resizeStatus = AspectRatioFrameLayout.RESIZE_MODE_FIT;
-    private Toast toastMessage;
     private MediaRouteButton mediaRouteButton;
     private CastContext castContext;
     private CastPlayer castPlayer;
     private MediaItem mediaItem;
+
+    //declare byte[] atribute
+    public byte[] byte_image;
+    private Boolean isLocked = false;
+    private LinearLayout videoTimeContainer;
+    private ConstraintLayout layout_header_view;
+    private LinearLayout right_buttons;
+    private ImageButton exo_rew;
+    private ImageButton exo_play;
+    private ImageButton exo_pause;
+    private ImageButton exo_ffwd;
 
     /**
      * Create Fragment View
@@ -171,29 +197,32 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         context = container.getContext();
         packageManager = context.getPackageManager();
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_fs_exoplayer, container, false);
         constLayout = view.findViewById(R.id.fsExoPlayer);
         linearLayout = view.findViewById(R.id.linearLayout);
-        playerView = view.findViewById(R.id.videoViewId);
+        styledPlayerView = view.findViewById(R.id.videoViewId);
         header_tv = view.findViewById(R.id.header_tv);
         header_below = view.findViewById(R.id.header_below);
         Pbar = view.findViewById(R.id.indeterminateBar);
         exo_progress = view.findViewById(R.id.exo_progress);
         resizeBtn = view.findViewById(R.id.exo_resize);
-        cast_message = view.findViewById(R.id.cast_message);
+        lockBtn = view.findViewById(R.id.player_lock);
+        videoTimeContainer = view.findViewById(R.id.videoTimeContainer);
+        exo_play = view.findViewById(R.id.exo_play);
+        exo_pause = view.findViewById(R.id.exo_pause);
+        exo_rew = view.findViewById(R.id.exo_rew);
+        exo_ffwd = view.findViewById(R.id.exo_ffwd);
+        cast_image = view.findViewById(R.id.cast_image);
+        mediaRouteButton = view.findViewById(R.id.media_route_button);
 
         castContext = CastContext.getSharedInstance(getContext());
 
-        mediaRouteButton = view.findViewById(R.id.media_route_button);
         castPlayer = new CastPlayer(CastContext.getSharedInstance(context));
 
         if (!chromecast) {
             mediaRouteButton.setVisibility(View.GONE);
         } else {
             CastButtonFactory.setUpMediaRouteButton(context, mediaRouteButton);
-
-            if (castContext.getCastState() != CastState.NO_DEVICES_AVAILABLE) mediaRouteButton.setVisibility(View.VISIBLE);
 
             castContext.addCastStateListener(
                 state -> {
@@ -207,49 +236,93 @@ public class FullscreenExoPlayerFragment extends Fragment {
                 }
             );
 
-            String castTitle = "";
-            if (title != "") {
-                castTitle = title;
-                if (smallTitle != "") castTitle = title + " (" + smallTitle + ")";
+            if (artwork != "") {
+
+              MediaMetadata movieMetadata = new MediaMetadata.Builder()
+                .setTitle(title)
+                .setSubtitle(smallTitle)
+                .setArtworkUri(Uri.parse(artwork))
+                .build();
+              mediaItem =
+                new MediaItem.Builder()
+                  .setUri(videoPath)
+                  .setMimeType(MimeTypes.VIDEO_UNKNOWN)
+                  .setMediaMetadata(movieMetadata)
+                  .build();
+
+              new setCastImage().execute();
             } else {
-                if (smallTitle != "") castTitle = smallTitle;
+              MediaMetadata movieMetadata = new MediaMetadata.Builder()
+                .setTitle(title)
+                .setSubtitle(smallTitle)
+                .build();
+              mediaItem =
+                new MediaItem.Builder()
+                  .setUri(videoPath)
+                  .setMimeType(MimeTypes.VIDEO_UNKNOWN)
+                  .setMediaMetadata(movieMetadata)
+                  .build();
             }
 
-            MediaMetadata movieMetadata = new MediaMetadata.Builder().setTitle(castTitle).build();
 
-            mediaItem =
-                new MediaItem.Builder().setUri(videoPath).setMimeType(MimeTypes.VIDEO_UNKNOWN).setMediaMetadata(movieMetadata).build();
-
-            castPlayer.setSessionAvailabilityListener(
+             castPlayer.setSessionAvailabilityListener(
                 new SessionAvailabilityListener() {
                     @Override
                     public void onCastSessionAvailable() {
                         final Long videoPosition = player.getCurrentPosition();
                         if (pipEnabled) {
-                            pipBtn.setClickable(false);
+                            pipBtn.setVisibility(View.GONE);
                         }
-                        resizeBtn.setClickable(false);
+                        resizeBtn.setVisibility(View.GONE);
                         player.setPlayWhenReady(false);
-                        cast_message.setVisibility(View.VISIBLE);
-                        playerView.setPlayer(castPlayer);
+                        cast_image.setVisibility(View.VISIBLE);
                         castPlayer.setMediaItem(mediaItem, videoPosition);
-                        Toast.makeText(context, "Casting started", Toast.LENGTH_SHORT).show();
+                        styledPlayerView.setPlayer(castPlayer);
+                        styledPlayerView.setControllerShowTimeoutMs(0);
+                        styledPlayerView.setControllerHideOnTouch(false);
                     }
 
                     @Override
                     public void onCastSessionUnavailable() {
                         final Long videoPosition = castPlayer.getCurrentPosition();
                         if (pipEnabled) {
-                            pipBtn.setClickable(true);
+                            pipBtn.setVisibility(View.VISIBLE);
                         }
-                        resizeBtn.setClickable(true);
-                        cast_message.setVisibility(View.GONE);
-                        playerView.setPlayer(player);
+                        resizeBtn.setVisibility(View.VISIBLE);
+                        cast_image.setVisibility(View.GONE);
+                        styledPlayerView.setPlayer(player);
                         player.setPlayWhenReady(true);
                         player.seekTo(videoPosition);
+                        styledPlayerView.setControllerShowTimeoutMs(3000);
+                        styledPlayerView.setControllerHideOnTouch(true);
                     }
                 }
             );
+
+          castPlayer.addListener(
+            new Player.Listener() {
+              @Override
+              public void onPlayerStateChanged(boolean playWhenReady, int state) {
+                Map<String, Object> info = new HashMap<String, Object>() {
+                  {
+                    put("fromPlayerId", playerId);
+                    put("currentTime", String.valueOf(player.getCurrentPosition() / 1000));
+                  }
+                };
+                switch (state) {
+                  case CastPlayer.STATE_READY:
+                    if (castPlayer.isPlaying()) {
+                      NotificationCenter.defaultCenter().postNotification("playerItemPlay", info);
+                    } else {
+                      NotificationCenter.defaultCenter().postNotification("playerItemPause", info);
+                    }
+                    break;
+                  default:
+                    break;
+                }
+              }
+            }
+          );
         }
 
         if (title != "") {
@@ -266,22 +339,93 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
         closeBtn = view.findViewById(R.id.exo_close);
         pipBtn = view.findViewById(R.id.exo_pip);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || !pipEnabled) {
-            pipBtn.setVisibility(View.GONE);
-        }
-        playerView.requestFocus();
+
+        styledPlayerView.requestFocus();
         linearLayout.setVisibility(View.INVISIBLE);
-        playerView.setControllerShowTimeoutMs(3000);
-        playerView.setControllerVisibilityListener(
-            new PlayerControlView.VisibilityListener() {
-                @Override
-                public void onVisibilityChange(int visibility) {
-                    linearLayout.setVisibility(visibility);
+        styledPlayerView.setControllerShowTimeoutMs(3000);
+        styledPlayerView.setControllerVisibilityListener(new StyledPlayerView.ControllerVisibilityListener() {
+          @Override
+          public void onVisibilityChanged(int visibility) {
+            linearLayout.setVisibility(visibility);
+          }
+        });
+
+        listener = new Player.Listener() {
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int state) {
+
+              String stateString;
+              Map<String, Object> info = new HashMap<String, Object>() {
+                {
+                  put("fromPlayerId", playerId);
+                  put("currentTime", String.valueOf(player.getCurrentPosition() / 1000));
                 }
+              };
+
+              switch (state) {
+                case ExoPlayer.STATE_IDLE:
+                  stateString = "ExoPlayer.STATE_IDLE      -";
+                  Toast.makeText(context, "Intenta con otra fuente por favor", Toast.LENGTH_SHORT).show();
+                  playerExit();
+                  break;
+                case ExoPlayer.STATE_BUFFERING:
+                  stateString = "ExoPlayer.STATE_BUFFERING -";
+                  Pbar.setVisibility(View.VISIBLE);
+                  break;
+                case ExoPlayer.STATE_READY:
+                  stateString = "ExoPlayer.STATE_READY     -";
+                  Pbar.setVisibility(View.GONE);
+                  styledPlayerView.setUseController(true);
+                  linearLayout.setVisibility(View.INVISIBLE);
+                  Log.v(TAG, "**** in ExoPlayer.STATE_READY firstReadyToPlay " + firstReadyToPlay);
+
+                  if (firstReadyToPlay) {
+                    firstReadyToPlay = false;
+                    NotificationCenter.defaultCenter().postNotification("playerItemReady", info);
+                    play();
+                    Log.v(TAG, "**** in ExoPlayer.STATE_READY firstReadyToPlay player.isPlaying" + player.isPlaying());
+                    player.seekTo(currentWindow, playbackPosition);
+                  } else {
+                    Log.v(TAG, "**** in ExoPlayer.STATE_READY isPlaying " + player.isPlaying());
+                    if (player.isPlaying()) {
+                      Log.v(TAG, "**** in ExoPlayer.STATE_READY going to notify playerItemPlay ");
+                      NotificationCenter.defaultCenter().postNotification("playerItemPlay", info);
+
+                      resizeBtn.setVisibility(View.VISIBLE);
+
+                      mediaRouteButtonColorWhite(mediaRouteButton);
+                      if (castContext.getCastState() != CastState.NO_DEVICES_AVAILABLE)
+                        mediaRouteButton.setVisibility(View.VISIBLE);
+
+
+                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && pipEnabled) {
+                        pipBtn.setVisibility(View.VISIBLE);
+                      }
+                    } else {
+                      Log.v(TAG, "**** in ExoPlayer.STATE_READY going to notify playerItemPause ");
+                      NotificationCenter.defaultCenter().postNotification("playerItemPause", info);
+                    }
+                  }
+                  break;
+                case ExoPlayer.STATE_ENDED:
+                  stateString = "ExoPlayer.STATE_ENDED     -";
+                  Log.v(TAG, "**** in ExoPlayer.STATE_ENDED going to notify playerItemEnd ");
+
+                  player.seekTo(0);
+                  player.setVolume(curVolume);
+                  player.setPlayWhenReady(false);
+                  if (exitOnEnd) {
+                    releasePlayer();
+                    NotificationCenter.defaultCenter().postNotification("playerItemEnd", info);
+                  }
+                  break;
+                default:
+                  stateString = "UNKNOWN_STATE             -";
+                  break;
+              }
             }
-        );
-        // Listening for events
-        playbackStateListener = new PlaybackStateListener();
+        };
+
         if (isTV) {
             Toast.makeText(context, "Device is a TV ", Toast.LENGTH_SHORT).show();
         }
@@ -390,43 +534,56 @@ public class FullscreenExoPlayerFragment extends Fragment {
         return view;
     }
 
+  /**
+   * Sets the cast image in playerView when it is connected to a cast device
+   */
+  private class setCastImage extends AsyncTask<Void,Void,Bitmap>{
+    protected Bitmap doInBackground(Void... params) {
+      final String image = artwork;
+      if (image != "") {
+        try {
+          URL url = new URL(image);
+          HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+          connection.setDoInput(true);
+          connection.connect();
+          InputStream input = connection.getInputStream();
+          Bitmap myBitmap = BitmapFactory.decodeStream(input);
+          return myBitmap;
+        } catch (IOException e) {
+          e.printStackTrace();
+          return null;
+        }
+      } else {
+        return null;
+      }
+    }
+
+    @Override
+    protected void onPostExecute(Bitmap result) {
+      cast_image.setImageBitmap(result);
+    }
+  }
+
     /**
      * Perform backPressed Action
      */
     private void backPressed() {
-        if (
-            !isInPictureInPictureMode &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
-            packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) &&
-            isPIPModeeEnabled
-        ) {
-            pictureInPictureMode();
-        } else {
-            playerExit();
-        }
+      playerExit();
     }
 
     private void resizePressed() {
-        if (toastMessage != null) toastMessage.cancel();
-
         if (resizeStatus == AspectRatioFrameLayout.RESIZE_MODE_FIT) {
-            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+            styledPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
             resizeStatus = AspectRatioFrameLayout.RESIZE_MODE_FILL;
             resizeBtn.setImageResource(R.drawable.ic_zoom);
-            toastMessage = Toast.makeText(context, "Mode Fill", Toast.LENGTH_SHORT);
-            toastMessage.show();
         } else if (resizeStatus == AspectRatioFrameLayout.RESIZE_MODE_FILL) {
-            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
+            styledPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
             resizeStatus = AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
             resizeBtn.setImageResource(R.drawable.ic_fit);
-            toastMessage = Toast.makeText(context, "Mode Zoom", Toast.LENGTH_SHORT);
-            toastMessage.show();
         } else {
-            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+            styledPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
             resizeStatus = AspectRatioFrameLayout.RESIZE_MODE_FIT;
             resizeBtn.setImageResource(R.drawable.ic_expand);
-            toastMessage = Toast.makeText(context, "Mode Fit", Toast.LENGTH_SHORT);
-            toastMessage.show();
         }
     }
 
@@ -449,7 +606,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
      */
     private void pictureInPictureMode() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
-            playerView.setUseController(false);
+            styledPlayerView.setUseController(false);
+            styledPlayerView.setControllerAutoShow(false);
             linearLayout.setVisibility(View.INVISIBLE);
             // require android O or higher
             if (
@@ -457,7 +615,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
             ) {
                 pictureInPictureParams = new PictureInPictureParams.Builder();
                 // setup height and width of the PIP window
-                Rational aspectRatio = new Rational(playerView.getWidth(), playerView.getHeight());
+                Rational aspectRatio = new Rational(player.getVideoFormat().width, player.getVideoFormat().height);
                 pictureInPictureParams.setAspectRatio(aspectRatio).build();
                 getActivity().enterPictureInPictureMode(pictureInPictureParams.build());
             } else {
@@ -490,7 +648,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public void onStart() {
         super.onStart();
         if (Util.SDK_INT >= 24) {
-            if (playerView != null) {
+            if (styledPlayerView != null) {
                 // If cast is playing then it doesn't start the local player once get backs from background
                 if (!castPlayer.isCastSessionAvailable()) {
                     initializePlayer();
@@ -518,17 +676,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
             linearLayout.setVisibility(View.VISIBLE);
             playerExit();
             getActivity().finishAndRemoveTask();
-        } else {
-            /*          if (!isAppBackground) {
-                if (Util.SDK_INT >= 24) {
-                    if (player != null) {
-                        player.seekTo(0);
-                        player.setVolume(curVolume);
-                    }
-                    releasePlayer();
-                }
-            }
-*/
         }
     }
 
@@ -582,7 +729,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
             mediaSessionConnector.setPlayer(null);
             mediaSession.setActive(false);
             player.setRepeatMode(player.REPEAT_MODE_OFF);
-            player.removeListener(playbackStateListener);
+            player.removeListener(listener);
             player.release();
             player = null;
             showSystemUI();
@@ -607,7 +754,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
             if (
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
             ) {
-                playerView.setUseController(true);
+                styledPlayerView.setUseController(true);
             }
             if (sturi != null) {
                 setSubtitle(false);
@@ -620,7 +767,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      */
     @SuppressLint("InlinedApi")
     private void hideSystemUi() {
-        if (playerView != null) playerView.setSystemUiVisibility(
+        if (styledPlayerView != null) styledPlayerView.setSystemUiVisibility(
             View.SYSTEM_UI_FLAG_LOW_PROFILE |
             View.SYSTEM_UI_FLAG_FULLSCREEN |
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
@@ -656,9 +803,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
                     .setLoadControl(loadControl)
                     .setBandwidthMeter(bandwidthMeter)
                     .build();
+
         }
 
-        playerView.setPlayer(player);
+        styledPlayerView.setPlayer(player);
 
         MediaSource mediaSource;
         if (!isInternal) {
@@ -674,7 +822,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
         if (mediaSource != null) {
             player.setAudioAttributes(AudioAttributes.DEFAULT, true);
-            player.addListener(playbackStateListener);
+            player.addListener(listener);
             player.prepare(mediaSource, false, false);
             if (loopOnEnd) {
                 player.setRepeatMode(player.REPEAT_MODE_ONE);
@@ -715,12 +863,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
             foreground = Color.TRANSPARENT;
             background = Color.TRANSPARENT;
         }
-        playerView
+        styledPlayerView
             .getSubtitleView()
             .setStyle(
                 new CaptionStyleCompat(foreground, background, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null)
             );
-        playerView.getSubtitleView().setFixedTextSize(TypedValue.COMPLEX_UNIT_DIP, stFontSize);
+        styledPlayerView.getSubtitleView().setFixedTextSize(TypedValue.COMPLEX_UNIT_DIP, stFontSize);
+        styledPlayerView.setShowSubtitleButton(true);
     }
 
     /**
@@ -729,7 +878,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private MediaSource buildAssetMediaSource(Uri uri) {
         MediaSource mediaSource = null;
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, "jeep-exoplayer-plugin");
-        mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+        mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
         // Get the subtitles if any
         if (sturi != null) {
             mediaSource = getSubTitle(mediaSource, sturi, dataSourceFactory);
@@ -742,7 +891,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      */
     private MediaSource buildInternalMediaSource(Uri uri) {
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context, "jeep-exoplayer-plugin");
-        return new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+        return new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
     }
 
     /**
@@ -782,15 +931,15 @@ public class FullscreenExoPlayerFragment extends Fragment {
             vType.equals("flv") ||
             vType.equals("")
         ) {
-            mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+            mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
         } else if (vType.equals("dash") || vType.equals("mpd")) {
             /* adaptive streaming Dash stream */
             DashMediaSource.Factory mediaSourceFactory = new DashMediaSource.Factory(dataSourceFactory);
-            mediaSource = mediaSourceFactory.createMediaSource(uri);
+            mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(uri));
         } else if (vType.equals("m3u8")) {
-            mediaSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+            mediaSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
         } else if (vType.equals("ism")) {
-            mediaSource = new SsMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+            mediaSource = new SsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
         }
         // Get the subtitles if any
         if (sturi != null) {
@@ -832,12 +981,16 @@ public class FullscreenExoPlayerFragment extends Fragment {
         MediaSource[] mediaSources = new MediaSource[2];
         mediaSources[0] = mediaSource;
         String mimeType = getMimeType(sturi);
-        //Add subtitles
 
+        // We get the language label from the language code
+        String languageLabel = Locale.forLanguageTag(language).getDisplayLanguage();
         MediaItem.SubtitleConfiguration subConfig = new MediaItem.SubtitleConfiguration.Builder(sturi)
             .setMimeType(mimeType)
             .setUri(sturi)
-            .setSelectionFlags(Format.NO_VALUE)
+            .setId(subTitle)
+            .setLabel(languageLabel)
+            .setRoleFlags(C.ROLE_FLAG_CAPTION)
+            .setSelectionFlags(C.SELECTION_FLAG_DEFAULT)
             .setLanguage(language)
             .build();
 
@@ -945,7 +1098,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      */
     public void setCurrentTime(int timeSecond) {
         if (isInPictureInPictureMode) {
-            playerView.setUseController(false);
+            styledPlayerView.setUseController(false);
             linearLayout.setVisibility(View.INVISIBLE);
         }
         long seekPosition = player.getCurrentPosition() == UNKNOWN_TIME
@@ -1012,70 +1165,19 @@ public class FullscreenExoPlayerFragment extends Fragment {
     }
 
     /**
-     * Player Event Listener
+     * Apply white color to MediaRouteButton
+     * @param button
      */
-    private class PlaybackStateListener implements Player.EventListener {
+    private void mediaRouteButtonColorWhite(MediaRouteButton button) {
+      if (button == null) return;
+      Context castContext = new ContextThemeWrapper(getContext(), androidx.mediarouter.R.style.Theme_MediaRouter);
 
-        @Override
-        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            String stateString;
-            Map<String, Object> info = new HashMap<String, Object>() {
-                {
-                    put("fromPlayerId", playerId);
-                    put("currentTime", String.valueOf(player.getCurrentPosition() / 1000));
-                }
-            };
-            switch (playbackState) {
-                case ExoPlayer.STATE_IDLE:
-                    stateString = "ExoPlayer.STATE_IDLE      -";
-                    Toast.makeText(context, "Video could not be played", Toast.LENGTH_SHORT).show();
-                    playerExit();
-                    break;
-                case ExoPlayer.STATE_BUFFERING:
-                    stateString = "ExoPlayer.STATE_BUFFERING -";
-                    Pbar.setVisibility(View.VISIBLE);
-                    break;
-                case ExoPlayer.STATE_READY:
-                    stateString = "ExoPlayer.STATE_READY     -";
-                    Pbar.setVisibility(View.GONE);
-                    playerView.setUseController(true);
-                    linearLayout.setVisibility(View.INVISIBLE);
-                    Log.v(TAG, "**** in ExoPlayer.STATE_READY firstReadyToPlay " + firstReadyToPlay);
-
-                    if (firstReadyToPlay) {
-                        firstReadyToPlay = false;
-                        NotificationCenter.defaultCenter().postNotification("playerItemReady", info);
-                        play();
-                        Log.v(TAG, "**** in ExoPlayer.STATE_READY firstReadyToPlay player.isPlaying" + player.isPlaying());
-                        player.seekTo(currentWindow, playbackPosition);
-                    } else {
-                        Log.v(TAG, "**** in ExoPlayer.STATE_READY isPlaying " + player.isPlaying());
-                        if (player.isPlaying()) {
-                            Log.v(TAG, "**** in ExoPlayer.STATE_READY going to notify playerItemPlay ");
-                            NotificationCenter.defaultCenter().postNotification("playerItemPlay", info);
-                        } else {
-                            Log.v(TAG, "**** in ExoPlayer.STATE_READY going to notify playerItemPause ");
-                            NotificationCenter.defaultCenter().postNotification("playerItemPause", info);
-                        }
-                    }
-                    break;
-                case ExoPlayer.STATE_ENDED:
-                    stateString = "ExoPlayer.STATE_ENDED     -";
-                    Log.v(TAG, "**** in ExoPlayer.STATE_ENDED going to notify playerItemEnd ");
-
-                    player.seekTo(0);
-                    player.setVolume(curVolume);
-                    player.setPlayWhenReady(false);
-                    if (exitOnEnd) {
-                        releasePlayer();
-                        NotificationCenter.defaultCenter().postNotification("playerItemEnd", info);
-                    }
-                    break;
-                default:
-                    stateString = "UNKNOWN_STATE             -";
-                    break;
-            }
-        }
+      TypedArray a = castContext.obtainStyledAttributes(null, androidx.mediarouter.R.styleable.MediaRouteButton, androidx.mediarouter.R.attr.mediaRouteButtonStyle, 0);
+      Drawable drawable = a.getDrawable(androidx.mediarouter.R.styleable.MediaRouteButton_externalRouteEnabledDrawable);
+      a.recycle();
+      DrawableCompat.setTint(drawable, getContext().getResources().getColor(R.color.white));
+      drawable.setState(button.getDrawableState());
+      button.setRemoteIndicatorDrawable(drawable);
     }
 
     /**
@@ -1084,32 +1186,32 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * @return video type
      */
     private String getVideoType(Uri uri) {
-        String ret = null;
-        Object obj = uri.getLastPathSegment();
-        String lastSegment = (obj == null) ? "" : uri.getLastPathSegment();
-        for (String type : supportedFormat) {
-            if (ret != null) break;
-            if(lastSegment.length() > 0 && lastSegment.contains(type)) ret = type;
-            if (ret == null) {
-                List<String> segments = uri.getPathSegments();
-                if(segments.size() > 0) {
-                  String segment;
-                  if (segments.get(segments.size() - 1).equals("manifest")) {
-                    segment = segments.get(segments.size() - 2);
-                  } else {
-                    segment = segments.get(segments.size() - 1);
-                  }
-                  for (String sType : supportedFormat) {
-                    if (segment.contains(sType)) {
-                      ret = sType;
-                      break;
-                    }
-                  }
-                }
+      String ret = null;
+      Object obj = uri.getLastPathSegment();
+      String lastSegment = (obj == null) ? "" : uri.getLastPathSegment();
+      for (String type : supportedFormat) {
+        if (ret != null) break;
+        if(lastSegment.length() > 0 && lastSegment.contains(type)) ret = type;
+        if (ret == null) {
+          List<String> segments = uri.getPathSegments();
+          if(segments.size() > 0) {
+            String segment;
+            if (segments.get(segments.size() - 1).equals("manifest")) {
+              segment = segments.get(segments.size() - 2);
+            } else {
+              segment = segments.get(segments.size() - 1);
             }
+            for (String sType : supportedFormat) {
+              if (segment.contains(sType)) {
+                ret = sType;
+                break;
+              }
+            }
+          }
         }
-        ret = (ret != null) ? ret : "";
-        return ret;
+      }
+      ret = (ret != null) ? ret : "";
+      return ret;
     }
 
     /**
@@ -1117,7 +1219,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
      */
     private void resetVariables() {
         vType = null;
-        playerView = null;
+        styledPlayerView = null;
         playWhenReady = true;
         firstReadyToPlay = true;
         isEnded = false;
