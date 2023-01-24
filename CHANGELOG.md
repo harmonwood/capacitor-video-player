@@ -1,3 +1,13 @@
+## 4.6.2-1 (2023-01-24)
+
+### Chores
+
+ - Update to Capacitor 4.6.2
+
+### Bug Fixes
+
+ - PR Android: Check pipEnabled in backPressed function by j-oppenhuis
+
 ## 4.6.1 (2023-01-22)
 
 ### Chores

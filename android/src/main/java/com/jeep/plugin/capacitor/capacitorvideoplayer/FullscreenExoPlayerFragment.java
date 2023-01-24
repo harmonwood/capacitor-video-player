@@ -150,6 +150,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private int mCurrentPosition;
     private int mDuration;
     private static final int videoStep = 10000;
+    private boolean isCastSession = false;
 
     // Tag for the instance state bundle.
     private static final String PLAYBACK_TIME = "play_time";
@@ -254,6 +255,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
                 new SessionAvailabilityListener() {
                     @Override
                     public void onCastSessionAvailable() {
+                        isCastSession = true;
                         final Long videoPosition = player.getCurrentPosition();
                         if (pipEnabled) {
                             pipBtn.setVisibility(View.GONE);
@@ -269,6 +271,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
                     @Override
                     public void onCastSessionUnavailable() {
+                        isCastSession = false;
                         final Long videoPosition = castPlayer.getCurrentPosition();
                         if (pipEnabled) {
                             pipBtn.setVisibility(View.VISIBLE);
@@ -352,7 +355,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
                     switch (state) {
                         case ExoPlayer.STATE_IDLE:
                             stateString = "ExoPlayer.STATE_IDLE      -";
-                            Toast.makeText(context, "Intenta con otra fuente por favor", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Video Url not found", Toast.LENGTH_SHORT).show();
                             playerExit();
                             break;
                         case ExoPlayer.STATE_BUFFERING:
@@ -556,7 +559,21 @@ public class FullscreenExoPlayerFragment extends Fragment {
      * Perform backPressed Action
      */
     private void backPressed() {
-        playerExit();
+        if (isCastSession) {
+            playerExit();
+        }
+        if (
+            !isInPictureInPictureMode &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
+            packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) &&
+            isPIPModeeEnabled &&
+            pipEnabled
+        ) {
+            pictureInPictureMode();
+        } else {
+            playerExit();
+        }
+
     }
 
     private void resizePressed() {
