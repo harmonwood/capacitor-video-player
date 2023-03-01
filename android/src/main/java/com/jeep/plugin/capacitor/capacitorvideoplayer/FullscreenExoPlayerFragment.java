@@ -214,13 +214,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
         cast_image = view.findViewById(R.id.cast_image);
         mediaRouteButton = view.findViewById(R.id.media_route_button);
 
-        castContext = CastContext.getSharedInstance(getContext());
-
-        castPlayer = new CastPlayer(CastContext.getSharedInstance(context));
+        
 
         if (!chromecast) {
             mediaRouteButton.setVisibility(View.GONE);
         } else {
+            castContext = CastContext.getSharedInstance(getContext());
+            castPlayer = new CastPlayer(CastContext.getSharedInstance(context));
             CastButtonFactory.setUpMediaRouteButton(context, mediaRouteButton);
 
             castContext.addCastStateListener(
@@ -384,7 +384,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
                                     resizeBtn.setVisibility(View.VISIBLE);
 
                                     mediaRouteButtonColorWhite(mediaRouteButton);
-                                    if (castContext.getCastState() != CastState.NO_DEVICES_AVAILABLE) mediaRouteButton.setVisibility(
+                                    if (castContext != null && castContext.getCastState() != CastState.NO_DEVICES_AVAILABLE) mediaRouteButton.setVisibility(
                                         View.VISIBLE
                                     );
 
@@ -655,7 +655,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
         if (Util.SDK_INT >= 24) {
             if (styledPlayerView != null) {
                 // If cast is playing then it doesn't start the local player once get backs from background
-                if (!castPlayer.isCastSessionAvailable()) {
+                if (castPlayer != null && !castPlayer.isCastSessionAvailable()) {
                     initializePlayer();
 
                     if (player.getCurrentPosition() != 0) {
@@ -739,7 +739,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
             player = null;
             showSystemUI();
             resetVariables();
-            castPlayer.release();
+            if(castPlayer != null) {
+                castPlayer.release();
+            }
         }
     }
 
