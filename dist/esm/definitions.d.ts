@@ -74,6 +74,21 @@ export interface CapacitorVideoPlayerPlugin {
      *
      */
     stopAllPlayers(): Promise<capVideoPlayerResult>;
+    /**
+     * Show controller
+     *
+     */
+    showController(): Promise<capVideoPlayerResult>;
+    /**
+     * isControllerIsFullyVisible
+     *
+     */
+    isControllerIsFullyVisible(): Promise<capVideoPlayerResult>;
+    /**
+     * Exit player
+     *
+     */
+    exitPlayer(): Promise<capVideoPlayerResult>;
 }
 export interface capEchoOptions {
     /**

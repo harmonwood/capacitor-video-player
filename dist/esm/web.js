@@ -510,6 +510,39 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             value: true,
         });
     }
+    /**
+     * Show controller
+     *
+     */
+    async showController() {
+        return Promise.resolve({
+            method: 'showController',
+            result: true,
+            value: true,
+        });
+    }
+    /**
+     * isControllerIsFullyVisible
+     *
+     */
+    async isControllerIsFullyVisible() {
+        return Promise.resolve({
+            method: 'isControllerIsFullyVisible',
+            result: true,
+            value: true,
+        });
+    }
+    /**
+     * Exit the current player
+     *
+     */
+    async exitPlayer() {
+        return Promise.resolve({
+            method: 'exitPlayer',
+            result: true,
+            value: true,
+        });
+    }
     checkSize(options) {
         const playerSize = {
             width: options.width ? options.width : 320,
