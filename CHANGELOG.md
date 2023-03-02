@@ -3,6 +3,7 @@
 ### Bug Fixes
 
  - PR Android: Add support for devices who doesnt support Google Play Service by fegauthier
+ - Fix initPlayer issue Capacitor 4 issue#118 Android
 
 ## 4.6.2-1 (2023-01-24)
 
