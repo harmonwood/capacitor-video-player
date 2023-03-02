@@ -1,3 +1,9 @@
+## 4.6.2-2 (2023-03-02)
+
+### Bug Fixes
+
+ - PR Android: Add support for devices who doesnt support Google Play Service by fegauthier
+
 ## 4.6.2-1 (2023-01-24)
 
 ### Chores
