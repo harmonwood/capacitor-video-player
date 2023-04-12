@@ -8,7 +8,6 @@
 
 import UIKit
 import AVKit
-import MediaPlayer
 
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
