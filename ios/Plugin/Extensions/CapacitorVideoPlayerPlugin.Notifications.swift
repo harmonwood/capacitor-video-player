@@ -65,7 +65,12 @@ extension CapacitorVideoPlayerPlugin {
     // MARK: - playerFullscreenDismiss
 
     @objc func playerFullscreenDismiss(notification: Notification) {
-        let info: [String: Any] = ["dismiss": true]
+        
+        var currentTime: Double = 0.0
+        if let playerView = self.videoPlayerFullScreenView {
+            currentTime = playerView.getRealCurrentTime()
+        }
+        let info: [String: Any] = ["dismiss": true, "currentTime": currentTime]
         DispatchQueue.main.async {
             if self.mode == "fullscreen" {
                 if let vPFSV = self.videoPlayerFullScreenView {

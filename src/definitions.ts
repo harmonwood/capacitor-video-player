@@ -246,6 +246,10 @@ export interface capExitListener {
    * Dismiss value true or false
    */
   dismiss?: boolean;
+  /**
+   * Video current time when listener trigerred
+   */
+  currentTime?: number;
 }
 export interface capVideoPlayerResult {
   /**

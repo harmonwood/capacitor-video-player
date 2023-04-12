@@ -8,6 +8,7 @@
 
 import UIKit
 import AVKit
+import MediaPlayer
 
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
@@ -71,7 +72,13 @@ open class FullScreenVideoPlayerView: UIView {
     // swiftlint:disable function_body_length
     private func initialize() {
         // Set SubTitles if any
-        if let subTitleUrl = self._stUrl {
+        if var subTitleUrl = self._stUrl {
+            //check if subtitle is .srt
+            if subTitleUrl.pathExtension == "srt" {
+                let vttUrl: URL = srtSubtitleToVtt(srtURL: self._stUrl!)
+                self._stUrl = vttUrl
+                subTitleUrl = vttUrl
+            }
             var textStyle: [AVTextStyleRule] = []
             if let opt = self._stOptions {
                 textStyle.append(contentsOf: self.setSubTitleStyle(options: opt))
@@ -350,6 +357,17 @@ open class FullScreenVideoPlayerView: UIView {
     @objc func getCurrentTime() -> Double {
         return self._currentTime
     }
+    // This func will return the updated currentTime of player item
+    // getCurrentTime() is only updated when player plays, pauses, seek, etc
+    // the function is only used in playerFullscreenDismiss() Notification
+    public func getRealCurrentTime() -> Double {
+        if let item = self.playerItem {
+            let currentTime = CMTimeGetSeconds(item.currentTime())
+            return currentTime
+        } else {
+            return 0
+        }
+    }
     @objc func setCurrentTime(time: Double) {
         let seekTime: CMTime = CMTimeMake(value: Int64(time*1000), timescale: 1000)
         self.player?.seek(to: seekTime)
@@ -408,6 +426,44 @@ open class FullScreenVideoPlayerView: UIView {
         } else {
             return []
         }
+    }
+    
+    private func srtSubtitleToVtt(srtURL: URL) -> URL {
+        guard let cachesURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else {
+            fatalError("Couldn't get caches directory")
+        }
+        let vttFileName = UUID().uuidString + ".vtt"
+        let vttURL = cachesURL.appendingPathComponent(vttFileName)
+        let session = URLSession(configuration: .default)
+        let vttFolderURL = vttURL.deletingLastPathComponent()
+        do {
+            try FileManager.default.createDirectory(at: vttFolderURL, withIntermediateDirectories: true, attributes: nil)
+        } catch let error {
+            print("Creating folder error: ", error)
+        }
+        let task = session.dataTask(with: srtURL) { (data, response, error) in
+            guard let data = data, error == nil else {
+                print("Download failed: \(error?.localizedDescription ?? "ukn")")
+                return
+            }
+            do {
+                let tempSRTURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("subtitulos.srt")
+                try data.write(to: tempSRTURL)
+                let srtContent = try String(contentsOf: tempSRTURL, encoding: .utf8)
+                let vttContent = srtContent.replacingOccurrences(of: ",", with: ".")
+                let vttString = "WEBVTT\n\n" + vttContent
+                try vttString.write(toFile: vttURL.path, atomically: true, encoding: .utf8)
+                try FileManager.default.removeItem(at: tempSRTURL)
+
+            } catch let error {
+                print("Processing subs error: \(error)")
+                exit(1)
+            }
+            
+        }
+
+        task.resume()
+        return vttURL
     }
 
 }

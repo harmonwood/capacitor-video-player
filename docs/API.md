@@ -543,6 +543,7 @@ The listeners are attached to the plugin not anymore to the DOM document element
 
 #### capExitListener
 
-| Prop        | Type    | Description                 |
-| ----------- | ------- | --------------------------- |
-| **dismiss** | boolean | Dismiss value true or false |
+| Prop            | Type    | Description                                |
+| --------------- | ------- | ------------------------------------------ |
+| **dismiss**     | boolean | Dismiss value true or false                |
+| **currentTime** | number  | Video current time when listener trigerred |
