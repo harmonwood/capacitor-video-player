@@ -5,7 +5,6 @@ import android.app.ActivityManager;
 import android.app.PictureInPictureParams;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -78,7 +77,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
-import com.google.android.gms.cast.CastMediaControlIntent;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
@@ -600,6 +598,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
         Map<String, Object> info = new HashMap<String, Object>() {
             {
                 put("dismiss", "1");
+                put("currentTime", getCurrentTime());
             }
         };
         if (player != null) {
