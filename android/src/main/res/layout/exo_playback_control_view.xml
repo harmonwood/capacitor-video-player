@@ -10,9 +10,14 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<merge xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto">
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/exo_black_opacity_60"
+  android:fitsSystemWindows="true">
 
   <!-- 0dp dimensions are used to prevent this view from influencing the size of
        the parent view if it uses "wrap_content". It is expanded to occupy the
@@ -22,8 +27,7 @@
   <View
     android:id="@id/exo_controls_background"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/exo_black_opacity_60" />
+    android:layout_height="match_parent" />
 
   <ImageView
     android:id="@+id/cast_image"
@@ -43,7 +47,8 @@
     android:layout_marginTop="@dimen/exo_styled_bottom_bar_margin_top"
     android:layout_gravity="top"
     android:layoutDirection="ltr"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    app:layout_constraintTop_toTopOf="parent">
 
     <LinearLayout
       android:layout_width="match_parent"
@@ -139,7 +144,8 @@
     android:layout_height="@dimen/exo_styled_bottom_bar_height"
     android:layout_marginTop="@dimen/exo_styled_bottom_bar_margin_top"
     android:layout_gravity="bottom"
-    android:layoutDirection="ltr">
+    android:layoutDirection="ltr"
+    app:layout_constraintBottom_toBottomOf="parent">
 
     <LinearLayout android:id="@id/exo_time"
       android:layout_width="wrap_content"
@@ -218,7 +224,8 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/exo_styled_progress_layout_height"
     android:layout_gravity="bottom"
-    android:layout_marginBottom="@dimen/exo_styled_progress_margin_bottom"/>
+    android:layout_marginBottom="@dimen/exo_styled_progress_margin_bottom"
+    app:layout_constraintBottom_toBottomOf="parent"/>
 
   <LinearLayout android:id="@id/exo_minimal_controls"
     android:layout_width="wrap_content"
@@ -227,7 +234,10 @@
     android:layout_marginBottom="@dimen/exo_styled_minimal_controls_margin_bottom"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:layoutDirection="ltr">
+    android:layoutDirection="ltr"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    >
 
     <ImageButton android:id="@id/exo_minimal_fullscreen"
       style="@style/ExoStyledControls.Button.Bottom.FullScreen"/>
@@ -242,7 +252,11 @@
     android:background="@android:color/transparent"
     android:gravity="center"
     android:padding="@dimen/exo_styled_controls_padding"
-    android:clipToPadding="false">
+    android:clipToPadding="false"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent">
 
     <ImageButton android:id="@id/exo_prev"
       style="@style/ExoStyledControls.Button.Center.Previous"/>
@@ -260,4 +274,4 @@
 
   </LinearLayout>
 
-</merge>
+</androidx.constraintlayout.widget.ConstraintLayout>
