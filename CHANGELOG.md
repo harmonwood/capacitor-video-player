@@ -1,3 +1,9 @@
+## 4.6.2 (2023-05-12)
+
+### Bug Fixes
+
+- Issue #122, some changes and MediaRouteButton fix PR#124 by PhantomPainX 
+
 ## 4.6.2-3 (2023-03-02)
 
 ### Bug Fixes
