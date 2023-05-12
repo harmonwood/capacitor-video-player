@@ -1,3 +1,10 @@
+## 4.8.0-1 (2023-05-12)
+
+### Chores
+
+ - Update to Capacitor 4.6.2
+ - Update to hls.js 1.4.3
+ 
 ## 4.6.2 (2023-05-12)
 
 ### Bug Fixes
