@@ -30,7 +30,6 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
     var endObserver: Any?
     var readyObserver: Any?
     var fsDismissObserver: Any?
-    var willResignObserver: Any?
     var backgroundObserver: Any?
     var foregroundObserver: Any?
     var vpInternalObserver: Any?
@@ -51,7 +50,6 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
         NotificationCenter.default.removeObserver(endObserver as Any)
         NotificationCenter.default.removeObserver(readyObserver as Any)
         NotificationCenter.default.removeObserver(fsDismissObserver as Any)
-        NotificationCenter.default.removeObserver(willResignObserver as Any)
         NotificationCenter.default.removeObserver(backgroundObserver as Any)
         NotificationCenter.default.removeObserver(foregroundObserver as Any)
         NotificationCenter.default.removeObserver(vpInternalObserver as Any)

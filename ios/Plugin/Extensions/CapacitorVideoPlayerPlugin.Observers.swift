@@ -37,20 +37,6 @@ extension CapacitorVideoPlayerPlugin {
             .addObserver(forName: .videoPathInternalReady, object: nil,
                          queue: nil, using: videoPathInternalReady)
 
-        willResignObserver =
-            NotificationCenter.default.addObserver(
-                forName: UIApplication.willResignActiveNotification,
-                object: nil, queue: nil) { (_) in
-                if !isInPIPMode &&
-                    self.videoPlayerFullScreenView != nil {
-                    // release video tracks
-                    if let playerItem = self.videoPlayerFullScreenView?
-                        .playerItem {
-                        self.videoTrackEnable(playerItem: playerItem,
-                                              enable: false)
-                    }
-                }
-            }
         backgroundObserver =
             NotificationCenter.default.addObserver(
                 forName: UIApplication.didEnterBackgroundNotification,
@@ -61,6 +47,12 @@ extension CapacitorVideoPlayerPlugin {
                         self.videoPlayerFullScreenView != nil {
                         self.videoPlayerFullScreenView?
                             .videoPlayer.player = nil
+                        
+                        if let playerItem = self.videoPlayerFullScreenView?
+                            .playerItem {
+                            self.videoTrackEnable(playerItem: playerItem,
+                                                  enable: false)
+                        }
                     }
                 } else {
                     if self.videoPlayerFullScreenView != nil {

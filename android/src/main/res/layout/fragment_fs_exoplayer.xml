@@ -19,7 +19,7 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       app:use_controller="true"
-      app:show_buffering="always"
+      app:show_buffering="never"
       app:animation_enabled="false"
       android:animateLayoutChanges="true"
       app:controller_layout_id="@layout/exo_playback_control_view"/>
@@ -33,7 +33,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:indeterminateTint="#FFFFFF"
-        />
+        android:fitsSystemWindows="true"/>
 
     <LinearLayout
         android:id="@+id/linearLayout"

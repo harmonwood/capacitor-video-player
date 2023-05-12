@@ -38,6 +38,10 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.mediarouter.app.MediaRouteButton;
+import androidx.mediarouter.media.MediaControlIntent;
+import androidx.mediarouter.media.MediaRouteSelector;
+import androidx.mediarouter.media.MediaRouter;
+
 import com.getcapacitor.JSObject;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -76,6 +80,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
+import com.google.android.gms.cast.framework.CastStateListener;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.Notifications.NotificationCenter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -131,7 +136,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private ImageButton closeBtn;
     private ImageButton pipBtn;
     private ImageButton resizeBtn;
-    private ImageButton lockBtn;
     private ConstraintLayout constLayout;
     private LinearLayout linearLayout;
     private TextView header_tv;
@@ -174,17 +178,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private CastContext castContext;
     private CastPlayer castPlayer;
     private MediaItem mediaItem;
-
-    //declare byte[] atribute
-    public byte[] byte_image;
-    private Boolean isLocked = false;
-    private LinearLayout videoTimeContainer;
-    private ConstraintLayout layout_header_view;
-    private LinearLayout right_buttons;
-    private ImageButton exo_rew;
-    private ImageButton exo_play;
-    private ImageButton exo_pause;
-    private ImageButton exo_ffwd;
+    private MediaRouter mRouter;
+    private MediaRouter.Callback mCallback = new EmptyCallback();
+    private MediaRouteSelector mSelector;
+    private CastStateListener castStateListener = null;
+    private Boolean playerReady = false;
 
     /**
      * Create Fragment View
@@ -205,35 +203,37 @@ public class FullscreenExoPlayerFragment extends Fragment {
         Pbar = view.findViewById(R.id.indeterminateBar);
         exo_progress = view.findViewById(R.id.exo_progress);
         resizeBtn = view.findViewById(R.id.exo_resize);
-        lockBtn = view.findViewById(R.id.player_lock);
-        videoTimeContainer = view.findViewById(R.id.videoTimeContainer);
-        exo_play = view.findViewById(R.id.exo_play);
-        exo_pause = view.findViewById(R.id.exo_pause);
-        exo_rew = view.findViewById(R.id.exo_rew);
-        exo_ffwd = view.findViewById(R.id.exo_ffwd);
         cast_image = view.findViewById(R.id.cast_image);
         mediaRouteButton = view.findViewById(R.id.media_route_button);
-
-        
 
         if (!chromecast) {
             mediaRouteButton.setVisibility(View.GONE);
         } else {
-            castContext = CastContext.getSharedInstance(getContext());
-            castPlayer = new CastPlayer(CastContext.getSharedInstance(context));
-            CastButtonFactory.setUpMediaRouteButton(context, mediaRouteButton);
+            castContext = CastContext.getSharedInstance(context);
+            castPlayer = new CastPlayer(castContext);
+            mRouter = MediaRouter.getInstance(context);
+            mSelector = new MediaRouteSelector.Builder()
+              .addControlCategories(
+                Arrays.asList(
+                  MediaControlIntent.CATEGORY_LIVE_AUDIO,
+                  MediaControlIntent.CATEGORY_LIVE_VIDEO))
+              .build();
 
-            castContext.addCastStateListener(
-                state -> {
-                    if (state == CastState.NO_DEVICES_AVAILABLE) {
-                        mediaRouteButton.setVisibility(View.GONE);
-                    } else {
-                        if (mediaRouteButton.getVisibility() == View.GONE) {
-                            mediaRouteButton.setVisibility(View.VISIBLE);
-                        }
-                    }
-                }
+            mediaRouteButtonColorWhite(mediaRouteButton);
+            if (castContext != null && castContext.getCastState() != CastState.NO_DEVICES_AVAILABLE) mediaRouteButton.setVisibility(
+              View.VISIBLE
             );
+
+            castStateListener = state -> {
+                if (state == CastState.NO_DEVICES_AVAILABLE) {
+                  mediaRouteButton.setVisibility(View.GONE);
+                } else {
+                  if (mediaRouteButton.getVisibility() == View.GONE) {
+                    mediaRouteButton.setVisibility(View.VISIBLE);
+                  }
+                }
+            };
+            CastButtonFactory.setUpMediaRouteButton(context, mediaRouteButton);
 
             if (artwork != "") {
                 MediaMetadata movieMetadata = new MediaMetadata.Builder()
@@ -246,7 +246,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
                 new setCastImage().execute();
             } else {
-                MediaMetadata movieMetadata = new MediaMetadata.Builder().setTitle(title).setSubtitle(smallTitle).build();
+                MediaMetadata movieMetadata = new MediaMetadata.Builder()
+                  .setTitle(title)
+                  .setSubtitle(smallTitle)
+                  .build();
                 mediaItem =
                     new MediaItem.Builder().setUri(videoPath).setMimeType(MimeTypes.VIDEO_UNKNOWN).setMediaMetadata(movieMetadata).build();
             }
@@ -267,6 +270,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
                         styledPlayerView.setPlayer(castPlayer);
                         styledPlayerView.setControllerShowTimeoutMs(0);
                         styledPlayerView.setControllerHideOnTouch(false);
+                        //We perform a click because for some weird reason, the layout is black until the user clicks on it
+                        styledPlayerView.performClick();
                     }
 
                     @Override
@@ -365,6 +370,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
                         case ExoPlayer.STATE_READY:
                             stateString = "ExoPlayer.STATE_READY     -";
                             Pbar.setVisibility(View.GONE);
+                            playerReady = true;
                             styledPlayerView.setUseController(true);
                             linearLayout.setVisibility(View.INVISIBLE);
                             Log.v(TAG, "**** in ExoPlayer.STATE_READY firstReadyToPlay " + firstReadyToPlay);
@@ -382,11 +388,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
                                     NotificationCenter.defaultCenter().postNotification("playerItemPlay", info);
 
                                     resizeBtn.setVisibility(View.VISIBLE);
-
-                                    mediaRouteButtonColorWhite(mediaRouteButton);
-                                    if (castContext != null && castContext.getCastState() != CastState.NO_DEVICES_AVAILABLE) mediaRouteButton.setVisibility(
-                                        View.VISIBLE
-                                    );
 
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && pipEnabled) {
                                         pipBtn.setVisibility(View.VISIBLE);
@@ -561,13 +562,14 @@ public class FullscreenExoPlayerFragment extends Fragment {
     private void backPressed() {
         if (isCastSession) {
             playerExit();
+            return;
         }
         if (
             !isInPictureInPictureMode &&
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
             packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) &&
             isPIPModeeEnabled &&
-            pipEnabled
+            pipEnabled && playerReady // <- playerReady: this prevents a crash if the user presses back before the player is ready (when enters in pip mode and tries to get the aspect ratio)
         ) {
             pictureInPictureMode();
         } else {
@@ -596,6 +598,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
         Map<String, Object> info = new HashMap<String, Object>() {
             {
                 put("dismiss", "1");
+                put("currentTime", getCurrentTime());
             }
         };
         if (player != null) {
@@ -603,7 +606,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
             player.setVolume(curVolume);
         }
         releasePlayer();
-        NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
+
+        // We control if the user lock the screen when the player is in pip mode
+        try {
+          NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
+        } catch (Exception e) {
+          Log.e(TAG, "Error in posting notification");
+        }
     }
 
     /**
@@ -652,16 +661,17 @@ public class FullscreenExoPlayerFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        if (chromecast) mRouter.addCallback(mSelector, mCallback, MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
+
         if (Util.SDK_INT >= 24) {
             if (styledPlayerView != null) {
                 // If cast is playing then it doesn't start the local player once get backs from background
-                if (castPlayer != null && !castPlayer.isCastSessionAvailable()) {
-                    initializePlayer();
+                if (chromecast && castPlayer.isCastSessionAvailable()) return;
 
-                    if (player.getCurrentPosition() != 0) {
-                        firstReadyToPlay = false;
-                        play();
-                    }
+                initializePlayer();
+                if (player.getCurrentPosition() != 0) {
+                    firstReadyToPlay = false;
+                    play();
                 }
             } else {
                 getActivity().finishAndRemoveTask();
@@ -690,6 +700,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if (chromecast) mRouter.removeCallback(mCallback);
         releasePlayer();
     }
 
@@ -699,6 +710,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        if (chromecast) castContext.removeCastStateListener(castStateListener);
         boolean isAppBackground = false;
         if (bkModeEnabled) isAppBackground = isApplicationSentToBackground(context);
 
@@ -739,8 +751,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
             player = null;
             showSystemUI();
             resetVariables();
-            if(castPlayer != null) {
-                castPlayer.release();
+            if (chromecast) {
+              castPlayer.release();
+              castPlayer = null;
             }
         }
     }
@@ -751,6 +764,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (chromecast) castContext.addCastStateListener(castStateListener);
         if (!isInPictureInPictureMode) {
             hideSystemUi();
             if ((Util.SDK_INT < 24 || player == null)) {
@@ -1072,7 +1086,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public void play() {
         PlaybackParameters param = new PlaybackParameters(videoRate);
         player.setPlaybackParameters(param);
-        player.setPlayWhenReady(true);
+
+        /* If the user start the cast before the player is ready and playing, then the video will start
+          in the device and chromecast at the same time. This is to avoid that behaviour.*/
+        if (!isCastSession) player.setPlayWhenReady(true);
     }
 
     /**
@@ -1259,5 +1276,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
             }
         }
         return false;
+    }
+
+    private final class EmptyCallback extends MediaRouter.Callback {
     }
 }

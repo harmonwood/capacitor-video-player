@@ -268,6 +268,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                         Map<String, Object> info = new HashMap<String, Object>() {
                             {
                                 put("dismiss", "1");
+                                put("currentTime", "0");
                             }
                         };
                         NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
@@ -948,6 +949,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                         final JSObject data = new JSObject();
                         if (Integer.valueOf((String) this.getInfo().get("dismiss")) == 1) ret = true;
                         data.put("dismiss", ret);
+                        data.put("currentTime", this.getInfo().get("currentTime"));
                         bridge
                             .getActivity()
                             .runOnUiThread(
@@ -1013,6 +1015,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                             Map<String, Object> info = new HashMap<String, Object>() {
                                 {
                                     put("dismiss", "1");
+                                    put("currentTime", "0");
                                 }
                             };
                             NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
