@@ -47,7 +47,7 @@ extension CapacitorVideoPlayerPlugin {
                         self.videoPlayerFullScreenView != nil {
                         self.videoPlayerFullScreenView?
                             .videoPlayer.player = nil
-                        
+
                         if let playerItem = self.videoPlayerFullScreenView?
                             .playerItem {
                             self.videoTrackEnable(playerItem: playerItem,
@@ -115,6 +115,7 @@ extension CapacitorVideoPlayerPlugin {
 
     // MARK: - videoPathInternalReady
 
+    // swiftlint:disable function_body_length
     func videoPathInternalReady(notification: Notification) {
         self.bridge?.viewController?.dismiss(animated: true, completion: {
         })
@@ -145,6 +146,16 @@ extension CapacitorVideoPlayerPlugin {
                 name: .playerFullscreenDismiss, object: nil)
             return
         }
+        guard let showControls = info["showControls"] as? Bool else {
+            NotificationCenter.default.post(
+                name: .playerFullscreenDismiss, object: nil)
+            return
+        }
+        guard let displayMode = info["displayMode"] as? String else {
+            NotificationCenter.default.post(
+                name: .playerFullscreenDismiss, object: nil)
+            return
+        }
         guard let backModeEnabled = info["backModeEnabled"] as? Bool else {
             NotificationCenter.default.post(
                 name: .playerFullscreenDismiss, object: nil)
@@ -154,10 +165,15 @@ extension CapacitorVideoPlayerPlugin {
 
         self.createVideoPlayerFullscreenView(
             call: call, videoUrl: videoUrl,
-            rate: videoRate, exitOnEnd: exitOnEnd, loopOnEnd: loopOnEnd,
-            pipEnabled: pipEnabled, backModeEnabled: backModeEnabled,
-            subTitleUrl: nil, subTitleLanguage: nil, subTitleOptions: nil, headers: nil)
+            rate: videoRate, exitOnEnd: exitOnEnd,
+            loopOnEnd: loopOnEnd, pipEnabled: pipEnabled,
+            backModeEnabled: backModeEnabled,
+            showControls: showControls,
+            displayMode: displayMode,
+            subTitleUrl: nil, subTitleLanguage: nil,
+            subTitleOptions: nil, headers: nil)
         return
     }
+    // swiftlint:enable function_body_length
 
 }

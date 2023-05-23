@@ -1,10 +1,12 @@
 package com.jeep.plugin.capacitor.capacitorvideoplayer;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.PictureInPictureParams;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -41,7 +43,6 @@ import androidx.mediarouter.app.MediaRouteButton;
 import androidx.mediarouter.media.MediaControlIntent;
 import androidx.mediarouter.media.MediaRouteSelector;
 import androidx.mediarouter.media.MediaRouter;
-
 import com.getcapacitor.JSObject;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -109,6 +110,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public Boolean loopOnEnd;
     public Boolean pipEnabled;
     public Boolean bkModeEnabled;
+    public Boolean showControls;
+    public String displayMode = "portrait";
     public String title;
     public String smallTitle;
     public String accentColor;
@@ -205,34 +208,41 @@ public class FullscreenExoPlayerFragment extends Fragment {
         resizeBtn = view.findViewById(R.id.exo_resize);
         cast_image = view.findViewById(R.id.cast_image);
         mediaRouteButton = view.findViewById(R.id.media_route_button);
-
+        Activity mAct = getActivity();
+        if (displayMode.equals("landscape")) {
+            mAct.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+        if (!showControls) {
+            styledPlayerView.setUseController(false);
+        } else {
+            styledPlayerView.setUseController(true);
+        }
         if (!chromecast) {
             mediaRouteButton.setVisibility(View.GONE);
         } else {
             castContext = CastContext.getSharedInstance(context);
             castPlayer = new CastPlayer(castContext);
             mRouter = MediaRouter.getInstance(context);
-            mSelector = new MediaRouteSelector.Builder()
-              .addControlCategories(
-                Arrays.asList(
-                  MediaControlIntent.CATEGORY_LIVE_AUDIO,
-                  MediaControlIntent.CATEGORY_LIVE_VIDEO))
-              .build();
+            mSelector =
+                new MediaRouteSelector.Builder()
+                    .addControlCategories(Arrays.asList(MediaControlIntent.CATEGORY_LIVE_AUDIO, MediaControlIntent.CATEGORY_LIVE_VIDEO))
+                    .build();
 
             mediaRouteButtonColorWhite(mediaRouteButton);
             if (castContext != null && castContext.getCastState() != CastState.NO_DEVICES_AVAILABLE) mediaRouteButton.setVisibility(
-              View.VISIBLE
+                View.VISIBLE
             );
 
-            castStateListener = state -> {
-                if (state == CastState.NO_DEVICES_AVAILABLE) {
-                  mediaRouteButton.setVisibility(View.GONE);
-                } else {
-                  if (mediaRouteButton.getVisibility() == View.GONE) {
-                    mediaRouteButton.setVisibility(View.VISIBLE);
-                  }
-                }
-            };
+            castStateListener =
+                state -> {
+                    if (state == CastState.NO_DEVICES_AVAILABLE) {
+                        mediaRouteButton.setVisibility(View.GONE);
+                    } else {
+                        if (mediaRouteButton.getVisibility() == View.GONE) {
+                            mediaRouteButton.setVisibility(View.VISIBLE);
+                        }
+                    }
+                };
             CastButtonFactory.setUpMediaRouteButton(context, mediaRouteButton);
 
             if (artwork != "") {
@@ -246,10 +256,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
                 new setCastImage().execute();
             } else {
-                MediaMetadata movieMetadata = new MediaMetadata.Builder()
-                  .setTitle(title)
-                  .setSubtitle(smallTitle)
-                  .build();
+                MediaMetadata movieMetadata = new MediaMetadata.Builder().setTitle(title).setSubtitle(smallTitle).build();
                 mediaItem =
                     new MediaItem.Builder().setUri(videoPath).setMimeType(MimeTypes.VIDEO_UNKNOWN).setMediaMetadata(movieMetadata).build();
             }
@@ -371,7 +378,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
                             stateString = "ExoPlayer.STATE_READY     -";
                             Pbar.setVisibility(View.GONE);
                             playerReady = true;
-                            styledPlayerView.setUseController(true);
+                            if (!showControls) {
+                                styledPlayerView.setUseController(false);
+                            } else {
+                                styledPlayerView.setUseController(true);
+                            }
                             linearLayout.setVisibility(View.INVISIBLE);
                             Log.v(TAG, "**** in ExoPlayer.STATE_READY firstReadyToPlay " + firstReadyToPlay);
 
@@ -407,6 +418,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
                             player.setPlayWhenReady(false);
                             if (exitOnEnd) {
                                 releasePlayer();
+                                Activity mAct = getActivity();
+                                int mOrient = mAct.getRequestedOrientation();
+                                if (mOrient == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                                    mAct.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                                }
                                 NotificationCenter.defaultCenter().postNotification("playerItemEnd", info);
                             }
                             break;
@@ -569,13 +585,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
             packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) &&
             isPIPModeeEnabled &&
-            pipEnabled && playerReady // <- playerReady: this prevents a crash if the user presses back before the player is ready (when enters in pip mode and tries to get the aspect ratio)
+            pipEnabled &&
+            playerReady // <- playerReady: this prevents a crash if the user presses back before the player is ready (when enters in pip mode and tries to get the aspect ratio)
         ) {
             pictureInPictureMode();
         } else {
             playerExit();
         }
-
     }
 
     private void resizePressed() {
@@ -606,12 +622,17 @@ public class FullscreenExoPlayerFragment extends Fragment {
             player.setVolume(curVolume);
         }
         releasePlayer();
+        Activity mAct = getActivity();
+        int mOrient = mAct.getRequestedOrientation();
+        if (mOrient == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            mAct.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
 
         // We control if the user lock the screen when the player is in pip mode
         try {
-          NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
+            NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
         } catch (Exception e) {
-          Log.e(TAG, "Error in posting notification");
+            Log.e(TAG, "Error in posting notification");
         }
     }
 
@@ -752,8 +773,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
             showSystemUI();
             resetVariables();
             if (chromecast) {
-              castPlayer.release();
-              castPlayer = null;
+                castPlayer.release();
+                castPlayer = null;
             }
         }
     }
@@ -775,7 +796,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
             if (
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
             ) {
-                styledPlayerView.setUseController(true);
+                if (!showControls) {
+                    styledPlayerView.setUseController(false);
+                } else {
+                    styledPlayerView.setUseController(true);
+                }
             }
             if (sturi != null) {
                 setSubtitle(false);
@@ -1278,6 +1303,5 @@ public class FullscreenExoPlayerFragment extends Fragment {
         return false;
     }
 
-    private final class EmptyCallback extends MediaRouter.Callback {
-    }
+    private final class EmptyCallback extends MediaRouter.Callback {}
 }

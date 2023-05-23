@@ -1,8 +1,10 @@
 package com.jeep.plugin.capacitor.capacitorvideoplayer;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.UiModeManager;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.util.Log;
@@ -53,13 +55,15 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private Boolean loopOnEnd = false;
     private Boolean pipEnabled = true;
     private Boolean bkModeEnabled = true;
+    private Boolean showControls = true;
+    private String displayMode = "portrait";
     private FullscreenExoPlayerFragment fsFragment;
     private PickerVideoFragment pkFragment;
     private FilesUtils filesUtils;
     private JSObject headers;
     private FragmentUtils fragmentUtils;
     private PluginCall call;
-    private Float rateList[] = { 0.25f, 0.5f, 0.75f, 1f, 2f, 4f };
+    private final Float[] rateList = { 0.25f, 0.5f, 0.75f, 1f, 2f, 4f };
     private Float videoRate = 1f;
     private String title;
     private String smallTitle;
@@ -155,7 +159,16 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             _bkModeEnabled = call.getBoolean("bkmodeEnabled");
         }
         bkModeEnabled = _bkModeEnabled;
-
+        Boolean _showControls = true;
+        if (call.getData().has("showControls")) {
+            _showControls = call.getBoolean("showControls");
+        }
+        showControls = _showControls;
+        String _displayMode = "portrait";
+        if (call.getData().has("displayMode")) {
+            _displayMode = call.getString("displayMode");
+        }
+        displayMode = _displayMode;
         if ("fullscreen".equals(mode)) {
             fsPlayerId = playerId;
             String url = call.getString("url");
@@ -250,6 +263,8 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                             loopOnEnd,
                             pipEnabled,
                             bkModeEnabled,
+                            showControls,
+                            displayMode,
                             subTitlePath,
                             language,
                             subTitleOptions,
@@ -996,6 +1011,8 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                                 loopOnEnd,
                                 pipEnabled,
                                 bkModeEnabled,
+                                showControls,
+                                displayMode,
                                 null,
                                 null,
                                 null,
@@ -1033,6 +1050,8 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         Boolean loopOnEnd,
         Boolean pipEnabled,
         Boolean bkModeEnabled,
+        Boolean showControls,
+        String displayMode,
         String subTitle,
         String language,
         JSObject subTitleOptions,
@@ -1057,6 +1076,8 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 loopOnEnd,
                 pipEnabled,
                 bkModeEnabled,
+                showControls,
+                displayMode,
                 subTitle,
                 language,
                 subTitleOptions,

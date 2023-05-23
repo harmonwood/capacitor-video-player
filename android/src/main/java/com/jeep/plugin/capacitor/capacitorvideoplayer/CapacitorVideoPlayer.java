@@ -23,6 +23,8 @@ public class CapacitorVideoPlayer {
         Boolean loopOnEnd,
         Boolean pipEnabled,
         Boolean bkModeEnabled,
+        Boolean showControls,
+        String displayMode,
         String subTitle,
         String language,
         JSObject subTitleOptions,
@@ -45,6 +47,8 @@ public class CapacitorVideoPlayer {
         fsFragment.loopOnEnd = loopOnEnd;
         fsFragment.pipEnabled = pipEnabled;
         fsFragment.bkModeEnabled = bkModeEnabled;
+        fsFragment.showControls = showControls;
+        fsFragment.displayMode = displayMode;
         fsFragment.subTitle = subTitle;
         fsFragment.language = language;
         fsFragment.subTitleOptions = subTitleOptions;

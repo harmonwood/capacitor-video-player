@@ -1,3 +1,15 @@
+## 4.8.0 (2023-05-23)
+
+### Add Features
+
+ - add showControls in capVideoPlayerOptions (iOS &Android only)
+ - add displayMode in capVideoPlayerOptions (iOS &Android only)
+
+### Bug Fixes
+
+ - Fix Hide controls and loading indicator issue#98
+ - Fix issue#127 by implementing the landscape/portrait mode natively
+ 
 ## 4.8.0-1 (2023-05-12)
 
 ### Chores

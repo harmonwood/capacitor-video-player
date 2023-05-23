@@ -65,7 +65,7 @@ extension CapacitorVideoPlayerPlugin {
     // MARK: - playerFullscreenDismiss
 
     @objc func playerFullscreenDismiss(notification: Notification) {
-        
+
         var currentTime: Double = 0.0
         if let playerView = self.videoPlayerFullScreenView {
             currentTime = playerView.getRealCurrentTime()
@@ -89,6 +89,9 @@ extension CapacitorVideoPlayerPlugin {
         if let vPFSV = self.videoPlayerFullScreenView {
             vPFSV.removeObservers()
             vPFSV.videoPlayer.player = nil
+            if self.displayMode == "landscape" {
+                vPFSV.videoPlayer = PortraitAVPlayerController()
+            }
             self.videoPlayerFullScreenView = nil
         }
         self.bridge?.viewController?.dismiss(animated: true, completion: {

@@ -22,6 +22,8 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
     var loopOnEnd: Bool = false
     var pipEnabled: Bool = true
     var backModeEnabled: Bool = true
+    var showControls: Bool = true
+    var displayMode: String = "portrait"
     var headers: [String: String]?
     var fsPlayerId: String = "fullscreen"
     var videoRate: Float = 1.0
@@ -110,6 +112,15 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
         if let sbkModeEnabled = call.options["bkmodeEnabled"] as? Bool {
             bkModeEnabled = sbkModeEnabled
         }
+        var shControls: Bool = true
+        if let shoControls = call.options["showControls"] as? Bool {
+            shControls = shoControls
+        }
+        var disMode: String = "portrait"
+        if let dispMode = call.options["displayMode"] as? String {
+            disMode = dispMode
+        }
+
         self.fsPlayerId = playerId
         self.mode = mode
         self.videoRate = mRate
@@ -119,6 +130,8 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
         self.headers = headers
         if !self.pipEnabled {isPIPModeAvailable = false}
         self.backModeEnabled = bkModeEnabled
+        self.showControls = shControls
+        self.displayMode = disMode
         if mode == "fullscreen" {
             guard let videoPath = call.options["url"] as? String else {
                 let error: String = "Must provide a video url"
@@ -145,7 +158,9 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                             exitOnEnd: self?.exitOnEnd ?? true,
                             loopOnEnd: self?.loopOnEnd ?? false,
                             pipEnabled: self?.pipEnabled ?? true,
-                            backModeEnabled: self?.backModeEnabled ?? true) {
+                            backModeEnabled: self?.backModeEnabled ?? true,
+                            showControls: self?.showControls ?? true,
+                            displayMode: self?.displayMode ?? "portrait") {
                         self?.bridge?.viewController?.present(
                             videoPickerViewController,
                             animated: true, completion: {return})
@@ -192,6 +207,8 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                     exitOnEnd: exitOnEnd, loopOnEnd: loopOnEnd,
                     pipEnabled: pipEnabled,
                     backModeEnabled: backModeEnabled,
+                    showControls: showControls,
+                    displayMode: displayMode,
                     subTitleUrl: subTitle,
                     subTitleLanguage: subTitleLanguage,
                     subTitleOptions: subTitleOptions,

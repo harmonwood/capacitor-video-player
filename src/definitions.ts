@@ -137,6 +137,16 @@ export interface capVideoPlayerOptions {
    */
   bkmodeEnabled?: boolean;
   /**
+   * Show Controls Enable (iOS, Android)
+   * default: true
+   */
+  showControls?: boolean;
+  /**
+   * Display Mode ["portrait", "landscape"] (iOS, Android)
+   * default: "portrait"
+   */
+  displayMode?: string;
+  /**
    * Component Tag or DOM Element Tag (React app)
    */
   componentTag?: string;

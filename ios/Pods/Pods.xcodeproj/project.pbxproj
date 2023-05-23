@@ -632,8 +632,8 @@
 				738D62F53229D31B1D9EE96AEDCD1586 /* CDVCommandDelegateImpl.h in Headers */,
 				C0F9257A59173F8129C0B2C4646D7BC9 /* CDVConfigParser.h in Headers */,
 				D6F25440AA6468AF45E5F3456BB86438 /* CDVInvokedUrlCommand.h in Headers */,
-				70E22E8D11DC8AC209CA8B5E96BE3CD5 /* CDVPlugin+Resources.h in Headers */,
 				AA6E22C0EB6476B7E74DC7960EE49879 /* CDVPlugin.h in Headers */,
+				70E22E8D11DC8AC209CA8B5E96BE3CD5 /* CDVPlugin+Resources.h in Headers */,
 				B8C6DE1965F4D0EB114CD5DBB88352C8 /* CDVPluginManager.h in Headers */,
 				C7769D6190688E6AB1B8829F71B49B83 /* CDVPluginResult.h in Headers */,
 				7B04AE9EBC9BA160E0586282E3B65377 /* CDVScreenOrientationDelegate.h in Headers */,
@@ -737,8 +737,8 @@
 		BFDFE7DC352907FC980B868725387E98 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1100;
-				LastUpgradeCheck = 1100;
+				LastSwiftUpdateCheck = 1300;
+				LastUpgradeCheck = 1300;
 			};
 			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 8.0";
@@ -812,8 +812,8 @@
 				815184E1588A818CA14EFB9B01955540 /* CAPBridgeDelegate.swift in Sources */,
 				83BD4D398C1CAF55795F70847638B9BF /* CAPBridgedJSTypes.m in Sources */,
 				3295C1234A426010A8E7C01E16C06846 /* CAPBridgeProtocol.swift in Sources */,
-				75F4CB91C7B134F9BF8B96C4D4B7DDC2 /* CAPBridgeViewController+CDVScreenOrientationDelegate.m in Sources */,
 				A13A812EC4F4081C2A3E8D0FDF78581C /* CAPBridgeViewController.swift in Sources */,
+				75F4CB91C7B134F9BF8B96C4D4B7DDC2 /* CAPBridgeViewController+CDVScreenOrientationDelegate.m in Sources */,
 				462984735734A39D011E512F639C7F6B /* CAPFile.swift in Sources */,
 				FE4A150CD3009E2CCD460B926AC6B5A6 /* CAPInstanceConfiguration.m in Sources */,
 				DBFCD1437921D3A8EBFB6A0A724A5AB1 /* CAPInstanceConfiguration.swift in Sources */,
@@ -822,8 +822,8 @@
 				28F9EB27A2ADE9C4518391EEFCCCB141 /* CAPInstancePlugin.swift in Sources */,
 				63A6129FC6C4A3EA5C9A1E4CF2DDD887 /* CAPLog.swift in Sources */,
 				792422933FF3B058FB725B84C698FE91 /* CAPNotifications.swift in Sources */,
-				97F41FBC054C064633795E81039C90D6 /* CAPPlugin+LoadInstance.swift in Sources */,
 				0F47525F6572BB96109326D21B7EB23A /* CAPPlugin.m in Sources */,
+				97F41FBC054C064633795E81039C90D6 /* CAPPlugin+LoadInstance.swift in Sources */,
 				9FB8045BD8DB873127940E9CEA145E06 /* CAPPluginCall.m in Sources */,
 				EB2B20E318A09C1066AD1F4A6D9F37D7 /* CAPPluginCall.swift in Sources */,
 				DD66BDCCC6EE895BE7F926B9718B0DD1 /* CAPPluginMethod.m in Sources */,
@@ -878,8 +878,8 @@
 				F02F23D0EDBBC1C790D01295A8112F55 /* CDVCommandDelegateImpl.m in Sources */,
 				5354E5DAD5D9574B57092F73656F11DA /* CDVConfigParser.m in Sources */,
 				47BE07A10DC86097CD5D1E1929CFC49F /* CDVInvokedUrlCommand.m in Sources */,
-				2E51673C8B83318C44E3DECBC572707B /* CDVPlugin+Resources.m in Sources */,
 				8B7CD4F8FDE99122982F90BB858D24CE /* CDVPlugin.m in Sources */,
+				2E51673C8B83318C44E3DECBC572707B /* CDVPlugin+Resources.m in Sources */,
 				0FBB338E65F43F2AA91C8A0DD879F5AC /* CDVPluginManager.m in Sources */,
 				72026B402D0B469BB685D365CA5F58BF /* CDVPluginResult.m in Sources */,
 				ABC4F79257383B964EA6544797E6A575 /* CDVURLProtocol.m in Sources */,

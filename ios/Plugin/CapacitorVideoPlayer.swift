@@ -17,6 +17,8 @@ enum CapacitorVideoPlayerError: Error {
                                              exitOnEnd: Bool,
                                              loopOnEnd: Bool,
                                              pipEnabled: Bool,
+                                             showControls: Bool,
+                                             displayMode: String,
                                              subTitleUrl: URL?,
                                              language: String?,
                                              headers: [String: String]?,
@@ -27,16 +29,20 @@ enum CapacitorVideoPlayerError: Error {
         let videoPlayerFullScreenView = FullScreenVideoPlayerView(
             url: videoUrl, rate: rate, playerId: playerId,
             exitOnEnd: exitOnEnd, loopOnEnd: loopOnEnd,
-            pipEnabled: pipEnabled, stUrl: subTitleUrl,
-            stLanguage: language, stHeaders: headers, stOptions: options)
+            pipEnabled: pipEnabled, showControls: showControls,
+            displayMode: displayMode,
+            stUrl: subTitleUrl, stLanguage: language,
+            stHeaders: headers, stOptions: options)
         return videoPlayerFullScreenView
     }
-    // swiftlint:enable function_parameter_count
 
+    // swiftlint:disable function_parameter_count
     @objc public func pickVideoFromInternal(rate: Float, exitOnEnd: Bool,
                                             loopOnEnd: Bool,
                                             pipEnabled: Bool,
-                                            backModeEnabled: Bool) ->
+                                            backModeEnabled: Bool,
+                                            showControls: Bool,
+                                            displayMode: String) ->
     VideoPickerViewController {
         let videoPickerViewController = VideoPickerViewController()
         videoPickerViewController.rate = rate
@@ -44,7 +50,11 @@ enum CapacitorVideoPlayerError: Error {
         videoPickerViewController.loopOnEnd = loopOnEnd
         videoPickerViewController.pipEnabled = pipEnabled
         videoPickerViewController.backModeEnabled = backModeEnabled
+        videoPickerViewController.showControls = showControls
+        videoPickerViewController.displayMode = displayMode
+
         return videoPickerViewController
 
     }
+    // swiftlint:enable function_parameter_count
 }

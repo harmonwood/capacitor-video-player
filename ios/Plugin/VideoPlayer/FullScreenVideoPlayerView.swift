@@ -28,6 +28,8 @@ open class FullScreenVideoPlayerView: UIView {
     private var _stHeaders: [String: String]?
     private var _stOptions: [String: Any]?
     private var _videoRate: Float
+    private var _showControls: Bool = true
+    private var _displayMode: String = "portrait"
 
     var player: AVPlayer?
     var videoPlayer: AVPlayerViewController
@@ -41,8 +43,9 @@ open class FullScreenVideoPlayerView: UIView {
     var videoPlayerMoveObserver: NSKeyValueObservation?
 
     init(url: URL, rate: Float, playerId: String, exitOnEnd: Bool,
-         loopOnEnd: Bool, pipEnabled: Bool, stUrl: URL?,
-         stLanguage: String?, stHeaders: [String: String]?, stOptions: [String: Any]?) {
+         loopOnEnd: Bool, pipEnabled: Bool, showControls: Bool,
+         displayMode: String, stUrl: URL?, stLanguage: String?,
+         stHeaders: [String: String]?, stOptions: [String: Any]?) {
         //self._videoPath = videoPath
         self._url = url
         self._stUrl = stUrl
@@ -54,7 +57,12 @@ open class FullScreenVideoPlayerView: UIView {
         self._videoId = playerId
         self._videoRate = rate
         self._stHeaders = stHeaders
-        self.videoPlayer = AVPlayerViewController()
+        self._displayMode = displayMode
+        self.videoPlayer = PortraitAVPlayerController()
+        if displayMode == "landscape" {
+            self.videoPlayer = LandscapeAVPlayerController()
+        }
+        self._showControls = showControls
 
         if let headers = self._stHeaders {
             self.videoAsset = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": headers])
@@ -69,12 +77,13 @@ open class FullScreenVideoPlayerView: UIView {
     }
 
     // swiftlint:disable function_body_length
+    // swiftlint:disable cyclomatic_complexity
     private func initialize() {
         // Set SubTitles if any
         if var subTitleUrl = self._stUrl {
             //check if subtitle is .srt
             if subTitleUrl.pathExtension == "srt" {
-                let vttUrl: URL = srtSubtitleToVtt(srtURL: self._stUrl!)
+                let vttUrl: URL = srtSubtitleToVtt(srtURL: subTitleUrl)
                 self._stUrl = vttUrl
                 subTitleUrl = vttUrl
             }
@@ -144,6 +153,9 @@ open class FullScreenVideoPlayerView: UIView {
         }
         self.player = AVPlayer(playerItem: playerItem)
         self.player?.currentItem?.audioTimePitchAlgorithm = .timeDomain
+        if !self._showControls {
+            self.videoPlayer.showsPlaybackControls = false
+        }
         self.videoPlayer.player = self.player
         if #available(iOS 13.0, *) {
             self.videoPlayer.isModalInPresentation = true
@@ -158,6 +170,7 @@ open class FullScreenVideoPlayerView: UIView {
         self._isLoaded.updateValue(false, forKey: self._videoId)
 
     }
+    // swiftlint:enable cyclomatic_complexity
     // swiftlint:enable function_body_length
 
     private func setSubTitleStyle(options: [String: Any]) -> [AVTextStyleRule] {
@@ -297,8 +310,6 @@ open class FullScreenVideoPlayerView: UIView {
                      changeHandler: {(_, _) in
                         if !isInPIPMode {
                             if self.videoPlayer.isBeingDismissed && !isVideoEnded {
-                                print("$$$$$ in frame observer")
-
                                 NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
                             }
                         }
@@ -309,8 +320,6 @@ open class FullScreenVideoPlayerView: UIView {
                      changeHandler: {(_, _) in
                         if !isInPIPMode {
                             if self.videoPlayer.isBeingDismissed && !isVideoEnded {
-                                print("$$$$$ in move observer")
-
                                 NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
                             }
 
@@ -426,7 +435,7 @@ open class FullScreenVideoPlayerView: UIView {
             return []
         }
     }
-    
+
     private func srtSubtitleToVtt(srtURL: URL) -> URL {
         guard let cachesURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else {
             fatalError("Couldn't get caches directory")
@@ -440,7 +449,7 @@ open class FullScreenVideoPlayerView: UIView {
         } catch let error {
             print("Creating folder error: ", error)
         }
-        let task = session.dataTask(with: srtURL) { (data, response, error) in
+        let task = session.dataTask(with: srtURL) { (data, _, error) in
             guard let data = data, error == nil else {
                 print("Download failed: \(error?.localizedDescription ?? "ukn")")
                 return
@@ -458,7 +467,7 @@ open class FullScreenVideoPlayerView: UIView {
                 print("Processing subs error: \(error)")
                 exit(1)
             }
-            
+
         }
 
         task.resume()

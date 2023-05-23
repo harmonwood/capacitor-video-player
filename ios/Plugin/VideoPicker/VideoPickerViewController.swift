@@ -16,6 +16,8 @@ open class VideoPickerViewController: UIViewController {
     private var _loopOnEnd: Bool = false
     private var _pipEnabled: Bool = true
     private var _backModeEnabled: Bool = true
+    private var _showControls: Bool = true
+    private var _displayMode: String = "portrait"
 
     // MARK: - Set-up rate
 
@@ -71,6 +73,27 @@ open class VideoPickerViewController: UIViewController {
             self._backModeEnabled = newValue
         }
     }
+    // MARK: - Set-up showControls
+
+    var showControls: Bool {
+        get {
+            return self._showControls
+        }
+        set {
+            self._showControls = newValue
+        }
+    }
+
+    // MARK: - Set-up displayMode
+
+    var displayMode: String {
+        get {
+            return self._displayMode
+        }
+        set {
+            self._displayMode = newValue
+        }
+    }
 
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -93,21 +116,24 @@ extension VideoPickerViewController: UIImagePickerControllerDelegate {
         else {
             return
         }
-        let vId: [String: Any] = ["videoUrl": url,
-                                  "videoRate": rate,
-                                  "exitOnEnd": exitOnEnd,
-                                  "loopOnEnd": loopOnEnd,
-                                  "pipEnabled": pipEnabled,
-                                  "backModeEnabled": backModeEnabled]
+        let vId: [String: Any] = [
+            "videoUrl": url, "videoRate": rate,
+            "exitOnEnd": exitOnEnd, "loopOnEnd": loopOnEnd,
+            "pipEnabled": pipEnabled,
+            "backModeEnabled": backModeEnabled,
+            "showControls": showControls,
+            "displayMode": displayMode]
         NotificationCenter.default.post(name: .videoPathInternalReady, object: nil, userInfo: vId)
     }
     public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        let vId: [String: Any] = ["videoUrl": "",
-                                  "videoRate": rate,
-                                  "exitOnEnd": exitOnEnd,
-                                  "loopOnEnd": loopOnEnd,
-                                  "pipEnabled": pipEnabled,
-                                  "backModeEnabled": backModeEnabled]
+        let vId: [String: Any] = [
+            "videoUrl": "", "videoRate": rate,
+            "exitOnEnd": exitOnEnd, "loopOnEnd": loopOnEnd,
+            "pipEnabled": pipEnabled,
+            "backModeEnabled": backModeEnabled,
+            "showControls": showControls,
+            "displayMode": displayMode
+        ]
         NotificationCenter.default.post(name: .videoPathInternalReady,
                                         object: nil, userInfo: vId)
     }
