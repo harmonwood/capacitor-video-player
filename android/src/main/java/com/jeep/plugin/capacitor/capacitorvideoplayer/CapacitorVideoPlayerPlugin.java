@@ -856,6 +856,83 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             );
     }
 
+    @PluginMethod
+    public void isControllerIsFullyVisible(PluginCall call) {
+        this.call = call;
+        bridge
+                .getActivity()
+                .runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                JSObject ret = new JSObject();
+                                ret.put("method", "isControllerIsFullyVisible");
+                                if (fsFragment != null) {
+                                    ret.put("result", true);
+                                    ret.put("value", fsFragment.isControllerIsFullyVisible());
+                                    call.resolve(ret);
+                                } else {
+                                    ret.put("result", false);
+                                    ret.put("message", "Fullscreen fragment is not defined");
+                                    call.resolve(ret);
+                                }
+                            }
+                        }
+                );
+    }
+
+    @PluginMethod
+    public void showController(PluginCall call) {
+        this.call = call;
+        bridge
+                .getActivity()
+                .runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                JSObject ret = new JSObject();
+                                ret.put("method", "showController");
+                                if (fsFragment != null) {
+                                    fsFragment.showController();
+                                    ret.put("result", true);
+                                    ret.put("value", true);
+                                    call.resolve(ret);
+                                } else {
+                                    ret.put("result", false);
+                                    ret.put("message", "Fullscreen fragment is not defined");
+                                    call.resolve(ret);
+                                }
+                            }
+                        }
+                );
+    }
+
+    @PluginMethod
+    public void exitPlayer(PluginCall call) {
+        this.call = call;
+        bridge
+                .getActivity()
+                .runOnUiThread(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                JSObject ret = new JSObject();
+                                ret.put("method", "exitPlayer");
+                                if (fsFragment != null) {
+                                    fsFragment.playerExit();
+                                    ret.put("result", true);
+                                    ret.put("value", true);
+                                    call.resolve(ret);
+                                } else {
+                                    ret.put("result", false);
+                                    ret.put("message", "Fullscreen fragment is not defined");
+                                    call.resolve(ret);
+                                }
+                            }
+                        }
+                );
+    }
+
     public boolean isDeviceTV(Context context) {
         //Since Android TV is only API 21+ that is the only time we will compare configurations
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

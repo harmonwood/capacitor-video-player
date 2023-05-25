@@ -19,6 +19,9 @@
 * [`setRate(...)`](#setrate)
 * [`getRate(...)`](#getrate)
 * [`stopAllPlayers()`](#stopallplayers)
+* [`showController()`](#showcontroller)
+* [`isControllerIsFullyVisible()`](#iscontrollerisfullyvisible)
+* [`exitPlayer()`](#exitplayer)
 * [Interfaces](#interfaces)
 
 </docgen-index>
@@ -421,6 +424,45 @@ stopAllPlayers() => Promise<capVideoPlayerResult>
 ```
 
 Stop all players playing
+
+**Returns:** <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code>
+
+--------------------
+
+
+### showController()
+
+```typescript
+showController() => Promise<capVideoPlayerResult>
+```
+
+Show controller
+
+**Returns:** <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code>
+
+--------------------
+
+
+### isControllerIsFullyVisible()
+
+```typescript
+isControllerIsFullyVisible() => Promise<capVideoPlayerResult>
+```
+
+isControllerIsFullyVisible
+
+**Returns:** <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code>
+
+--------------------
+
+
+### exitPlayer()
+
+```typescript
+exitPlayer() => Promise<capVideoPlayerResult>
+```
+
+Exit player
 
 **Returns:** <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code>
 

@@ -201,6 +201,9 @@ No configuration required for this plugin
 | stopAllPlayers                     | ✅      | ✅  | ✅       | ✅  |
 | getRate                            | ✅      | ✅  | ✅       | ✅  |
 | setRate                            | ✅      | ✅  | ✅       | ✅  |
+| showController                     | ✅      | ❌  | ❌       | ❌  |
+| isControllerIsFullyVisible         | ✅      | ❌  | ❌       | ❌  |
+| exitPlayer                         | ✅      | ❌  | ❌       | ❌  |
 
 ## Supported listeners
 

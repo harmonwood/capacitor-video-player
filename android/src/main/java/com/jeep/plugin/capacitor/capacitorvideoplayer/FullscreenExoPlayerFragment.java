@@ -573,6 +573,20 @@ public class FullscreenExoPlayerFragment extends Fragment {
     }
 
     /**
+     * Show controller
+     */
+    public void showController() {
+        styledPlayerView.showController();
+    }
+
+    /**
+     * isControllerIsFullyVisible
+     */
+    public boolean isControllerIsFullyVisible() {
+        return styledPlayerView.isControllerFullyVisible();
+    }
+
+    /**
      * Perform backPressed Action
      */
     private void backPressed() {
@@ -610,7 +624,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
         }
     }
 
-    private void playerExit() {
+    public void playerExit() {
         Map<String, Object> info = new HashMap<String, Object>() {
             {
                 put("dismiss", "1");

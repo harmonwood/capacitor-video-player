@@ -546,6 +546,39 @@ export class CapacitorVideoPlayerWeb
       value: true,
     });
   }
+  /**
+   * Show controller
+   *
+   */
+  async showController(): Promise<capVideoPlayerResult> {
+    return Promise.resolve({
+      method: 'showController',
+      result: true,
+      value: true,
+    });
+  }
+  /**
+   * isControllerIsFullyVisible
+   *
+   */
+  async isControllerIsFullyVisible(): Promise<capVideoPlayerResult> {
+    return Promise.resolve({
+      method: 'isControllerIsFullyVisible',
+      result: true,
+      value: true,
+    });
+  }
+  /**
+   * Exit the current player
+   *
+   */
+  async exitPlayer(): Promise<capVideoPlayerResult> {
+    return Promise.resolve({
+      method: 'exitPlayer',
+      result: true,
+      value: true,
+    });
+  }
   private checkSize(options: capVideoPlayerOptions): IPlayerSize {
     const playerSize: IPlayerSize = {
       width: options.width ? options.width : 320,
