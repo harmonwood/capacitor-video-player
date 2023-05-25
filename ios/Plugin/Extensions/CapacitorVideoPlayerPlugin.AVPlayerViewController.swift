@@ -45,11 +45,11 @@ extension CapacitorVideoPlayerPlugin: AVPlayerViewControllerDelegate {
         }
 
     }
-/*    public func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-         if playerViewController.isBeingDismissed {
-             playerViewController.dismiss(animated: false) {
-             print(">>>>> playerViewController has been dismiss ")
-             }
-         }
+    /*    public func playerViewController(_ playerViewController: AVPlayerViewController, willEndFullScreenPresentationWithAnimationCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+     if playerViewController.isBeingDismissed {
+     playerViewController.dismiss(animated: false) {
+     print(">>>>> playerViewController has been dismiss ")
      }
-*/}
+     }
+     }
+     */}

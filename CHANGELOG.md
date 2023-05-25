@@ -1,3 +1,9 @@
+## 4.8.1 (2023-05-25)
+
+### Add Features
+
+ - Add new functions for Android PR#121 from fegauthier 
+
 ## 4.8.0 (2023-05-23)
 
 ### Add Features
