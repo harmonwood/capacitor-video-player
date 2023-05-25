@@ -1,3 +1,9 @@
+## 5.0.0 (2023-05-25)
+
+### Chores
+
+ - Update to Capacitor 5.0.4
+
 ## 4.8.1 (2023-05-25)
 
 ### Add Features

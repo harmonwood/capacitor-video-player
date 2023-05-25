@@ -2,7 +2,7 @@
 <h3 align="center">Video Player</h3>
 <p align="center"><strong><code>capacitor-video-player</code></strong></p>
 <br>
-<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 4 </strong></p><br>
+<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 5 </strong></p><br>
 <p align="center">
   Capacitor Video Player Plugin is a custom Native Capacitor plugin to play a video 
 <br>
@@ -29,48 +29,7 @@
 | ----------------- | ----------------------------------------- | ------ |
 | Quéau Jean Pierre | [jepiqueau](https://github.com/jepiqueau) |        |
 
-## LATEST FOR CAPACITOR 4 (Master)
-
-WARNING do not use the 4.0.1 there is a bug with permissions
-the normal videos not requiring permissions are not displayed
-
-Fix in 4.1.0-1
-
-## LAST3 FOR CAPACITOR 3 (3.7.x)
-
-🚨 Since release 3.7.2 ->> 🚨
-
-Android Only by Manuel García Marín (https://github.com/PhantomPainX)
- - Update to Exoplayer 2.16.0 
- - Add ChromeCast Support 
-
-see [Chromecast Support](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/API.md#chromecast-support)
-
-🚨 Since release 3.7.2 <<- 🚨
-
-🚨 Since release 3.7.1 ->> 🚨
-
-New Android Layout by Manuel García Marín (https://github.com/PhantomPainX)
-
-🚨 Since release 3.7.1 <<- 🚨
-
-🚨 Since release 3.3.1 ->> 🚨
-
-the PIP (Picture in Picture) mode has been added to the Android (API >= N) and iOS (iPad - iOS >= 13, iPhone - iOS >= 14) plugins. Is it accessible by clicking on the PiP button next to the Close button on the top-left window corner.
-
-In Android, to have it running in your application, you must include in the `AndroidManifest.xml`file under the `<activity` tag the following
-```
-    android:resizeableActivity="true"
-    android:supportsPictureInPicture="true"
-```
-
-In iOS, to have it running in your application, you must set the `Background Modes` application capabilities and switch on the mode `Audio, Air-Play, and Picture in Picture` 
-
-🚨 Since release 3.3.1 <<- 🚨
-
-## PREVIOUS CAPACITOR 2.4.7
-
-The `2.4.7` is now 🛑 NOT MAINTAINED ANYMORE 🛑 and can be used as is.
+## LATEST FOR CAPACITOR 5 (Master)
 
 ## Browser Support
 
@@ -82,77 +41,11 @@ meaning that it will not work in IE11 without additional JavaScript transformati
 
 ## Installation
 
-### Release 3.7.5
-
   ```bash
-  npm install --save capacitor-video-player@last3
+  npm install --save capacitor-video-player
   npx cap sync
   npx cap sync @capacitor-community/electron
   ```
-
-### Release 2.4.7
-
-  ```bash
-  npm install --save capacitor-video-player@2.4.7
-  npx cap sync
-  npx cap sync @capacitor-community/electron
-  ```
-  - On Web and Electron, no further steps are needed.
-
-  - on iOS, you need to set your app Capabilities Background Modes (Audio and AirPlay) in Xcode
-
-  - On Android, register the plugin in your main activity:
-
-  ```java
-  import com.jeep.plugin.capacitor.CapacitorVideoPlayer;
-
-  public class MainActivity extends BridgeActivity {
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-
-      // Initializes the Bridge
-      this.init(
-          savedInstanceState,
-          new ArrayList<Class<? extends Plugin>>() {
-            {
-              // Additional plugins you've installed go here
-              // Ex: add(TotallyAwesomePlugin.class);
-              add(CapacitorVideoPlayer.class);
-            }
-          }
-        );
-    }
-  }
-
-  ```
-
-### Release 3.0.0 
-
-  ```bash
-  npm install --save capacitor-video-player@latest
-  npx cap sync
-  npx cap sync @capacitor-community/electron
-  ```
-
-  - On Web and Electron , 
-  ```
-  npm install --save hls.js
-  ```
-
-  - on iOS, you need to set your app Capabilities Background Modes (Audio and AirPlay) in Xcode
-
-  - On Android, the `AndroidManifest.xml`should include
-  ```
-    <!-- Permissions -->
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Camera, Photos, input file -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
-  ```
-
 
 ### Build
   Then build YOUR_APPLICATION
@@ -221,15 +114,7 @@ No configuration required for this plugin
 
 ## Applications demonstrating the use of the plugin
 
-### Application Starter 2.4.7
-
-- [pwa-video-player-app-starter](https://github.com/jepiqueau/pwa-video-player-app-starter)
-
-- [angular-video-player-app-starter](https://github.com/jepiqueau/angular-videoplayer-app-starter/tree/0.6.4)
-
-- [react-video-player-app-starter](https://github.com/jepiqueau/react-video-player-app-starter/blob/0.0.5)
-
-### Application Starter 3.0.0
+### Application Starter (Not yet updated to 5.0.0)
 
 - [angular-video-player-app-starter](https://github.com/jepiqueau/angular-videoplayer-app-starter)
 
@@ -245,11 +130,11 @@ No configuration required for this plugin
 
 - [see usage 2.4.7](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/Usage_2.4.7.md)
 
-## Usage 3.0.0 
+## Usage > 3.0.0 
 
 - [see capacitor documentation](https://capacitor.ionicframework.com/docs/getting-started/with-ionic)
 
-- [see usage 3.0.0](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/Usage_3.0.0.md)
+- [see usage > 3.0.0](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/Usage_3.0.0.md)
 
 ## Dependencies
 
