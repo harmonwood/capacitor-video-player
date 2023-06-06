@@ -91,11 +91,7 @@ extension CapacitorVideoPlayerPlugin {
             vPFSV.removeObservers()
             vPFSV.videoPlayer.player = nil
             if self.displayMode == "landscape" {
-                vPFSV.videoPlayer = LandscapeAVPlayerController()
-            } else if (self.displayMode == "portrait") {
                 vPFSV.videoPlayer = PortraitAVPlayerController()
-            } else {
-                vPFSV.videoPlayer = AllOrientationAVPlayerController()
             }
             self.videoPlayerFullScreenView = nil
         }
