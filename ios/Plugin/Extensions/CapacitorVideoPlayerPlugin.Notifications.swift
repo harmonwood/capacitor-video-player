@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MediaPlayer
 
 // MARK: - Handle Notifications
 
@@ -90,7 +91,11 @@ extension CapacitorVideoPlayerPlugin {
             vPFSV.removeObservers()
             vPFSV.videoPlayer.player = nil
             if self.displayMode == "landscape" {
+                vPFSV.videoPlayer = LandscapeAVPlayerController()
+            } else if (self.displayMode == "portrait") {
                 vPFSV.videoPlayer = PortraitAVPlayerController()
+            } else {
+                vPFSV.videoPlayer = AllOrientationAVPlayerController()
             }
             self.videoPlayerFullScreenView = nil
         }
@@ -99,6 +104,7 @@ extension CapacitorVideoPlayerPlugin {
                 do {
                     // DeActivate the audio session.
                     try self.audioSession?.setActive(false)
+                    MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
                     self.audioSession = nil
                 } catch {
                     let error: String = "playerFullscreenExit: Failed to "

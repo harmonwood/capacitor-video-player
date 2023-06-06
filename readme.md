@@ -76,11 +76,11 @@ No configuration required for this plugin
 | initPlayer (url application/files) | ✅      | ✅  | ❌       | ❌  |
 | initPlayer (subtitles)             | ✅      | ✅  | ❌       | ❌  |
 | initPlayer (headers)               | ✅      | ✅  | ❌       | ❌  |
-| initPlayer (title)                 | ✅      | ❌  | ❌       | ❌  |
-| initPlayer (smallTitle)            | ✅      | ❌  | ❌       | ❌  |
+| initPlayer (title)                 | ✅      | ✅  | ❌       | ❌  |
+| initPlayer (smallTitle)            | ✅      | ✅  | ❌       | ❌  |
 | initPlayer (accentColor)           | ✅      | ❌  | ❌       | ❌  |
 | initPlayer (chromecast)            | ✅      | ❌  | ❌       | ❌  |
-| initPlayer (artwork)               | ✅      | ❌  | ❌       | ❌  |
+| initPlayer (artwork)               | ✅      | ✅  | ❌       | ❌  |
 | isPlaying                          | ✅      | ✅  | ✅       | ✅  |
 | play                               | ✅      | ✅  | ✅       | ✅  |
 | pause                              | ✅      | ✅  | ✅       | ✅  |

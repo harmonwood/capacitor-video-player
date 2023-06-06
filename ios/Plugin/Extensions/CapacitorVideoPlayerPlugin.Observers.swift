@@ -171,7 +171,8 @@ extension CapacitorVideoPlayerPlugin {
             showControls: showControls,
             displayMode: displayMode,
             subTitleUrl: nil, subTitleLanguage: nil,
-            subTitleOptions: nil, headers: nil)
+            subTitleOptions: nil, headers: nil,
+            title: nil, smallTitle: nil, artwork: nil)
         return
     }
     // swiftlint:enable function_body_length

@@ -23,8 +23,11 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
     var pipEnabled: Bool = true
     var backModeEnabled: Bool = true
     var showControls: Bool = true
-    var displayMode: String = "portrait"
+    var displayMode: String = "all"
     var headers: [String: String]?
+    var title: String?
+    var smallTitle: String?
+    var artwork: String?
     var fsPlayerId: String = "fullscreen"
     var videoRate: Float = 1.0
     var playObserver: Any?
@@ -116,11 +119,22 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
         if let shoControls = call.options["showControls"] as? Bool {
             shControls = shoControls
         }
-        var disMode: String = "portrait"
+        var disMode: String = "all"
         if let dispMode = call.options["displayMode"] as? String {
             disMode = dispMode
         }
-
+        var title: String?
+        if let stitle = call.options["title"] as? String {
+            title = stitle
+        }
+        var smallTitle: String?
+        if let ssmallTitle = call.options["smallTitle"] as? String {
+            smallTitle = ssmallTitle
+        }
+        var artwork: String?
+        if let sartwork = call.options["artwork"] as? String {
+            artwork = sartwork
+        }
         self.fsPlayerId = playerId
         self.mode = mode
         self.videoRate = mRate
@@ -132,6 +146,9 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
         self.backModeEnabled = bkModeEnabled
         self.showControls = shControls
         self.displayMode = disMode
+        self.title = title
+        self.smallTitle = smallTitle
+        self.artwork = artwork
         if mode == "fullscreen" {
             guard let videoPath = call.options["url"] as? String else {
                 let error: String = "Must provide a video url"
@@ -160,7 +177,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                             pipEnabled: self?.pipEnabled ?? true,
                             backModeEnabled: self?.backModeEnabled ?? true,
                             showControls: self?.showControls ?? true,
-                            displayMode: self?.displayMode ?? "portrait") {
+                            displayMode: self?.displayMode ?? "all") {
                         self?.bridge?.viewController?.present(
                             videoPickerViewController,
                             animated: true, completion: {return})
@@ -212,7 +229,10 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                     subTitleUrl: subTitle,
                     subTitleLanguage: subTitleLanguage,
                     subTitleOptions: subTitleOptions,
-                    headers: headers)
+                    headers: headers,
+                    title: title,
+                    smallTitle: smallTitle,
+                    artwork: artwork)
 
             }
         } else {
