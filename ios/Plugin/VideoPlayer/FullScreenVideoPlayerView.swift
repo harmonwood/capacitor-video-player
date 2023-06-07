@@ -571,7 +571,7 @@ open class FullScreenVideoPlayerView: UIView {
         UIApplication.shared.beginReceivingRemoteControlEvents()
         periodicTimeObserver = self.player?.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main) { [weak self] time in
             guard let self = self else { return }
-            updateNowPlayingInfo()
+            self.updateNowPlayingInfo()
         }
     }
     

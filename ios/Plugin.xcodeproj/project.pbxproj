@@ -19,6 +19,7 @@
 		2C4C403C2660E3D3007AAD20 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4C403B2660E3D3007AAD20 /* View.swift */; };
 		2C4C403F26613FD3007AAD20 /* VideoHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4C403E26613FD3007AAD20 /* VideoHelper.swift */; };
 		2C4C40412661404E007AAD20 /* VideoPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4C40402661404E007AAD20 /* VideoPickerViewController.swift */; };
+		2CA6CB502A30F3FB00463982 /* AllOrientationAVPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CA6CB4F2A30F3FB00463982 /* AllOrientationAVPlayerController.swift */; };
 		2CBED47F2A1CE4CB006E2A2B /* PortraitAVPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBED47D2A1CE4CB006E2A2B /* PortraitAVPlayerController.swift */; };
 		2CBED4802A1CE4CB006E2A2B /* LandscapeAVPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBED47E2A1CE4CB006E2A2B /* LandscapeAVPlayerController.swift */; };
 		2CD0135E26637CE300F8E57E /* CapacitorVideoPlayerPlugin.File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD0135D26637CE300F8E57E /* CapacitorVideoPlayerPlugin.File.swift */; };
@@ -55,6 +56,7 @@
 		2C4C403B2660E3D3007AAD20 /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		2C4C403E26613FD3007AAD20 /* VideoHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoHelper.swift; sourceTree = "<group>"; };
 		2C4C40402661404E007AAD20 /* VideoPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPickerViewController.swift; sourceTree = "<group>"; };
+		2CA6CB4F2A30F3FB00463982 /* AllOrientationAVPlayerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AllOrientationAVPlayerController.swift; sourceTree = "<group>"; };
 		2CBED47D2A1CE4CB006E2A2B /* PortraitAVPlayerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PortraitAVPlayerController.swift; sourceTree = "<group>"; };
 		2CBED47E2A1CE4CB006E2A2B /* LandscapeAVPlayerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandscapeAVPlayerController.swift; sourceTree = "<group>"; };
 		2CD0135D26637CE300F8E57E /* CapacitorVideoPlayerPlugin.File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapacitorVideoPlayerPlugin.File.swift; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 		2C4C402D2660E223007AAD20 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				2CA6CB4F2A30F3FB00463982 /* AllOrientationAVPlayerController.swift */,
 				2CBED47E2A1CE4CB006E2A2B /* LandscapeAVPlayerController.swift */,
 				2CBED47D2A1CE4CB006E2A2B /* PortraitAVPlayerController.swift */,
 				2C4C40352660E320007AAD20 /* AVURLAsset.swift */,
@@ -400,6 +403,7 @@
 				2C4C403C2660E3D3007AAD20 /* View.swift in Sources */,
 				2C4C40342660E2B9007AAD20 /* VideoModel.swift in Sources */,
 				50E1A94820377CB70090CE1A /* CapacitorVideoPlayerPlugin.swift in Sources */,
+				2CA6CB502A30F3FB00463982 /* AllOrientationAVPlayerController.swift in Sources */,
 				2C1A95AA2763E2B000652D3E /* CapacitorVideoPlayerPlugin.AVPlayerViewController.swift in Sources */,
 				2CD0135E26637CE300F8E57E /* CapacitorVideoPlayerPlugin.File.swift in Sources */,
 				2F98D68224C9AAE500613A4C /* CapacitorVideoPlayer.swift in Sources */,

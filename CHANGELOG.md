@@ -1,3 +1,15 @@
+## 5.0.1 (2023-06-07)
+
+### Add Features (PR#129 from PhantomPainX)
+
+ - Add display information in NowPlayingInfo center (iOS) with title, smallTitle and artwork (capVideoPlayerOptions)
+
+### Bug Fixes (PR#129 from PhantomPainX)
+
+ - displayMode default "portrait" to "all" (unlocked orientation) (related: Exit listener not working correctly on Android #127)
+ - Audio of the videos doesn't mix with other audios anymore (iOS)
+
+
 ## 5.0.0 (2023-05-25)
 
 ### Chores
