@@ -17,7 +17,7 @@ open class VideoPickerViewController: UIViewController {
     private var _pipEnabled: Bool = true
     private var _backModeEnabled: Bool = true
     private var _showControls: Bool = true
-    private var _displayMode: String = "portrait"
+    private var _displayMode: String = "all"
 
     // MARK: - Set-up rate
 

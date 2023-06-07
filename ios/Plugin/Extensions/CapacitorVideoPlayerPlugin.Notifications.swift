@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MediaPlayer
 
 // MARK: - Handle Notifications
 
@@ -99,6 +100,7 @@ extension CapacitorVideoPlayerPlugin {
                 do {
                     // DeActivate the audio session.
                     try self.audioSession?.setActive(false)
+                    MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
                     self.audioSession = nil
                 } catch {
                     let error: String = "playerFullscreenExit: Failed to "

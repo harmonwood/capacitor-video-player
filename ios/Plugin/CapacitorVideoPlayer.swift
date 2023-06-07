@@ -22,7 +22,10 @@ enum CapacitorVideoPlayerError: Error {
                                              subTitleUrl: URL?,
                                              language: String?,
                                              headers: [String: String]?,
-                                             options: [String: Any]?
+                                             options: [String: Any]?,
+                                             title: String?,
+                                             smallTitle: String?,
+                                             artwork: String?
 
     ) -> FullScreenVideoPlayerView {
 
@@ -32,7 +35,8 @@ enum CapacitorVideoPlayerError: Error {
             pipEnabled: pipEnabled, showControls: showControls,
             displayMode: displayMode,
             stUrl: subTitleUrl, stLanguage: language,
-            stHeaders: headers, stOptions: options)
+            stHeaders: headers, stOptions: options,
+            title: title, smallTitle: smallTitle, artwork: artwork)
         return videoPlayerFullScreenView
     }
 

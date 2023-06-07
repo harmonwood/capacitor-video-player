@@ -111,7 +111,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     public Boolean pipEnabled;
     public Boolean bkModeEnabled;
     public Boolean showControls;
-    public String displayMode = "portrait";
+    public String displayMode = "all";
     public String title;
     public String smallTitle;
     public String accentColor;
@@ -211,6 +211,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
         Activity mAct = getActivity();
         if (displayMode.equals("landscape")) {
             mAct.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else if (displayMode.equals("portrait")) {
+          mAct.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
         if (!showControls) {
             styledPlayerView.setUseController(false);

@@ -8,6 +8,7 @@
 
 import UIKit
 import AVKit
+import MediaPlayer
 
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
@@ -29,7 +30,10 @@ open class FullScreenVideoPlayerView: UIView {
     private var _stOptions: [String: Any]?
     private var _videoRate: Float
     private var _showControls: Bool = true
-    private var _displayMode: String = "portrait"
+    private var _displayMode: String = "all"
+    private var _title: String?
+    private var _smallTitle: String?
+    private var _artwork: String?
 
     var player: AVPlayer?
     var videoPlayer: AVPlayerViewController
@@ -41,11 +45,13 @@ open class FullScreenVideoPlayerView: UIView {
     var playerRateObserver: NSKeyValueObservation?
     var videoPlayerFrameObserver: NSKeyValueObservation?
     var videoPlayerMoveObserver: NSKeyValueObservation?
+    var periodicTimeObserver: Any?
 
     init(url: URL, rate: Float, playerId: String, exitOnEnd: Bool,
          loopOnEnd: Bool, pipEnabled: Bool, showControls: Bool,
          displayMode: String, stUrl: URL?, stLanguage: String?,
-         stHeaders: [String: String]?, stOptions: [String: Any]?) {
+         stHeaders: [String: String]?, stOptions: [String: Any]?,
+         title: String?, smallTitle: String?, artwork: String?) {
         //self._videoPath = videoPath
         self._url = url
         self._stUrl = stUrl
@@ -58,11 +64,16 @@ open class FullScreenVideoPlayerView: UIView {
         self._videoRate = rate
         self._stHeaders = stHeaders
         self._displayMode = displayMode
-        self.videoPlayer = PortraitAVPlayerController()
+        self.videoPlayer = AllOrientationAVPlayerController()
         if displayMode == "landscape" {
             self.videoPlayer = LandscapeAVPlayerController()
+        } else if (displayMode == "portrait") {
+            self.videoPlayer = PortraitAVPlayerController()
         }
         self._showControls = showControls
+        self._title = title
+        self._smallTitle = smallTitle
+        self._artwork = artwork
 
         if let headers = self._stHeaders {
             self.videoAsset = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": headers])
@@ -157,6 +168,7 @@ open class FullScreenVideoPlayerView: UIView {
             self.videoPlayer.showsPlaybackControls = false
         }
         self.videoPlayer.player = self.player
+        self.videoPlayer.updatesNowPlayingInfoCenter = false
         if #available(iOS 13.0, *) {
             self.videoPlayer.isModalInPresentation = true
         } else {
@@ -233,6 +245,10 @@ open class FullScreenVideoPlayerView: UIView {
                                                           "videoRate": self._videoRate]
                                 NotificationCenter.default.post(name: .playerItemReady, object: nil, userInfo: vId)
                                 self._firstReadyToPlay = false
+                                
+                                self.setNowPlayingInfo()
+                                self.setRemoteCommandCenter()
+                                self.setNowPlayingImage()
                             }
                         case .failed:
                             print("failing to load")
@@ -285,6 +301,7 @@ open class FullScreenVideoPlayerView: UIView {
                     self._currentTime = 0
                     if /*!isInPIPMode && */self._exitOnEnd {
                         isVideoEnded = true
+                        self.terminateNowPlayingInfo()
                         NotificationCenter.default.post(name: .playerItemEnd, object: nil, userInfo: vId)
                     } else {
                         if self._loopOnEnd {
@@ -297,6 +314,8 @@ open class FullScreenVideoPlayerView: UIView {
                         if !self.videoPlayer.isBeingDismissed {
                             print("AVPlayer Rate for player \(self._videoId): Paused")
                             NotificationCenter.default.post(name: .playerItemPause, object: nil, userInfo: vId)
+                        } else {
+                            self.terminateNowPlayingInfo()
                         }
                     } else {
                         isRateZero = true
@@ -472,6 +491,111 @@ open class FullScreenVideoPlayerView: UIView {
 
         task.resume()
         return vttURL
+    }
+    
+    func setRemoteCommandCenter() {
+        let rcc = MPRemoteCommandCenter.shared()
+        
+        rcc.playCommand.isEnabled = true
+        rcc.playCommand.addTarget {event in
+            self.play()
+            return .success
+        }
+        rcc.pauseCommand.isEnabled = true
+        rcc.pauseCommand.addTarget {event in
+            self.pause()
+            return .success
+        }
+        rcc.changePlaybackPositionCommand.isEnabled = true
+        rcc.changePlaybackPositionCommand.addTarget {event in
+            let seconds = (event as? MPChangePlaybackPositionCommandEvent)?.positionTime ?? 0
+            let time = CMTime(seconds: seconds, preferredTimescale: 1)
+            self.player?.seek(to: time)
+            return .success
+        }
+        rcc.skipForwardCommand.isEnabled = true
+        rcc.skipForwardCommand.addTarget {event in
+            let currentTime = CMTimeGetSeconds((self.player?.currentTime())!) + 10
+            self.player?.seek(to: CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1))
+            self.updateNowPlayingInfo()
+            return .success
+        }
+        rcc.skipBackwardCommand.isEnabled = true
+        rcc.skipBackwardCommand.addTarget {event in
+            let currentTime = CMTimeGetSeconds((self.player?.currentTime())!) - 10
+            self.player?.seek(to: CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1))
+            self.updateNowPlayingInfo()
+            return .success
+        }
+        
+        // Next and previous track buttons are disabled because we don't have more than 1 video
+        rcc.nextTrackCommand.isEnabled = false
+        rcc.previousTrackCommand.isEnabled = false
+    }
+    
+    func setNowPlayingImage() {
+        if let artwork = self._artwork {
+            let session = URLSession(configuration: .default)
+            let image = URL(string: artwork)!
+            let task = session.dataTask(with: image) { (data, response, error) in
+                guard let imageData = data, error == nil else {
+                    print("Error while downloading the image: \(error?.localizedDescription ?? "")")
+                    return
+                }
+                
+                let image = UIImage(data: imageData)
+                DispatchQueue.main.async {
+                    var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [String: Any]()
+                    nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image?.size ?? CGSize.zero, requestHandler: { _ in
+                        return image ?? UIImage()
+                    })
+                    MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+                }
+            }
+            task.resume()
+        }
+    }
+    
+    func setNowPlayingInfo() {
+        var nowPlayingInfo = [String: Any]()
+        
+        if let title = self._title {
+            nowPlayingInfo[MPMediaItemPropertyTitle] = title
+        }
+        if let smalltitle = self._smallTitle {
+            nowPlayingInfo[MPMediaItemPropertyArtist] = smalltitle
+        }
+        
+        nowPlayingInfo[MPNowPlayingInfoPropertyMediaType] = NSNumber(value: MPNowPlayingInfoMediaType.video.rawValue)
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+        UIApplication.shared.beginReceivingRemoteControlEvents()
+        periodicTimeObserver = self.player?.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main) { [weak self] time in
+            guard let self = self else { return }
+            updateNowPlayingInfo()
+        }
+    }
+    
+    func updateNowPlayingInfo() {
+        var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [String: Any]()
+        let elapsedTime = CMTimeGetSeconds((self.player?.currentItem!.currentTime())!)
+        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = Float(elapsedTime)
+        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = self.player?.currentItem?.duration.seconds ?? CMTime.zero
+        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = self.player?.rate
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+    }
+    
+    func terminateNowPlayingInfo() {
+        if let token = periodicTimeObserver {
+            self.player?.removeTimeObserver(token)
+            periodicTimeObserver = nil
+        }
+        let rcc = MPRemoteCommandCenter.shared()
+        rcc.changePlaybackPositionCommand.isEnabled = false
+        rcc.playCommand.isEnabled = false
+        rcc.pauseCommand.isEnabled = false
+        rcc.skipForwardCommand.isEnabled = false
+        rcc.skipBackwardCommand.isEnabled = false
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
     }
 
 }
