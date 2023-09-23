@@ -60,7 +60,7 @@ extension CapacitorVideoPlayerPlugin {
                             do {
                                 try self?.audioSession?
                                     .setCategory(.playback,
-                                                 mode: .default,
+                                                 mode: .moviePlayback,
                                                  options: [])
                                 try self?.audioSession?.setActive(true)
                                 call.resolve([
