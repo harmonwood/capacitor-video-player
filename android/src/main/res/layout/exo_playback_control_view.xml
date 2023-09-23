@@ -157,13 +157,23 @@
       android:layout_gravity="center_vertical|start"
       android:layoutDirection="ltr">
 
-      <TextView android:id="@id/exo_position"
+      <TextView android:id="@+id/exo_position"
         style="@style/ExoStyledControls.TimeText.Position"/>
 
       <TextView
+          android:id="@+id/exo_label_separation"
         style="@style/ExoStyledControls.TimeText.Separator"/>
 
-      <TextView android:id="@id/exo_duration"
+        <TextView
+            android:id="@+id/live_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LIVE"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:visibility="gone"/>
+
+      <TextView android:id="@+id/exo_duration"
         style="@style/ExoStyledControls.TimeText.Duration"/>
 
     </LinearLayout>
