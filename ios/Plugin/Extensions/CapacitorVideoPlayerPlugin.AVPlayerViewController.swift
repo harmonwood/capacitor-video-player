@@ -13,6 +13,7 @@ var isInBackgroundMode: Bool = false
 var isPIPModeAvailable: Bool = false
 var isVideoEnded: Bool = false
 var isRateZero: Bool = false
+var isPlayerViewRestored: Bool = false
 
 extension CapacitorVideoPlayerPlugin: AVPlayerViewControllerDelegate {
 
@@ -31,14 +32,17 @@ extension CapacitorVideoPlayerPlugin: AVPlayerViewControllerDelegate {
         isRateZero = false
     }
     public func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
-        if isPIPModeAvailable && (isRateZero || isVideoEnded) {
+        // if !isPlayerViewRestored then the user closed the PIP
+        if isPIPModeAvailable && ((isRateZero || isVideoEnded) || !isPlayerViewRestored) {
             isInPIPMode = false
             NotificationCenter.default.post(name: .playerFullscreenDismiss, object: nil)
         }
+        isPlayerViewRestored = false
     }
     public func playerViewController(_ playerViewController: AVPlayerViewController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
         if isPIPModeAvailable {
             if isInPIPMode && !isVideoEnded {
+                isPlayerViewRestored = true
                 self.bridge?.viewController?.present(playerViewController, animated: true, completion: nil)
             }
             isInPIPMode = false
