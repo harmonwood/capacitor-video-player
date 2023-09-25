@@ -89,27 +89,51 @@ extension CapacitorVideoPlayerPlugin {
     func playerFullscreenExit() {
         if let vPFSV = self.videoPlayerFullScreenView {
             vPFSV.removeObservers()
+            self.terminateNowPlayingInfo()
             vPFSV.videoPlayer.player = nil
+            vPFSV.player = nil
             if self.displayMode == "landscape" {
                 vPFSV.videoPlayer = PortraitAVPlayerController()
+            } else if self.displayMode == "portrait" {
+                vPFSV.videoPlayer = LandscapeAVPlayerController()
+            } else {
+                vPFSV.videoPlayer = AllOrientationAVPlayerController()
             }
             self.videoPlayerFullScreenView = nil
         }
-        self.bridge?.viewController?.dismiss(animated: true, completion: {
-            if self.backModeEnabled {
-                do {
-                    // DeActivate the audio session.
-                    try self.audioSession?.setActive(false)
-                    MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
-                    self.audioSession = nil
-                } catch {
-                    let error: String = "playerFullscreenExit: Failed to "
-                        + "deactivate audio session category"
-                    print(error)
+        if let viewController = self.bridge?.viewController {
+            viewController.dismiss(animated: true, completion: {
+                if self.backModeEnabled {
+                    if let audioSession = self.audioSession {
+                        do {
+                            try audioSession.setActive(false)
+                            self.audioSession = nil
+                        } catch {
+                            let error: String = "playerFullscreenExit: Failed to deactivate audio session category"
+                            print(error)
+                        }
+                    }
                 }
+            })
+        }
+        
+    }
+    
+    private func terminateNowPlayingInfo() {
+        if let vPFSV = self.videoPlayerFullScreenView {
+            if let token = vPFSV.periodicTimeObserver {
+                vPFSV.player?.removeTimeObserver(token)
+                vPFSV.periodicTimeObserver = nil
             }
-        })
-        return
+            let rcc = MPRemoteCommandCenter.shared()
+            rcc.changePlaybackPositionCommand.isEnabled = false
+            rcc.playCommand.isEnabled = false
+            rcc.pauseCommand.isEnabled = false
+            rcc.skipForwardCommand.isEnabled = false
+            rcc.skipBackwardCommand.isEnabled = false
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+        }
     }
 
 }

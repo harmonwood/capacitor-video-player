@@ -162,7 +162,7 @@ open class FullScreenVideoPlayerView: UIView {
         } else {
             self.playerItem = AVPlayerItem(asset: self.videoAsset)
         }
-        self.player = AVPlayer(playerItem: playerItem)
+        self.player = AVPlayer(playerItem: self.playerItem)
         self.player?.currentItem?.audioTimePitchAlgorithm = .timeDomain
         if !self._showControls {
             self.videoPlayer.showsPlaybackControls = false
@@ -301,7 +301,6 @@ open class FullScreenVideoPlayerView: UIView {
                     self._currentTime = 0
                     if /*!isInPIPMode && */self._exitOnEnd {
                         isVideoEnded = true
-                        self.terminateNowPlayingInfo()
                         NotificationCenter.default.post(name: .playerItemEnd, object: nil, userInfo: vId)
                     } else {
                         if self._loopOnEnd {
@@ -314,8 +313,6 @@ open class FullScreenVideoPlayerView: UIView {
                         if !self.videoPlayer.isBeingDismissed {
                             print("AVPlayer Rate for player \(self._videoId): Paused")
                             NotificationCenter.default.post(name: .playerItemPause, object: nil, userInfo: vId)
-                        } else {
-                            self.terminateNowPlayingInfo()
                         }
                     } else {
                         isRateZero = true
@@ -515,17 +512,23 @@ open class FullScreenVideoPlayerView: UIView {
         }
         rcc.skipForwardCommand.isEnabled = true
         rcc.skipForwardCommand.addTarget {event in
-            let currentTime = CMTimeGetSeconds((self.player?.currentTime())!) + 10
-            self.player?.seek(to: CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1))
-            self.updateNowPlayingInfo()
-            return .success
+            if let player = self.player, let currentItem = player.currentItem {
+                let currentTime = CMTimeGetSeconds(currentItem.currentTime()) + 10
+                self.player?.seek(to: CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1))
+                return .success
+            } else {
+                return .commandFailed
+            }
         }
         rcc.skipBackwardCommand.isEnabled = true
         rcc.skipBackwardCommand.addTarget {event in
-            let currentTime = CMTimeGetSeconds((self.player?.currentTime())!) - 10
-            self.player?.seek(to: CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1))
-            self.updateNowPlayingInfo()
-            return .success
+            if let player = self.player, let currentItem = player.currentItem {
+                let currentTime = CMTimeGetSeconds(currentItem.currentTime()) - 10
+                self.player?.seek(to: CMTimeMakeWithSeconds(currentTime, preferredTimescale: 1))
+                return .success
+            } else {
+                return .commandFailed
+            }
         }
         
         // Next and previous track buttons are disabled because we don't have more than 1 video
@@ -571,33 +574,26 @@ open class FullScreenVideoPlayerView: UIView {
         UIApplication.shared.beginReceivingRemoteControlEvents()
         periodicTimeObserver = self.player?.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 1), queue: DispatchQueue.main) { [weak self] time in
             guard let self = self else { return }
-            self.updateNowPlayingInfo()
+            
+            var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [String: Any]()
+            if let currentItem = self.player?.currentItem,
+               let currentTime = self.player?.currentTime(),
+               currentItem.status == .readyToPlay {
+                
+                let elapsedTime = CMTimeGetSeconds(currentTime)
+                if currentItem.isPlaybackLikelyToKeepUp {
+                    nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = self.player?.rate
+                } else {
+                    nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = 0
+                }
+                
+                nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = Float(elapsedTime)
+                nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = currentItem.duration.seconds
+                
+                MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+            }
         }
     }
-    
-    func updateNowPlayingInfo() {
-        var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [String: Any]()
-        let elapsedTime = CMTimeGetSeconds((self.player?.currentItem!.currentTime())!)
-        nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = Float(elapsedTime)
-        nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = self.player?.currentItem?.duration.seconds ?? CMTime.zero
-        nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = self.player?.rate
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
-    }
-    
-    func terminateNowPlayingInfo() {
-        if let token = periodicTimeObserver {
-            self.player?.removeTimeObserver(token)
-            periodicTimeObserver = nil
-        }
-        let rcc = MPRemoteCommandCenter.shared()
-        rcc.changePlaybackPositionCommand.isEnabled = false
-        rcc.playCommand.isEnabled = false
-        rcc.pauseCommand.isEnabled = false
-        rcc.skipForwardCommand.isEnabled = false
-        rcc.skipBackwardCommand.isEnabled = false
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = [:]
-    }
-
 }
 
 // swiftlint:enable type_body_length
