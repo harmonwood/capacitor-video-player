@@ -1,3 +1,9 @@
+## 5.0.2 (2023-09-25)
+
+### Bug Fixes (PR#133 from PhantomPainX)
+
+ - Android ExoPlayer 2.19.0 update, Cast and NowPlayingInfo fixes #133
+
 ## 5.0.1 (2023-06-07)
 
 ### Add Features (PR#129 from PhantomPainX)
