@@ -6,6 +6,9 @@ export interface IPlayerSize {
 }
 export declare class CapacitorVideoPlayerWeb extends WebPlugin implements CapacitorVideoPlayerPlugin {
     private _players;
+    private videoContainer;
+    private mode;
+    constructor();
     echo(options: {
         value: string;
     }): Promise<capVideoPlayerResult>;
@@ -115,4 +118,6 @@ export declare class CapacitorVideoPlayerWeb extends WebPlugin implements Capaci
     private handlePlayerEnded;
     private handlePlayerExit;
     private handlePlayerReady;
+    private addListeners;
+    private removeListeners;
 }

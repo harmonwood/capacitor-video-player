@@ -2,11 +2,11 @@ import { WebPlugin } from '@capacitor/core';
 import { VideoPlayer } from './web-utils/videoplayer';
 export class CapacitorVideoPlayerWeb extends WebPlugin {
     constructor() {
-        super(...arguments);
+        super();
         this._players = [];
+        this.addListeners();
     }
     async echo(options) {
-        console.log('ECHO', options);
         return Promise.resolve({ result: true, method: 'echo', value: options });
     }
     /**
@@ -22,15 +22,15 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 message: 'Must provide a capVideoPlayerOptions object',
             });
         }
-        const mode = options.mode ? options.mode : '';
-        if (mode == null || mode.length === 0) {
+        this.mode = options.mode ? options.mode : '';
+        if (this.mode == null || this.mode.length === 0) {
             return Promise.resolve({
                 result: false,
                 method: 'initPlayer',
                 message: 'Must provide a Mode (fullscreen/embedded)',
             });
         }
-        if (mode === 'fullscreen' || mode === 'embedded') {
+        if (this.mode === 'fullscreen' || this.mode === 'embedded') {
             const url = options.url ? options.url : '';
             if (url == null || url.length === 0) {
                 return Promise.resolve({
@@ -76,10 +76,10 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 });
             }
             let playerSize = null;
-            if (mode === 'embedded') {
+            if (this.mode === 'embedded') {
                 playerSize = this.checkSize(options);
             }
-            const result = await this._initializeVideoPlayer(url, playerId, mode, rate, exitOnEnd, loopOnEnd, componentTag, playerSize);
+            const result = await this._initializeVideoPlayer(url, playerId, this.mode, rate, exitOnEnd, loopOnEnd, componentTag, playerSize);
             return Promise.resolve({ result: result });
         }
         else {
@@ -233,9 +233,7 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             playerId = 'fullscreen';
         }
         const rateList = [0.25, 0.5, 0.75, 1.0, 2.0, 4.0];
-        console.log(`>>> in plugin options.rate: ${options.rate}`);
         const rate = options.rate && rateList.includes(options.rate) ? options.rate : 1.0;
-        console.log(`>>> in plugin rate: ${rate}`);
         if (this._players[playerId]) {
             this._players[playerId].videoEl.playbackRate = rate;
             return Promise.resolve({
@@ -567,8 +565,9 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
             : null;
         if (videoURL === null)
             return Promise.resolve(false);
-        const videoContainer = await this._getContainerElement(playerId, componentTag);
-        if (videoContainer === null)
+        this.videoContainer =
+            await this._getContainerElement(playerId, componentTag);
+        if (this.videoContainer === null)
             return Promise.resolve({
                 method: 'initPlayer',
                 result: false,
@@ -580,34 +579,12 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
                 result: false,
                 message: 'playerSize must be defined in embedded mode',
             });
-        // add listeners
-        videoContainer.addEventListener('videoPlayerPlay', (ev) => {
-            this.handlePlayerPlay(ev.detail);
-        });
-        videoContainer.addEventListener('videoPlayerPause', (ev) => {
-            this.handlePlayerPause(ev.detail);
-        });
-        videoContainer.addEventListener('videoPlayerEnded', (ev) => {
-            if (mode === 'fullscreen') {
-                videoContainer.remove();
-            }
-            this.handlePlayerEnded(ev.detail);
-        });
-        videoContainer.addEventListener('videoPlayerReady', (ev) => {
-            this.handlePlayerReady(ev.detail);
-        });
-        videoContainer.addEventListener('videoPlayerExit', () => {
-            if (mode === 'fullscreen') {
-                videoContainer.remove();
-            }
-            this.handlePlayerExit();
-        });
         if (mode === 'embedded') {
-            this._players[playerId] = new VideoPlayer('embedded', videoURL, playerId, rate, exitOnEnd, loopOnEnd, videoContainer, 2, playerSize.width, playerSize.height);
+            this._players[playerId] = new VideoPlayer('embedded', videoURL, playerId, rate, exitOnEnd, loopOnEnd, this.videoContainer, 2, playerSize.width, playerSize.height);
             await this._players[playerId].initialize();
         }
         else if (mode === 'fullscreen') {
-            this._players['fullscreen'] = new VideoPlayer('fullscreen', videoURL, 'fullscreen', rate, exitOnEnd, loopOnEnd, videoContainer, 99995);
+            this._players['fullscreen'] = new VideoPlayer('fullscreen', videoURL, 'fullscreen', rate, exitOnEnd, loopOnEnd, this.videoContainer, 99995);
             await this._players['fullscreen'].initialize();
         }
         else {
@@ -649,14 +626,58 @@ export class CapacitorVideoPlayerWeb extends WebPlugin {
         this.notifyListeners('jeepCapVideoPlayerPause', data);
     }
     handlePlayerEnded(data) {
+        var _a;
+        if (this.mode === 'fullscreen') {
+            (_a = this.videoContainer) === null || _a === void 0 ? void 0 : _a.remove();
+        }
+        this.removeListeners();
         this.notifyListeners('jeepCapVideoPlayerEnded', data);
     }
     handlePlayerExit() {
+        var _a;
+        if (this.mode === 'fullscreen') {
+            (_a = this.videoContainer) === null || _a === void 0 ? void 0 : _a.remove();
+        }
         const retData = { dismiss: true };
+        this.removeListeners();
         this.notifyListeners('jeepCapVideoPlayerExit', retData);
     }
     handlePlayerReady(data) {
         this.notifyListeners('jeepCapVideoPlayerReady', data);
+    }
+    addListeners() {
+        document.addEventListener('videoPlayerPlay', (ev) => {
+            this.handlePlayerPlay(ev.detail);
+        }, false);
+        document.addEventListener('videoPlayerPause', (ev) => {
+            this.handlePlayerPause(ev.detail);
+        }, false);
+        document.addEventListener('videoPlayerEnded', (ev) => {
+            this.handlePlayerEnded(ev.detail);
+        }, false);
+        document.addEventListener('videoPlayerReady', (ev) => {
+            this.handlePlayerReady(ev.detail);
+        }, false);
+        document.addEventListener('videoPlayerExit', () => {
+            this.handlePlayerExit();
+        }, false);
+    }
+    removeListeners() {
+        document.removeEventListener('videoPlayerPlay', (ev) => {
+            this.handlePlayerPlay(ev.detail);
+        }, false);
+        document.removeEventListener('videoPlayerPause', (ev) => {
+            this.handlePlayerPause(ev.detail);
+        }, false);
+        document.removeEventListener('videoPlayerEnded', (ev) => {
+            this.handlePlayerEnded(ev.detail);
+        }, false);
+        document.removeEventListener('videoPlayerReady', (ev) => {
+            this.handlePlayerReady(ev.detail);
+        }, false);
+        document.removeEventListener('videoPlayerExit', () => {
+            this.handlePlayerExit();
+        }, false);
     }
 }
 //# sourceMappingURL=web.js.map

@@ -227,12 +227,10 @@ export class VideoPlayer {
                 }
                 this.videoEl.addEventListener('enterpictureinpicture', (event) => {
                     this.pipWindow = event.pictureInPictureWindow;
-                    console.log(' Enter PiP Mode ', this.pipWindow);
                     this.pipMode = true;
                     this._closeFullscreen();
                 });
                 this.videoEl.addEventListener('leavepictureinpicture', () => {
-                    console.log(' Exit PiP Mode ');
                     this.pipMode = false;
                     if (!this._isEnded) {
                         this._goFullscreen();
@@ -321,7 +319,7 @@ export class VideoPlayer {
                 detail: { fromPlayerId: playerId, currentTime: currentTime },
             });
         }
-        this._container.dispatchEvent(event);
+        document.dispatchEvent(event);
     }
     _closeFullscreen() {
         const mydoc = document;

@@ -22,9 +22,15 @@ export class CapacitorVideoPlayerWeb
   implements CapacitorVideoPlayerPlugin
 {
   private _players: any = [];
+  private videoContainer!: HTMLDivElement | null;
+  private mode!: string;
+
+  constructor() {
+    super();
+    this.addListeners();
+  }
 
   async echo(options: { value: string }): Promise<capVideoPlayerResult> {
-    console.log('ECHO', options);
     return Promise.resolve({ result: true, method: 'echo', value: options });
   }
 
@@ -44,15 +50,15 @@ export class CapacitorVideoPlayerWeb
       });
     }
 
-    const mode: string = options.mode ? options.mode : '';
-    if (mode == null || mode.length === 0) {
+    this.mode = options.mode ? options.mode : '';
+    if (this.mode == null || this.mode.length === 0) {
       return Promise.resolve({
         result: false,
         method: 'initPlayer',
         message: 'Must provide a Mode (fullscreen/embedded)',
       });
     }
-    if (mode === 'fullscreen' || mode === 'embedded') {
+    if (this.mode === 'fullscreen' || this.mode === 'embedded') {
       const url: string = options.url ? options.url : '';
       if (url == null || url.length === 0) {
         return Promise.resolve({
@@ -98,13 +104,13 @@ export class CapacitorVideoPlayerWeb
         });
       }
       let playerSize: IPlayerSize = null as any;
-      if (mode === 'embedded') {
+      if (this.mode === 'embedded') {
         playerSize = this.checkSize(options);
       }
       const result = await this._initializeVideoPlayer(
         url,
         playerId,
-        mode,
+        this.mode,
         rate,
         exitOnEnd,
         loopOnEnd,
@@ -264,10 +270,8 @@ export class CapacitorVideoPlayerWeb
       playerId = 'fullscreen';
     }
     const rateList: number[] = [0.25, 0.5, 0.75, 1.0, 2.0, 4.0];
-    console.log(`>>> in plugin options.rate: ${options.rate}`);
     const rate: number =
       options.rate && rateList.includes(options.rate) ? options.rate : 1.0;
-    console.log(`>>> in plugin rate: ${rate}`);
     if (this._players[playerId]) {
       this._players[playerId].videoEl.playbackRate = rate;
       return Promise.resolve({
@@ -611,9 +615,9 @@ export class CapacitorVideoPlayerWeb
         : url
       : (null as any);
     if (videoURL === null) return Promise.resolve(false);
-    const videoContainer: HTMLDivElement | null =
+    this.videoContainer =
       await this._getContainerElement(playerId, componentTag);
-    if (videoContainer === null)
+    if (this.videoContainer === null)
       return Promise.resolve({
         method: 'initPlayer',
         result: false,
@@ -626,29 +630,6 @@ export class CapacitorVideoPlayerWeb
         message: 'playerSize must be defined in embedded mode',
       });
 
-    // add listeners
-    videoContainer.addEventListener('videoPlayerPlay', (ev: any) => {
-      this.handlePlayerPlay(ev.detail);
-    });
-    videoContainer.addEventListener('videoPlayerPause', (ev: any) => {
-      this.handlePlayerPause(ev.detail);
-    });
-    videoContainer.addEventListener('videoPlayerEnded', (ev: any) => {
-      if (mode === 'fullscreen') {
-        videoContainer.remove();
-      }
-      this.handlePlayerEnded(ev.detail);
-    });
-    videoContainer.addEventListener('videoPlayerReady', (ev: any) => {
-      this.handlePlayerReady(ev.detail);
-    });
-    videoContainer.addEventListener('videoPlayerExit', () => {
-      if (mode === 'fullscreen') {
-        videoContainer.remove();
-      }
-      this.handlePlayerExit();
-    });
-
     if (mode === 'embedded') {
       this._players[playerId] = new VideoPlayer(
         'embedded',
@@ -657,7 +638,7 @@ export class CapacitorVideoPlayerWeb
         rate,
         exitOnEnd,
         loopOnEnd,
-        videoContainer,
+        this.videoContainer,
         2,
         playerSize.width,
         playerSize.height,
@@ -671,7 +652,7 @@ export class CapacitorVideoPlayerWeb
         rate,
         exitOnEnd,
         loopOnEnd,
-        videoContainer,
+        this.videoContainer,
         99995,
       );
       await this._players['fullscreen'].initialize();
@@ -715,13 +696,57 @@ export class CapacitorVideoPlayerWeb
     this.notifyListeners('jeepCapVideoPlayerPause', data);
   }
   private handlePlayerEnded(data: any) {
+    if (this.mode === 'fullscreen') {
+      this.videoContainer?.remove();
+    }
+    this.removeListeners();
     this.notifyListeners('jeepCapVideoPlayerEnded', data);
   }
   private handlePlayerExit() {
+    if (this.mode === 'fullscreen') {
+      this.videoContainer?.remove();
+    }
     const retData: any = { dismiss: true };
+    this.removeListeners();
     this.notifyListeners('jeepCapVideoPlayerExit', retData);
   }
   private handlePlayerReady(data: any) {
     this.notifyListeners('jeepCapVideoPlayerReady', data);
+  }
+
+  private addListeners() {
+    document.addEventListener('videoPlayerPlay', (ev: any) => {
+      this.handlePlayerPlay(ev.detail);
+    },false);
+    document.addEventListener('videoPlayerPause', (ev: any) => {
+      this.handlePlayerPause(ev.detail);
+    },false);
+    document.addEventListener('videoPlayerEnded', (ev: any) => {
+      this.handlePlayerEnded(ev.detail);
+    },false);
+    document.addEventListener('videoPlayerReady', (ev: any) => {
+      this.handlePlayerReady(ev.detail);
+    },false);
+    document.addEventListener('videoPlayerExit', () => {
+      this.handlePlayerExit();
+    },false);
+  }
+
+  private removeListeners() {
+    document.removeEventListener('videoPlayerPlay', (ev: any) => {
+      this.handlePlayerPlay(ev.detail);
+    },false);
+    document.removeEventListener('videoPlayerPause', (ev: any) => {
+      this.handlePlayerPause(ev.detail);
+    },false);
+    document.removeEventListener('videoPlayerEnded', (ev: any) => {
+      this.handlePlayerEnded(ev.detail);
+    },false);
+    document.removeEventListener('videoPlayerReady', (ev: any) => {
+      this.handlePlayerReady(ev.detail);
+    },false);
+    document.removeEventListener('videoPlayerExit', () => {
+      this.handlePlayerExit();
+    },false);
   }
 }

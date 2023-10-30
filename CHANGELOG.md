@@ -1,3 +1,9 @@
+## 5.0.3 (2023-10-30)
+
+### Bug Fixes
+
+ - Web Plugin fix event listeners issue
+
 ## 5.0.2 (2023-09-25)
 
 ### Bug Fixes (PR#133 from PhantomPainX)
