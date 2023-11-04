@@ -15,6 +15,9 @@
   ],
   "author": "Jean Pierre Quéau",
   "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jepiqueau/capacitor-video-player.git"
