@@ -164,7 +164,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             _showControls = call.getBoolean("showControls");
         }
         showControls = _showControls;
-        String _displayMode = "portrait";
+        String _displayMode = "all";
         if (call.getData().has("displayMode")) {
             _displayMode = call.getString("displayMode");
         }

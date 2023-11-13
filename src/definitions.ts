@@ -157,8 +157,8 @@ export interface capVideoPlayerOptions {
    */
   showControls?: boolean;
   /**
-   * Display Mode ["portrait", "landscape"] (iOS, Android)
-   * default: "portrait"
+   * Display Mode ["all", "portrait", "landscape"] (iOS, Android)
+   * default: "all"
    */
   displayMode?: string;
   /**

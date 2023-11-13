@@ -1,3 +1,19 @@
+## 5.0.4-1 (2023-11-13)
+
+### Add Features
+
+ - Add link to JeepQ Capacitor Plugin Tutorials
+
+ - Add link to application ionic7-angular-videoplayer-app 
+
+ - Add link to application vant-nuxt-videoplayer-app
+
+### Bug Fixes
+
+ - play video file from Directory.data on iOS issue#134
+
+ - Back button is locking to portrait orientation issue#136
+
 ## 5.0.3 (2023-11-04)
 
 ### Bug Fixes

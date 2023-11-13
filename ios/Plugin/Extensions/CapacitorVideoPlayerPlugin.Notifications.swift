@@ -92,6 +92,7 @@ extension CapacitorVideoPlayerPlugin {
             self.terminateNowPlayingInfo()
             vPFSV.videoPlayer.player = nil
             vPFSV.player = nil
+            /*
             if self.displayMode == "landscape" {
                 vPFSV.videoPlayer = PortraitAVPlayerController()
             } else if self.displayMode == "portrait" {
@@ -99,6 +100,7 @@ extension CapacitorVideoPlayerPlugin {
             } else {
                 vPFSV.videoPlayer = AllOrientationAVPlayerController()
             }
+            */
             self.videoPlayerFullScreenView = nil
         }
         if let viewController = self.bridge?.viewController {
@@ -116,9 +118,8 @@ extension CapacitorVideoPlayerPlugin {
                 }
             })
         }
-        
     }
-    
+
     private func terminateNowPlayingInfo() {
         if let vPFSV = self.videoPlayerFullScreenView {
             if let token = vPFSV.periodicTimeObserver {

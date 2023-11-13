@@ -112,7 +112,20 @@ No configuration required for this plugin
 
 [API_Documentation](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/API.md)
 
+## Tutorials Blog
+
+ - [JeepQ Capacitor Plugin Tutorials](https://jepiqueau.github.io/)
+
+
+
 ## Applications demonstrating the use of the plugin
+
+### Capacitor 5 Apps
+
+ - [ionic7-angular-videoplayer-app](https://github.com/jepiqueau/blog-tutorials-apps/tree/main/Videoplayer/ionic7-angular-videoplayer-app)
+
+ - [vant-nuxt-videoplayer-app](https://github.com/jepiqueau/blog-tutorials-apps/tree/main/Videoplayer/vant-nuxt-videoplayer-app)
+
 
 ### Application Starter (Not yet updated to 5.0.0)
 

@@ -232,7 +232,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
     Activity mAct = getActivity();
     if (displayMode.equals("landscape")) {
       mAct.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-    } else if (displayMode.equals("portrait")) {
+    }
+    if (displayMode.equals("portrait")) {
       mAct.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
     if (!showControls) {
@@ -350,11 +351,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
               player.setPlayWhenReady(false);
               if (exitOnEnd) {
                 releasePlayer();
+/*
                 Activity mAct = getActivity();
                 int mOrient = mAct.getRequestedOrientation();
                 if (mOrient == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
                   mAct.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 }
+*/
                 NotificationCenter.defaultCenter().postNotification("playerItemEnd", info);
               }
               break;
@@ -568,12 +571,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
       player.setVolume(curVolume);
     }
     releasePlayer();
+/* 
     Activity mAct = getActivity();
     int mOrient = mAct.getRequestedOrientation();
     if (mOrient == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
       mAct.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
-
+*/
     // We control if the user lock the screen when the player is in pip mode
     try {
       NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);

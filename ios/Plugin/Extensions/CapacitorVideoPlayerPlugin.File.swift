@@ -17,8 +17,37 @@ extension CapacitorVideoPlayerPlugin {
     func getURLFromFilePath(filePath: String) -> [String: Any] {
         var dict: [String: Any] = [:]
         dict["message"] = ""
-        let docPath: String = NSSearchPathForDirectoriesInDomains(.documentDirectory,
-                                                                  .userDomainMask, true)[0]
+        let docPath: String = 
+            NSSearchPathForDirectoriesInDomains(.documentDirectory,
+                                                .userDomainMask,
+                                                true)[0]
+        if filePath.contains("Documents") {
+            if let url = URL(string: filePath) {
+                let fullPath = url.path
+                
+                // Check if the path contains "Documents"
+                if let range = fullPath.range(of: "Documents") {
+                    let afterDocuments = fullPath.suffix(from: range.upperBound)
+                    let vPath: String = docPath.appendingFormat(afterDocuments)
+                    if !isFileExists(filePath: vPath) {
+                         print("*** file does not exist at path \n \(vPath) \n***")
+                         let info: [String: Any] = ["dismiss": true]
+                         self.notifyListeners("jeepCapVideoPlayerExit", data: info, retainUntilConsumed: true)
+                         dict["message"] = "file does not exist"
+                         return dict
+                     }
+                    dict["url"] = url
+                    return dict
+                } else {
+                    dict["message"] = "Path does not contain 'Documents'"
+                    return dict
+                }
+
+            } else {
+                dict["message"] = "cannot convert filePath in URL"
+                return dict
+            }
+        }
         if String(filePath.prefix(11)) == "application" {
             let path: String = String(filePath.dropFirst(12))
             let vPath: String = docPath.appendingFormat("/\(path)")
