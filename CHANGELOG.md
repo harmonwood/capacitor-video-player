@@ -1,3 +1,21 @@
+## 5.5.0 (2023-12-07)
+
+### Add Features
+
+ - Add access to `Documents` folder (Android)
+
+### Bug Fixes
+
+ - Fix issue with permissions for API >=33 (Android)
+ in the `AndroidManifest.xml` set
+ 
+ ```xml
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
+```
+
+
+
 ## 5.0.4-1 (2023-11-13)
 
 ### Add Features

@@ -31,14 +31,20 @@ import java.util.Map;
 
 @CapacitorPlugin(
     name = "CapacitorVideoPlayer",
-    permissions = { @Permission(alias = CapacitorVideoPlayerPlugin.MEDIAVIDEO, strings = { Manifest.permission.READ_EXTERNAL_STORAGE }) }
+    permissions = {
+      @Permission(alias = "mediaVideo",
+                  strings = { Manifest.permission.READ_MEDIA_VIDEO }) ,
+      @Permission(alias = "publicStorage",
+                  strings = { Manifest.permission.READ_EXTERNAL_STORAGE})
+    }
 )
 public class CapacitorVideoPlayerPlugin extends Plugin {
 
     // Permission alias constants
     private static final String PERMISSION_DENIED_ERROR = "Unable to access media videos, user denied permission request";
 
-    static final String MEDIAVIDEO = "video";
+    static final String PUBLICSTORAGE = "publicStorage";
+    static final String MEDIAVIDEO = "mediaVideo";
 
     private CapacitorVideoPlayer implementation;
     private static final String TAG = "CapacitorVideoPlayer";
@@ -56,7 +62,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private Boolean pipEnabled = true;
     private Boolean bkModeEnabled = true;
     private Boolean showControls = true;
-    private String displayMode = "portrait";
+    private String displayMode = "all";
     private FullscreenExoPlayerFragment fsFragment;
     private PickerVideoFragment pkFragment;
     private FilesUtils filesUtils;
@@ -70,28 +76,37 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private String accentColor;
     private Boolean chromecast = true;
     private String artwork;
-    private Boolean isPermissions = false;
+    private String url;
+    private String playerId;
+    private String subtitle = "";
+    private String language = "";
+    private JSObject subTitleOptions;
+    private final JSObject ret = new JSObject();
 
-    @Override
-    public void load() {
-        // Get context
-        this.context = getContext();
-        implementation = new CapacitorVideoPlayer(this.context);
-        this.filesUtils = new FilesUtils(this.context);
-        this.fragmentUtils = new FragmentUtils(getBridge());
+
+
+  @Override
+  public void load() {
+      // Get context
+      this.context = getContext();
+      implementation = new CapacitorVideoPlayer(this.context);
+      this.filesUtils = new FilesUtils(this.context);
+      this.fragmentUtils = new FragmentUtils(getBridge());
+  }
+
+  @PermissionCallback
+  private void permissionsCallback(PluginCall call) {
+    if (!isPermissionsGranted()) {
+      call.reject(PERMISSION_DENIED_ERROR);
+      return;
     }
-
-    @PermissionCallback
-    private void videosPermissionsCallback(PluginCall call) {
-        if (getPermissionState(MEDIAVIDEO) == PermissionState.GRANTED) {
-            isPermissions = true;
-            initPlayer(call);
-        } else {
-            call.reject(PERMISSION_DENIED_ERROR);
-        }
+    switch (call.getMethodName()) {
+      case "initPlayer" -> _initPlayer(call);
     }
+  }
 
-    @PluginMethod
+
+  @PluginMethod
     public void echo(PluginCall call) {
         String value = call.getString("value");
 
@@ -100,20 +115,17 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         call.resolve(ret);
     }
 
-    private boolean isVideosPermissions() {
-        // required for build version >= 29
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (getPermissionState(MEDIAVIDEO) != PermissionState.GRANTED) {
-                return false;
-            }
-        }
-        return true;
+    private boolean isPermissionsGranted() {
+      String permissionSet = PUBLICSTORAGE;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        permissionSet = MEDIAVIDEO;
+      }
+      return getPermissionState(permissionSet) == PermissionState.GRANTED;
     }
 
     @PluginMethod
     public void initPlayer(PluginCall call) {
         this.call = call;
-        final JSObject ret = new JSObject();
         ret.put("method", "initPlayer");
         ret.put("result", false);
         // Check if running on a TV Device
@@ -126,7 +138,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             return;
         }
         mode = _mode;
-        String playerId = call.getString("playerId");
+        playerId = call.getString("playerId");
         if (playerId == null) {
             ret.put("message", "Must provide a PlayerId");
             call.resolve(ret);
@@ -171,21 +183,19 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         displayMode = _displayMode;
         if ("fullscreen".equals(mode)) {
             fsPlayerId = playerId;
-            String url = call.getString("url");
+            url = call.getString("url");
             if (url == null) {
                 ret.put("message", "Must provide an url");
                 call.resolve(ret);
                 return;
             }
-            String subtitle = "";
             if (call.getData().has("subtitle")) {
                 subtitle = call.getString("subtitle");
             }
-            String language = "";
             if (call.getData().has("language")) {
                 language = call.getString("language");
             }
-            JSObject subTitleOptions = new JSObject();
+            subTitleOptions = new JSObject();
             if (call.getData().has("subtitleOptions")) {
                 subTitleOptions = call.getObject("subtitleOptions");
             }
@@ -230,68 +240,20 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             Log.v(TAG, "accentColor: " + accentColor);
             Log.v(TAG, "chromecast: " + chromecast);
             Log.v(TAG, "artwork: " + artwork);
-            if (url.equals("internal") || url.contains("DCIM")) {
+            if (url.equals("internal") || url.contains("DCIM") || url.contains("Documents")) {
                 // Check for permissions to access media video files
-                if (!isVideosPermissions()) {
-                    this.bridge.saveCall(call);
-                    requestAllPermissions(call, "videosPermissionsCallback");
+                if (isPermissionsGranted()) {
+                  _initPlayer(call);
+                } else {
+                  this.bridge.saveCall(call);
+                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    requestPermissionForAlias(MEDIAVIDEO, call, "permissionsCallback");
+                  } else {
+                    requestPermissionForAlias(PUBLICSTORAGE, call, "permissionsCallback");
+                  }
                 }
             } else {
-                isPermissions = true;
-            }
-            if (isPermissions) {
-                // Got Permissions ;
-                if (url.equals("internal")) {
-                    createPickerVideoFragment(call);
-                } else {
-                    // get the videoPath
-                    videoPath = filesUtils.getFilePath(url);
-                    // get the subTitlePath if any
-                    if (subtitle != null && subtitle.length() > 0) {
-                        subTitlePath = filesUtils.getFilePath(subtitle);
-                    } else {
-                        subTitlePath = null;
-                    }
-                    Log.v(TAG, "*** calculated videoPath: " + videoPath);
-                    Log.v(TAG, "*** calculated subTitlePath: " + subTitlePath);
-                    if (videoPath != null) {
-                        createFullScreenFragment(
-                            call,
-                            videoPath,
-                            videoRate,
-                            exitOnEnd,
-                            loopOnEnd,
-                            pipEnabled,
-                            bkModeEnabled,
-                            showControls,
-                            displayMode,
-                            subTitlePath,
-                            language,
-                            subTitleOptions,
-                            headers,
-                            title,
-                            smallTitle,
-                            accentColor,
-                            chromecast,
-                            artwork,
-                            isTV,
-                            playerId,
-                            false,
-                            null
-                        );
-                    } else {
-                        Map<String, Object> info = new HashMap<String, Object>() {
-                            {
-                                put("dismiss", "1");
-                                put("currentTime", "0");
-                            }
-                        };
-                        NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
-                        ret.put("message", "initPlayer command failed: Video file not found");
-                        call.resolve(ret);
-                        return;
-                    }
-                }
+              _initPlayer(call);
             }
         } else if ("embedded".equals(mode)) {
             ret.put("message", "Embedded Mode not implemented");
@@ -942,6 +904,60 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         return false;
     }
 
+    private void _initPlayer(PluginCall call) {
+        // Got Permissions ;
+        if (url.equals("internal")) {
+          createPickerVideoFragment(call);
+        } else {
+          // get the videoPath
+          videoPath = filesUtils.getFilePath(url);
+          // get the subTitlePath if any
+          if (subtitle != null && subtitle.length() > 0) {
+            subTitlePath = filesUtils.getFilePath(subtitle);
+          } else {
+            subTitlePath = null;
+          }
+          Log.v(TAG, "*** calculated videoPath: " + videoPath);
+          Log.v(TAG, "*** calculated subTitlePath: " + subTitlePath);
+          if (videoPath != null) {
+            createFullScreenFragment(
+              call,
+              videoPath,
+              videoRate,
+              exitOnEnd,
+              loopOnEnd,
+              pipEnabled,
+              bkModeEnabled,
+              showControls,
+              displayMode,
+              subTitlePath,
+              language,
+              subTitleOptions,
+              headers,
+              title,
+              smallTitle,
+              accentColor,
+              chromecast,
+              artwork,
+              isTV,
+              playerId,
+              false,
+              null
+            );
+          } else {
+            Map<String, Object> info = new HashMap<String, Object>() {
+              {
+                put("dismiss", "1");
+                put("currentTime", "0");
+              }
+            };
+            NotificationCenter.defaultCenter().postNotification("playerFullscreenDismiss", info);
+            ret.put("message", "initPlayer command failed: Video file not found");
+            call.resolve(ret);
+            return;
+          }
+        }
+    }
     private Boolean isInRate(Float arr[], Float rate) {
         Boolean ret = false;
         for (Float el : arr) {
