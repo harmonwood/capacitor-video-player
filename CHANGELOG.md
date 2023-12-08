@@ -1,4 +1,22 @@
+## 5.5.1 (2023-12-08)
+
+### Chores
+
+ - Update to Capacitor 5.5.1
+
+### Add Features
+
+ - Add access to `Documents` & `Download` directory (iOS)
+
+### Bug Fixes
+
+ - Fix the app's Documents directory (iOS)
+
 ## 5.5.0 (2023-12-07)
+
+### Chores
+
+ - Update to Capacitor 5.5.0
 
 ### Add Features
 

@@ -1,6 +1,6 @@
 {
   "name": "Capacitor",
-  "version": "5.5.0",
+  "version": "5.5.1",
   "summary": "Capacitor for iOS",
   "social_media_url": "https://twitter.com/capacitorjs",
   "license": "MIT",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/ionic-team/capacitor.git",
-    "tag": "5.5.0"
+    "tag": "5.5.1"
   },
   "source_files": [
     "Capacitor/Capacitor/*.{swift,h,m}",

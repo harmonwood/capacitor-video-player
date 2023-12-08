@@ -17,50 +17,15 @@ extension CapacitorVideoPlayerPlugin {
     func getURLFromFilePath(filePath: String) -> [String: Any] {
         var dict: [String: Any] = [:]
         dict["message"] = ""
-        let docPath: String = 
+        let docPath: String =
             NSSearchPathForDirectoriesInDomains(.documentDirectory,
                                                 .userDomainMask,
                                                 true)[0]
-        if filePath.contains("Documents") {
-            if let url = URL(string: filePath) {
-                let fullPath = url.path
-                
-                // Check if the path contains "Documents"
-                if let range = fullPath.range(of: "Documents") {
-                    let afterDocuments = fullPath.suffix(from: range.upperBound)
-                    let vPath: String = docPath.appendingFormat(afterDocuments)
-                    if !isFileExists(filePath: vPath) {
-                         print("*** file does not exist at path \n \(vPath) \n***")
-                         let info: [String: Any] = ["dismiss": true]
-                         self.notifyListeners("jeepCapVideoPlayerExit", data: info, retainUntilConsumed: true)
-                         dict["message"] = "file does not exist"
-                         return dict
-                     }
-                    dict["url"] = url
-                    return dict
-                } else {
-                    dict["message"] = "Path does not contain 'Documents'"
-                    return dict
-                }
+        let appPath: String =
+            NSSearchPathForDirectoriesInDomains(.applicationDirectory,
+                                                .userDomainMask,
+                                                true)[0]
 
-            } else {
-                dict["message"] = "cannot convert filePath in URL"
-                return dict
-            }
-        }
-        if String(filePath.prefix(11)) == "application" {
-            let path: String = String(filePath.dropFirst(12))
-            let vPath: String = docPath.appendingFormat("/\(path)")
-            if !isFileExists(filePath: vPath) {
-                print("*** file does not exist at path \n \(vPath) \n***")
-                let info: [String: Any] = ["dismiss": true]
-                self.notifyListeners("jeepCapVideoPlayerExit", data: info, retainUntilConsumed: true)
-                dict["message"] = "file does not exist"
-                return dict
-            }
-            dict["url"] = URL(fileURLWithPath: vPath)
-            return dict
-        }
         if String(filePath.prefix(4)) == "http" {
             if let url = URL(string: filePath) {
                 dict["url"] = url
@@ -79,11 +44,21 @@ extension CapacitorVideoPlayerPlugin {
                 return dict
             }
         }
+        if String(filePath.prefix(11)) == "application" {
+            let path: String = String(filePath.dropFirst(12))
+            let vPath: String = docPath.appendingFormat("/\(path)")
+            if !isFileExists(filePath: vPath) {
+                print("*** file does not exist at path \n \(vPath) \n***")
+                let info: [String: Any] = ["dismiss": true]
+                self.notifyListeners("jeepCapVideoPlayerExit", data: info, retainUntilConsumed: true)
+                dict["message"] = "file does not exist"
+                return dict
+            }
+            dict["url"] = URL(fileURLWithPath: vPath)
+            return dict
+        }
         if String(filePath.prefix(29)) == "file:///var/mobile/Containers" {
 
-            let appPath: String = NSSearchPathForDirectoriesInDomains(.applicationDirectory,
-                                                                      .userDomainMask,
-                                                                      true)[0]
             // get the appId from the appPath
             let pathArray = appPath.components(separatedBy: "Application")
             let appId: String = pathArray[1].replacingOccurrences(of: "/", with: "")
@@ -109,32 +84,27 @@ extension CapacitorVideoPlayerPlugin {
             }
             return dict
         }
-        if String(filePath.prefix(38)) == "file:///var/mobile/Media/DCIM/100APPLE" {
-            let appPath: String = NSSearchPathForDirectoriesInDomains(.applicationDirectory,
-                                                                      .userDomainMask,
-                                                                      true)[0]
-            // get the appId from the appPath
-            let pathArray = appPath.components(separatedBy: "Containers")
-            let fPathArray = filePath.components(separatedBy: "mobile/")
+         if String(filePath.prefix(19)) == "file:///var/mobile/" {
+             let pathArray = appPath.components(separatedBy: "Containers")
+             let fPathArray = filePath.components(separatedBy: "mobile/")
 
-            if let uPath = URL(string: pathArray[0]) {
-                let fPath = (uPath.appendingPathComponent(
-                                String(fPathArray[1]))
-                ).absoluteString
-                if !isFileExists(filePath: fPath) {
-                    print("*** file does not exist at path \n \(fPath) \n***")
-                    let info: [String: Any] = ["dismiss": true]
-                    self.notifyListeners("jeepCapVideoPlayerExit", data: info,
-                                         retainUntilConsumed: true)
-                    dict["message"] = "file does not exist"
-                    return dict
-                }
-                dict["url"] = URL(fileURLWithPath: fPath)
-                return dict
-            } else {
-                dict["message"] = "file path not correct"
-            }
-            return dict
+             if let uPath = URL(string: pathArray[0]) {
+                 let fPath = (uPath.appendingPathComponent(
+                                 String(fPathArray[1]))
+                 ).absoluteString
+                 if !isFileExists(filePath: fPath) {
+                     print("*** file does not exist at path \n \(fPath) \n***")
+                     let info: [String: Any] = ["dismiss": true]
+                     self.notifyListeners("jeepCapVideoPlayerExit", data: info,
+                                          retainUntilConsumed: true)
+                     dict["message"] = "file does not exist"
+                     return dict
+                 }
+                 dict["url"] = URL(fileURLWithPath: fPath)
+             } else {
+                 dict["message"] = "file path not correct"
+             }
+             return dict
         }
         dict["message"] = "filePath not implemented"
         return dict
