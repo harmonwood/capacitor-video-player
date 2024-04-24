@@ -1,5 +1,6 @@
 package com.jeep.plugin.capacitor.capacitorvideoplayer;
 
+import java.util.UUID;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -63,6 +64,10 @@ import com.google.android.exoplayer2.source.SingleSampleMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
+import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
+import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
+import com.google.android.exoplayer2.drm.MediaDrmCallback; // not remove yet
+import com.google.android.exoplayer2.drm.FrameworkMediaDrm;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.ExoTrackSelection;
@@ -121,6 +126,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
   public String accentColor;
   public Boolean chromecast;
   public String artwork;
+  public JSObject drm;
 
   private static final String TAG = FullscreenExoPlayerFragment.class.getName();
   public static final long UNKNOWN_TIME = -1L;
@@ -194,6 +200,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
   private MediaRouteSelector mSelector;
   private CastStateListener castStateListener = null;
   private Boolean playerReady = false;
+
+  // DRM integration
+  private DefaultDrmSessionManager drmSessionManager;
 
   /**
    * Create Fragment View
@@ -571,7 +580,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
       player.setVolume(curVolume);
     }
     releasePlayer();
-/* 
+/*
     Activity mAct = getActivity();
     int mOrient = mAct.getRequestedOrientation();
     if (mOrient == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
@@ -791,6 +800,33 @@ public class FullscreenExoPlayerFragment extends Fragment {
    */
   private void initializePlayer() {
     if (player == null) {
+
+      if (drm.has("widevine")) {
+        JSObject widevine = drm.getJSObject("widevine");
+        JSObject drmHeaders = widevine.getJSObject("headers");
+
+        UUID drmSchemeUUID = C.WIDEVINE_UUID;
+        String licenseServerUri = widevine.getString("licenseUri");
+
+        DefaultHttpDataSource.Factory httpDataSourceFactory = new DefaultHttpDataSource.Factory();
+        HttpMediaDrmCallback drmCallback = new HttpMediaDrmCallback(licenseServerUri, httpDataSourceFactory);
+
+        // Adds header X-AxDRM-Message with the token
+        if (drmHeaders != null && drmHeaders.length() > 0) {
+          for (int i = 0; i < drmHeaders.names().length(); i++) {
+            try {
+              drmCallback.setKeyRequestProperty(drmHeaders.names().getString(i), drmHeaders.get(drmHeaders.names().getString(i)).toString());
+            } catch (JSONException e) {
+              e.printStackTrace();
+            }
+          }
+        }
+
+        drmSessionManager = new DefaultDrmSessionManager.Builder()
+          .setUuidAndExoMediaDrmProvider(drmSchemeUUID, FrameworkMediaDrm.DEFAULT_PROVIDER)
+          .build(drmCallback);
+      }
+
       DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter.Builder(context).build();
       ExoTrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory();
       trackSelector = new DefaultTrackSelector(context, videoTrackSelectionFactory);
@@ -934,6 +970,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
     } else if (vType.equals("dash") || vType.equals("mpd")) {
       /* adaptive streaming Dash stream */
       DashMediaSource.Factory mediaSourceFactory = new DashMediaSource.Factory(dataSourceFactory);
+      if (drm.has("widevine")) {
+        mediaSourceFactory.setDrmSessionManagerProvider(unusedMediaItem -> drmSessionManager);
+      }
       mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(uri));
     } else if (vType.equals("m3u8")) {
       mediaSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));

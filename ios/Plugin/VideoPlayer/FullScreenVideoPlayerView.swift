@@ -12,7 +12,7 @@ import MediaPlayer
 
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
-open class FullScreenVideoPlayerView: UIView {
+open class FullScreenVideoPlayerView: UIView, AVContentKeySessionDelegate {
     private var _url: URL
     private var _isReadyToPlay: Bool = false
     private var _videoId: String = "fullscreen"
@@ -34,6 +34,10 @@ open class FullScreenVideoPlayerView: UIView {
     private var _title: String?
     private var _smallTitle: String?
     private var _artwork: String?
+    private var _drm: [String: Any]?
+    private var _drmlicenseUri: String?
+    private var _drmcertUri: String?
+    private var _drmHeaders: [String: String]?
 
     var player: AVPlayer?
     var videoPlayer: AVPlayerViewController
@@ -46,12 +50,14 @@ open class FullScreenVideoPlayerView: UIView {
     var videoPlayerFrameObserver: NSKeyValueObservation?
     var videoPlayerMoveObserver: NSKeyValueObservation?
     var periodicTimeObserver: Any?
+    var contentKeySession: AVContentKeySession! // Content Key Session for DRM
+    let urlSession = URLSession(configuration: .default)  // URLSession for network requests
 
     init(url: URL, rate: Float, playerId: String, exitOnEnd: Bool,
          loopOnEnd: Bool, pipEnabled: Bool, showControls: Bool,
          displayMode: String, stUrl: URL?, stLanguage: String?,
          stHeaders: [String: String]?, stOptions: [String: Any]?,
-         title: String?, smallTitle: String?, artwork: String?) {
+         title: String?, smallTitle: String?, artwork: String?, drm: [String: Any]?) {
         //self._videoPath = videoPath
         self._url = url
         self._stUrl = stUrl
@@ -75,6 +81,7 @@ open class FullScreenVideoPlayerView: UIView {
         self._title = title
         self._smallTitle = smallTitle
         self._artwork = artwork
+        self._drm = drm
 
         if let headers = self._stHeaders {
             self.videoAsset = AVURLAsset(url: url, options: ["AVURLAssetHTTPHeaderFieldsKey": headers])
@@ -84,8 +91,35 @@ open class FullScreenVideoPlayerView: UIView {
 
         self.isPlaying = false
         super.init(frame: .zero)
+        if (self._drm != nil) {
+            self.setupDRM()
+        }
         self.initialize()
         self.addObservers()
+    }
+
+    private func setupDRM() {
+        if let fairplayDict = self._drm?["fairplay"] as? [String: Any] {
+            // Access licenseUri and cast to String
+            if let licenseUri = fairplayDict["licenseUri"] as? String {
+                self._drmlicenseUri = licenseUri
+            }
+            // Access certificateUri and cast to String
+            if let certificateUri = fairplayDict["certificateUri"] as? String {
+                self._drmcertUri = certificateUri
+            }
+            
+            if let drmHeaders = fairplayDict["headers"] as? [String: String] {
+                self._drmHeaders = drmHeaders
+            }
+            
+            // Init Content Key Session for DRM
+            contentKeySession = AVContentKeySession(keySystem: .fairPlayStreaming)
+            contentKeySession?.setDelegate(self, queue: DispatchQueue.main)
+            // contentKeySession.setDelegate(self, queue: DispatchQueue(label: "\(Bundle.main.bundleIdentifier!).ContentKeyDelegateQueue"))
+            contentKeySession.addContentKeyRecipient(self.videoAsset)
+            // videoAsset.resourceLoader.setDelegate(self, queue: DispatchQueue.main)
+        }
     }
 
     // swiftlint:disable function_body_length
@@ -186,6 +220,111 @@ open class FullScreenVideoPlayerView: UIView {
     // swiftlint:enable cyclomatic_complexity
     // swiftlint:enable function_body_length
 
+    public func contentKeySession(_ session: AVContentKeySession, didProvide keyRequest: AVContentKeyRequest) {
+        // Extract content identifier and license service URL from the key request
+        guard let contentKeyIdentifierString = keyRequest.identifier as? String,
+            let contentIdentifier = contentKeyIdentifierString.replacingOccurrences(of: "skd://", with: "") as String?,
+            let licenseServiceUrl = contentKeyIdentifierString.replacingOccurrences(of: "skd://", with: "https://") as String?,
+            let contentIdentifierData = contentIdentifier.data(using: .utf8)
+        else {
+            print("ERROR: Failed to retrieve the content identifier from the key request!")
+            return
+        }
+        
+        // Completion handler for making streaming content key request
+        let handleCkcAndMakeContentAvailable = { [weak self] (spcData: Data?, error: Error?) in
+            guard self != nil else { return }
+            
+            if let error = error {
+                print("ERROR: Failed to prepare SPC: \(error.localizedDescription)")
+                // Report SPC preparation error to AVFoundation
+                keyRequest.processContentKeyResponseError(error)
+                return
+            }
+            
+            guard let spcData = spcData else { return }
+            
+            // Send SPC to the license service to obtain CKC
+            guard let url = URL(string: licenseServiceUrl) else {
+                print("ERROR: Missing license service URL!")
+                return
+            }
+            
+            print("*** DRM:", url)
+        
+            var licenseRequest = URLRequest(url: URL(string: (self?._drmlicenseUri)!)!)
+            licenseRequest.httpMethod = "POST"
+
+            // Set additional headers for the license service request
+            if let drmHeaders = self?._drmHeaders {
+                for (key, value) in drmHeaders {
+//                    print("*** DRM: Key: \(key), Value: \(value)")
+                    licenseRequest.setValue(value, forHTTPHeaderField: key)
+                }
+            }
+
+            licenseRequest.httpBody = spcData
+            
+            var dataTask: URLSessionDataTask?
+            
+            dataTask = self!.urlSession.dataTask(with: licenseRequest, completionHandler: { (data, response, error) in
+                defer {
+                    dataTask = nil
+                }
+
+                if let error = error {
+                    print("ERROR: Failed to get CKC: \(error.localizedDescription)")
+                } else if
+                    let ckcData = data,
+                    let response = response as? HTTPURLResponse,
+                    response.statusCode == 200 {
+                    // Create AVContentKeyResponse from CKC data
+                    let keyResponse = AVContentKeyResponse(fairPlayStreamingKeyResponseData: ckcData)
+                    // Provide the content key response to make protected content available for processing
+                    keyRequest.processContentKeyResponse(keyResponse)
+                }
+            })
+            
+            dataTask?.resume()
+        }
+          
+        do {
+            // Request the application certificate for the content key request
+            let applicationCertificate = try requestApplicationCertificate()
+            
+            // Make the streaming content key request with the specified options
+            keyRequest.makeStreamingContentKeyRequestData(
+                forApp: applicationCertificate,
+                contentIdentifier: contentIdentifierData,
+                options: [AVContentKeyRequestProtocolVersionsKey: [1]],
+                completionHandler: handleCkcAndMakeContentAvailable
+            )
+        } catch {
+            // Report error in processing content key response
+            keyRequest.processContentKeyResponseError(error)
+        }
+    }
+
+    /*
+        Requests the Application Certificate.
+    */
+    func requestApplicationCertificate() throws -> Data {
+        var applicationCertificate: Data? = nil
+        
+        do {
+            // Load the FairPlay application certificate from the specified URL.
+            applicationCertificate = try Data(contentsOf: URL(string: self._drmcertUri!)!)
+        } catch {
+            // Handle any errors that occur while loading the certificate.
+            let errorMessage = "Failed to load the FairPlay application certificate. Error: \(error)"
+            print(errorMessage)
+            throw error
+        }
+        
+        // Return the loaded application certificate.
+        return applicationCertificate!
+    }
+    
     private func setSubTitleStyle(options: [String: Any]) -> [AVTextStyleRule] {
         var styles: [AVTextStyleRule] = []
         var backColor: [Float] = [1.0, 0.0, 0.0, 0.0]

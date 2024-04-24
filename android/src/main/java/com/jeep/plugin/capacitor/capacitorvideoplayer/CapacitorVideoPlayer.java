@@ -37,7 +37,8 @@ public class CapacitorVideoPlayer {
         Boolean isTV,
         String playerId,
         Boolean isInternal,
-        Long videoId
+        Long videoId,
+        JSObject drm
     ) {
         FullscreenExoPlayerFragment fsFragment = new FullscreenExoPlayerFragment();
 
@@ -62,6 +63,7 @@ public class CapacitorVideoPlayer {
         fsFragment.playerId = playerId;
         fsFragment.isInternal = isInternal;
         fsFragment.videoId = videoId;
+        fsFragment.drm = drm;
         return fsFragment;
     }
 

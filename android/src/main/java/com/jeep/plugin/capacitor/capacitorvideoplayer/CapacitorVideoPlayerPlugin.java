@@ -82,6 +82,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private String language = "";
     private JSObject subTitleOptions;
     private final JSObject ret = new JSObject();
+    private JSObject drm;
 
 
 
@@ -230,6 +231,14 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 _artwork = call.getString("artwork");
             }
             artwork = _artwork;
+            // DRM object
+            JSObject _drm = new JSObject();
+            if (call.getData().has("drm")) {
+              _drm = call.getObject("drm");
+              Log.v(TAG, "*** DRM _drm " + _drm);
+            }
+            drm = _drm;
+
             AddObserversToNotificationCenter();
             Log.v(TAG, "display url: " + url);
             Log.v(TAG, "display subtitle: " + subtitle);
@@ -942,7 +951,8 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
               isTV,
               playerId,
               false,
-              null
+              null,
+              drm
             );
           } else {
             Map<String, Object> info = new HashMap<String, Object>() {
@@ -1118,7 +1128,8 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                                 isTV,
                                 fsPlayerId,
                                 true,
-                                videoId
+                                videoId,
+                                drm
                             );
                         } else {
                             Toast.makeText(context, "No Video files found ", Toast.LENGTH_SHORT).show();
@@ -1157,7 +1168,8 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         Boolean isTV,
         String playerId,
         Boolean isInternal,
-        Long videoId
+        Long videoId,
+        JSObject drm
     ) {
         Log.v(TAG, "§§§§ createFullScreenFragment chromecast: " + chromecast);
 
@@ -1183,7 +1195,8 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 isTV,
                 playerId,
                 isInternal,
-                videoId
+                videoId,
+                drm
             );
         bridge
             .getActivity()

@@ -28,6 +28,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
     var title: String?
     var smallTitle: String?
     var artwork: String?
+    var drm: [String: Any]?
     var fsPlayerId: String = "fullscreen"
     var videoRate: Float = 1.0
     var playObserver: Any?
@@ -135,6 +136,13 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
         if let sartwork = call.options["artwork"] as? String {
             artwork = sartwork
         }
+        
+        var drm: [String: Any]?
+//        print("*** DRM, type call.options['drm']:", type(of: call.options["drm"]))
+        if let sdrm = call.options["drm"] as? [String: Any] {
+            drm = sdrm
+        }
+        
         self.fsPlayerId = playerId
         self.mode = mode
         self.videoRate = mRate
@@ -149,6 +157,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
         self.title = title
         self.smallTitle = smallTitle
         self.artwork = artwork
+        self.drm = drm
         if mode == "fullscreen" {
             guard let videoPath = call.options["url"] as? String else {
                 let error: String = "Must provide a video url"
@@ -232,7 +241,7 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
                     headers: headers,
                     title: title,
                     smallTitle: smallTitle,
-                    artwork: artwork)
+                    artwork: artwork, drm: drm)
 
             }
         } else {

@@ -25,8 +25,8 @@ enum CapacitorVideoPlayerError: Error {
                                              options: [String: Any]?,
                                              title: String?,
                                              smallTitle: String?,
-                                             artwork: String?
-
+                                             artwork: String?,
+                                             drm: [String: Any]?
     ) -> FullScreenVideoPlayerView {
 
         let videoPlayerFullScreenView = FullScreenVideoPlayerView(
@@ -36,7 +36,7 @@ enum CapacitorVideoPlayerError: Error {
             displayMode: displayMode,
             stUrl: subTitleUrl, stLanguage: language,
             stHeaders: headers, stOptions: options,
-            title: title, smallTitle: smallTitle, artwork: artwork)
+            title: title, smallTitle: smallTitle, artwork: artwork, drm: drm)
         return videoPlayerFullScreenView
     }
 
