@@ -4,30 +4,7 @@
 <br>
 <p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 5 </strong></p><br>
 <br>
-<p align="center" style="font-size:50px;color:red"><strong>The ownership of this plugin is transfer to https://github.com/harmonwood who will ensure the maintenance </strong></p>
-
-<!-- Note from the Owner - Start -->
-<p align="center" style="font-size:50px;color:red"><strong>Note from the Owner</strong></p>
-<!-- Note from the Owner - End -->
-<br>
-<!-- Message below Note from the Owner - Start -->
-<p align="left" style="font-size:47px">Start --></p>
-<br>
-<p align="left">
-I have been dedicated to developing and maintaining this plugin for many years since the inception of Ionic Capacitor. Now, at 73+ years old, and with my MacBook Pro becoming obsolete for running Capacitor 6 for iOS, I have made the decision to cease maintenance of the plugin. If anyone wishes to take ownership of this plugin, they are welcome to do so.  
-</p>
-<br>
-<p align="left">
-It has been a great honor to be part of this development journey alongside the developer community. I am grateful to see many of you following me on this path and incorporating the plugin into your applications. Your comments and suggestions have motivated me to continuously improve it.  
-</p>
-<br>
-<p align="left">
-I have made this decision due to several family-related troubles that require my full attention and time. Therefore, I will not be stepping back. Thank you to all of you for your support.
-</p>
-<br>
-<p align="left" style="font-size:47px">End <--</p>
-<!-- Message below Note from the Owner - End -->
-<br>
+<p align="center" style="font-size:20px;color:red"><a href="https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/Jean_Pierre_Queau.md"><strong>Special note from Jean Pierre Quéau the original founder of this project.</strong></a></p>
 <br>
 <p align="center">
   Capacitor Video Player Plugin is a custom Native Capacitor plugin to play a video 
@@ -38,22 +15,23 @@ I have made this decision due to several family-related troubles that require my
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/maintenance/yes/2023?style=flat-square" />
+  <img src="https://img.shields.io/maintenance/yes/2024?style=flat-square" />
   <a href="https://github.com/jepiqueau/capacitor-video-player/actions?query=workflow%3A%22CI%22"><img src="https://img.shields.io/github/workflow/status/jepiqueau/capacitor-video-player/CI?style=flat-square" /></a>
   <a href="https://www.npmjs.com/package/capacitor-video-player"><img src="https://img.shields.io/npm/l/capacitor-video-player.svg?style=flat-square" /></a>
 <br>
   <a href="https://www.npmjs.com/package/capacitor-video-player"><img src="https://img.shields.io/npm/dw/capacitor-video-player?style=flat-square" /></a>
   <a href="https://www.npmjs.com/package/capacitor-video-player"><img src="https://img.shields.io/npm/v/capacitor-video-player?style=flat-square" /></a>
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-<a href="#contributors-"><img src="https://img.shields.io/badge/all%20contributors-8-orange?style=flat-square" /></a>
+<a href="#contributors-"><img src="https://img.shields.io/badge/all%20contributors-9-orange?style=flat-square" /></a>
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 </p>
 
 ## Maintainers
 
-| Maintainer        | GitHub                                    | Social |
-| ----------------- | ----------------------------------------- | ------ |
-| Quéau Jean Pierre | [jepiqueau](https://github.com/jepiqueau) |        |
+| Maintainer        | GitHub                                      | Social | Active |
+| ----------------- | ------------------------------------------- | ------ | ------ |
+| Harmon Wood       | [harmonwood](https://github.com/harmonwood) |        | ✅     |
+| Quéau Jean Pierre | [jepiqueau](https://github.com/jepiqueau)   |        | ❌     |
 
 ## LATEST FOR CAPACITOR 5 (Master)
 
@@ -197,6 +175,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/PhantomPainX"><img src="https://avatars.githubusercontent.com/u/47803967?v=4" width="100px;" alt=""/><br /><sub><b>Manuel García Marín</b></sub></a><br /><a href="https://github.com/jepiqueau/capacitor-video-player/commits?author=PhantomPainX" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/j-oppenhuis"><img src="https://avatars.githubusercontent.com/u/46529655?v=4" width="100px;" alt=""/><br /><sub><b>Jelle Oppenhuis</b></sub></a><br /><a href="https://github.com/jepiqueau/capacitor-video-player/commits?author=j-oppenhuis" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/fegauthier"><img src="https://avatars.githubusercontent.com/u/12112673?v=4" width="100px;" alt=""/><br /><sub><b>fegauthier</b></sub></a><br /><a href="https://github.com/jepiqueau/capacitor-video-player/commits?author=fegauthier" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/harmonwood"><img src="https://avatars.githubusercontent.com/u/460843?v=4" width="100px;" alt="Harmon Wood"/><br /><sub><b>Harmon WooD</b></sub></a><br /><a href="https://github.com/harmonwood/capacitor-video-player/commits?author=harmonwood" title="Code">💻</a></td>
     
   </tr>
 </table>
