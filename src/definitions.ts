@@ -209,6 +209,30 @@ export interface capVideoPlayerOptions {
    * default: ""
    */
   artwork?: string;
+
+  /**
+   * DRM options
+   */
+  drm?: capVideoPlayerDRMOptions;
+}
+
+export interface capVideoPlayerDRMOptions {
+  /**
+   * Object with widevine (android) and fairplay (ios) options
+   */
+  widevine?: {
+    licenseUri?: string;
+    headers?: {
+      [key: string]: string;
+    }
+  }
+  fairplay: {
+    licenseUri: string;
+    certificateUri: string;
+    headers?: {
+      [key: string]: string;
+    }
+  }
 }
 export interface capVideoPlayerIdOptions {
   /**
