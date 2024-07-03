@@ -249,8 +249,6 @@ open class FullScreenVideoPlayerView: UIView, AVContentKeySessionDelegate {
                 print("ERROR: Missing license service URL!")
                 return
             }
-            
-            print("*** DRM:", url)
         
             var licenseRequest = URLRequest(url: URL(string: (self?._drmlicenseUri)!)!)
             licenseRequest.httpMethod = "POST"
@@ -258,7 +256,6 @@ open class FullScreenVideoPlayerView: UIView, AVContentKeySessionDelegate {
             // Set additional headers for the license service request
             if let drmHeaders = self?._drmHeaders {
                 for (key, value) in drmHeaders {
-//                    print("*** DRM: Key: \(key), Value: \(value)")
                     licenseRequest.setValue(value, forHTTPHeaderField: key)
                 }
             }
