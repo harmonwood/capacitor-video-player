@@ -235,7 +235,6 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
             JSObject _drm = new JSObject();
             if (call.getData().has("drm")) {
               _drm = call.getObject("drm");
-              Log.v(TAG, "*** DRM _drm " + _drm);
             }
             drm = _drm;
 

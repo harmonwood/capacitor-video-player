@@ -138,7 +138,6 @@ public class CapacitorVideoPlayerPlugin: CAPPlugin {
         }
         
         var drm: [String: Any]?
-//        print("*** DRM, type call.options['drm']:", type(of: call.options["drm"]))
         if let sdrm = call.options["drm"] as? [String: Any] {
             drm = sdrm
         }
