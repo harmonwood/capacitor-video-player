@@ -288,7 +288,7 @@ export class VideoPlayer {
   private _getVideoType(): boolean {
     let ret = false;
     let vType = '';
-    const sUrl: string = this._url ? this._url : '';
+    const sUrl: string = this._url ? this._url.split('?')[0] : '';
     if (sUrl != null && sUrl.length > 0) {
       try {
         const val = sUrl.substring(sUrl.lastIndexOf('/')).match(/(.*)\.(.*)/);
@@ -312,18 +312,6 @@ export class VideoPlayer {
             this._videoType = 'application/x-mpegURL';
             break;
           }
-          /*
-                  case "mpd" : {
-                  this._videoType = "application/dash+xml";
-                  break;
-                  }
-          */
-          /*
-                  case "youtube" : {
-                  this._videoType = "video/youtube";
-                  break;
-                  }
-          */
           default: {
             this._videoType = null;
             break;
