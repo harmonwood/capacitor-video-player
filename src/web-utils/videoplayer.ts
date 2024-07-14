@@ -239,7 +239,7 @@ export class VideoPlayer {
           const hls = new Hls();
           hls.loadSource(this._url);
           hls.attachMedia(this.videoEl);
-          hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          hls.on(Hls.Events.FRAG_PARSED, () => {
             if (this.videoEl != null) {
               this.videoEl.muted = true;
               this.videoEl.crossOrigin = 'anonymous';
