@@ -9,13 +9,14 @@ This project uses the [Material for MkDocs](https://squidfunk.github.io/mkdocs-m
 To assist in using mkdocs on any environment, mkdocs software can be installed through [Micromamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html) python environment. To install mkdocs, run the following command:
 
 Start the python environment by running the following command:
-=== "Windows"
-    ```powershell
-    micromamba activate cap-video
-    ```
 
 === "macOS/Linux"
     ```shell
+    micromamba activate cap-video
+    ```
+
+=== "Windows"
+    ```powershell
     micromamba activate cap-video
     ```
 
@@ -23,12 +24,12 @@ Start the python environment by running the following command:
 
 To serve the documentation locally, run the following command:
 
-=== "Windows"
-    ```powershell
+=== "macOS/Linux"
+    ```shell
     mkdocs serve
     ```
 
-=== "macOS/Linux"
-    ```shell
+=== "Windows"
+    ```powershell
     mkdocs serve
     ```
