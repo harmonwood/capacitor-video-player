@@ -20,11 +20,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jepiqueau/capacitor-video-player.git"
+    "url": "git+https://github.com/harmonwood/capacitor-video-player.git"
   },
   "bugs": {
-    "url": "https://github.com/jepiqueau/capacitor-video-player/issues"
+    "url": "https://github.com/harmonwood/capacitor-video-player/issues"
   },
+  "homepage": "https://www.capacitorvideoplayer.com",
   "keywords": [
     "capacitor",
     "plugin",
