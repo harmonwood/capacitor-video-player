@@ -1,0 +1,2305 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../Jean_Pierre_Queau/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.27">
+    
+    
+      
+        <title>API Documentation - Capacitor Video Player</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#api-documentation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Capacitor Video Player" class="md-header__button md-logo" aria-label="Capacitor Video Player" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Capacitor Video Player
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              API Documentation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Capacitor Video Player" class="md-nav__button md-logo" aria-label="Capacitor Video Player" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Capacitor Video Player
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    API Documentation
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#methods-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      Methods Index
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#url" class="md-nav__link">
+    <span class="md-ellipsis">
+      Url
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Url">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-the-web" class="md-nav__link">
+    <span class="md-ellipsis">
+      from the Web
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-asset" class="md-nav__link">
+    <span class="md-ellipsis">
+      from Asset
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-application-folder" class="md-nav__link">
+    <span class="md-ellipsis">
+      from Application Folder
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-your-device-media" class="md-nav__link">
+    <span class="md-ellipsis">
+      from your Device Media
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-dcim-folder" class="md-nav__link">
+    <span class="md-ellipsis">
+      from DCIM folder
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subtitle-android-ios-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      Subtitle (Android, iOS Only)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Subtitle (Android, iOS Only)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supported Formats
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-the-web_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      from the Web
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-asset_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      from Asset
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-application-folder_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      from Application Folder
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-internal-gallery-dcim" class="md-nav__link">
+    <span class="md-ellipsis">
+      from Internal (Gallery, DCIM)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chromecast-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chromecast Support
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Chromecast Support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chromecast-explanation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chromecast explanation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#android-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Android Quirks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Methods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#echo" class="md-nav__link">
+    <span class="md-ellipsis">
+      echo(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initplayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      initPlayer(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isplaying" class="md-nav__link">
+    <span class="md-ellipsis">
+      isPlaying(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#play" class="md-nav__link">
+    <span class="md-ellipsis">
+      play(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pause" class="md-nav__link">
+    <span class="md-ellipsis">
+      pause(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getduration" class="md-nav__link">
+    <span class="md-ellipsis">
+      getDuration(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getcurrenttime" class="md-nav__link">
+    <span class="md-ellipsis">
+      getCurrentTime(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setcurrenttime" class="md-nav__link">
+    <span class="md-ellipsis">
+      setCurrentTime(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getvolume" class="md-nav__link">
+    <span class="md-ellipsis">
+      getVolume(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setvolume" class="md-nav__link">
+    <span class="md-ellipsis">
+      setVolume(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getmuted" class="md-nav__link">
+    <span class="md-ellipsis">
+      getMuted(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setmuted" class="md-nav__link">
+    <span class="md-ellipsis">
+      setMuted(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      setRate(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      getRate(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stopallplayers" class="md-nav__link">
+    <span class="md-ellipsis">
+      stopAllPlayers()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#showcontroller" class="md-nav__link">
+    <span class="md-ellipsis">
+      showController()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iscontrollerisfullyvisible" class="md-nav__link">
+    <span class="md-ellipsis">
+      isControllerIsFullyVisible()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exitplayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      exitPlayer()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interfaces
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#capvideoplayerresult" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoPlayerResult
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capechooptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      capEchoOptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capvideoplayeroptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoPlayerOptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subtitleoptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      SubTitleOptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capvideoplayeridoptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoPlayerIdOptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capvideotimeoptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoTimeOptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capvideovolumeoptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoVolumeOptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capvideomutedoptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoMutedOptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capvideorateoptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoRateOptions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#listeners" class="md-nav__link">
+    <span class="md-ellipsis">
+      Listeners
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Listeners">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#capvideolistener" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoListener
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capexitlistener" class="md-nav__link">
+    <span class="md-ellipsis">
+      capExitListener
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Jean_Pierre_Queau/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Special Note from the Founder Jean Pierre Quéau
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Notes_Exoplayer2.18.1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Notes from PhantomPainX on using v2.18.1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Usage_2.4.7/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Usage Release 2.4.7 Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Usage_3.0.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Usage Release 3.0.0 Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/documentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#methods-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      Methods Index
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#url" class="md-nav__link">
+    <span class="md-ellipsis">
+      Url
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Url">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-the-web" class="md-nav__link">
+    <span class="md-ellipsis">
+      from the Web
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-asset" class="md-nav__link">
+    <span class="md-ellipsis">
+      from Asset
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-application-folder" class="md-nav__link">
+    <span class="md-ellipsis">
+      from Application Folder
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-your-device-media" class="md-nav__link">
+    <span class="md-ellipsis">
+      from your Device Media
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-dcim-folder" class="md-nav__link">
+    <span class="md-ellipsis">
+      from DCIM folder
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subtitle-android-ios-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      Subtitle (Android, iOS Only)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Subtitle (Android, iOS Only)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supported Formats
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-the-web_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      from the Web
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-asset_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      from Asset
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-application-folder_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      from Application Folder
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-internal-gallery-dcim" class="md-nav__link">
+    <span class="md-ellipsis">
+      from Internal (Gallery, DCIM)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chromecast-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chromecast Support
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Chromecast Support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chromecast-explanation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chromecast explanation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#android-quirks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Android Quirks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Methods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#echo" class="md-nav__link">
+    <span class="md-ellipsis">
+      echo(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#initplayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      initPlayer(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isplaying" class="md-nav__link">
+    <span class="md-ellipsis">
+      isPlaying(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#play" class="md-nav__link">
+    <span class="md-ellipsis">
+      play(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pause" class="md-nav__link">
+    <span class="md-ellipsis">
+      pause(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getduration" class="md-nav__link">
+    <span class="md-ellipsis">
+      getDuration(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getcurrenttime" class="md-nav__link">
+    <span class="md-ellipsis">
+      getCurrentTime(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setcurrenttime" class="md-nav__link">
+    <span class="md-ellipsis">
+      setCurrentTime(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getvolume" class="md-nav__link">
+    <span class="md-ellipsis">
+      getVolume(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setvolume" class="md-nav__link">
+    <span class="md-ellipsis">
+      setVolume(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getmuted" class="md-nav__link">
+    <span class="md-ellipsis">
+      getMuted(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setmuted" class="md-nav__link">
+    <span class="md-ellipsis">
+      setMuted(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      setRate(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      getRate(...)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stopallplayers" class="md-nav__link">
+    <span class="md-ellipsis">
+      stopAllPlayers()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#showcontroller" class="md-nav__link">
+    <span class="md-ellipsis">
+      showController()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iscontrollerisfullyvisible" class="md-nav__link">
+    <span class="md-ellipsis">
+      isControllerIsFullyVisible()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exitplayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      exitPlayer()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interfaces
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#capvideoplayerresult" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoPlayerResult
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capechooptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      capEchoOptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capvideoplayeroptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoPlayerOptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subtitleoptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      SubTitleOptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capvideoplayeridoptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoPlayerIdOptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capvideotimeoptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoTimeOptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capvideovolumeoptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoVolumeOptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capvideomutedoptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoMutedOptions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capvideorateoptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoRateOptions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#listeners" class="md-nav__link">
+    <span class="md-ellipsis">
+      Listeners
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Listeners">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#capvideolistener" class="md-nav__link">
+    <span class="md-ellipsis">
+      capVideoListener
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capexitlistener" class="md-nav__link">
+    <span class="md-ellipsis">
+      capExitListener
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="api-documentation">API Documentation</h1>
+<h2 id="methods-index">Methods Index</h2>
+<p><docgen-index></p>
+<ul>
+<li><a href="#echo"><code>echo(...)</code></a></li>
+<li><a href="#initplayer"><code>initPlayer(...)</code></a></li>
+<li><a href="#isplaying"><code>isPlaying(...)</code></a></li>
+<li><a href="#play"><code>play(...)</code></a></li>
+<li><a href="#pause"><code>pause(...)</code></a></li>
+<li><a href="#getduration"><code>getDuration(...)</code></a></li>
+<li><a href="#getcurrenttime"><code>getCurrentTime(...)</code></a></li>
+<li><a href="#setcurrenttime"><code>setCurrentTime(...)</code></a></li>
+<li><a href="#getvolume"><code>getVolume(...)</code></a></li>
+<li><a href="#setvolume"><code>setVolume(...)</code></a></li>
+<li><a href="#getmuted"><code>getMuted(...)</code></a></li>
+<li><a href="#setmuted"><code>setMuted(...)</code></a></li>
+<li><a href="#setrate"><code>setRate(...)</code></a></li>
+<li><a href="#getrate"><code>getRate(...)</code></a></li>
+<li><a href="#stopallplayers"><code>stopAllPlayers()</code></a></li>
+<li><a href="#showcontroller"><code>showController()</code></a></li>
+<li><a href="#iscontrollerisfullyvisible"><code>isControllerIsFullyVisible()</code></a></li>
+<li><a href="#exitplayer"><code>exitPlayer()</code></a></li>
+<li><a href="#interfaces">Interfaces</a></li>
+</ul>
+<p></docgen-index>
+* <a href="#listeners">Listeners</a></p>
+<h2 id="url">Url</h2>
+<h3 id="from-the-web">from the Web</h3>
+<p>. <code>http:/..../video.mp4</code>
+. <code>https:/..../video.mp4</code></p>
+<h3 id="from-asset">from Asset</h3>
+<ul>
+<li>
+<p>iOS Plugin
+  . <code>"public/assets/video/video.mp4"</code></p>
+</li>
+<li>
+<p>Android Plugin
+  . <code>"public/assets/video/video.mp4"</code> not anymore the <code>resource/raw folder</code></p>
+</li>
+<li>
+<p>Web &amp; Electron Plugins
+  . <code>"assets/video/video.mp4"</code></p>
+</li>
+</ul>
+<h3 id="from-application-folder">from Application Folder</h3>
+<ul>
+<li>
+<p>iOS Plugin
+  . <code>application/files/video.mp4</code> is corresponding to :
+  <strong>/data/Containers/Data/Applications/YOUR_APPLICATION/Documents/files/video.mp4</strong></p>
+</li>
+<li>
+<p>Android Plugin
+  . <code>application/files/video.mp4</code> is corresponding to :
+  <strong>/data/user/0/YOUR_APPLICATION_PACKAGE/files/video.mp4</strong></p>
+</li>
+</ul>
+<h3 id="from-your-device-media">from your Device Media</h3>
+<ul>
+<li>iOS &amp; Android Plugin only
+  . <code>internal</code></li>
+</ul>
+<h3 id="from-dcim-folder">from DCIM folder</h3>
+<ul>
+<li>
+<p>Android Plugin 
+  . <code>file:///sdcard/DCIM/Camera/YOUR_VIDEO</code> 
+  . <code>file:///storage/extSdCard/DCIM/Camera/YOUR_VIDEO</code></p>
+</li>
+<li>
+<p>iOS Plugin 
+  . <code>file:///var/mobile/Media/DCIM/100APPLE/YOUR_VIDEO</code>
+  . <code>file:///var/mobile/Containers/Data/Application/YOUR_APPLICATION_ID/tmp/YOUR_VIDEO</code></p>
+</li>
+</ul>
+<h2 id="subtitle-android-ios-only">Subtitle (Android, iOS Only)</h2>
+<h3 id="supported-formats">Supported Formats</h3>
+<ul>
+<li>
+<p>Android Plugin
+  . <code>WebVTT .vtt extension</code>
+  . <code>TTML/SMPTE .ttml, .dfxp, .xml extensions</code>
+  . <code>SubRip .srt extension</code>
+  . <code>SubStationAlpha .ssa, .ass extensions</code></p>
+</li>
+<li>
+<p>iOS Plugin
+  . <code>WebVTT .vtt extension</code></p>
+</li>
+</ul>
+<h3 id="from-the-web_1">from the Web</h3>
+<p>. <code>http:/..../video.vtt</code>
+. <code>https:/..../video.vtt</code></p>
+<h3 id="from-asset_1">from Asset</h3>
+<ul>
+<li>
+<p>Android Plugin
+  . <code>"public/assets/video/video.srt"</code></p>
+</li>
+<li>
+<p>iOS Plugin
+  . <code>"public/assets/video/video.vtt"</code></p>
+</li>
+</ul>
+<h3 id="from-application-folder_1">from Application Folder</h3>
+<ul>
+<li>
+<p>Android Plugin
+  . <code>application/files/video.vtt</code> is corresponding to :
+  <strong>/data/user/0/YOUR_APPLICATION_PACKAGE/files//video.vtt</strong></p>
+</li>
+<li>
+<p>iOS Plugin
+  . <code>application/files/video.vtt</code> is corresponding to :
+  <strong>/data/Containers/Data/Applications/YOUR_APPLICATION/Documents/files/video.vtt</strong></p>
+</li>
+</ul>
+<h3 id="from-internal-gallery-dcim">from Internal (Gallery, DCIM)</h3>
+<ul>
+<li>Android plugin
+  .for API higher than 28 add the following in the app manifest file</li>
+</ul>
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>    &lt;uses-permission android:name=&quot;android.permission.READ_EXTERNAL_STORAGE&quot; android:maxSdkVersion=&quot;32&quot;/&gt;
+</span></code></pre></div>
+  and you will be prompted for authorization to access media files. </p>
+<h2 id="chromecast-support">Chromecast Support</h2>
+<p>Android Only</p>
+<h3 id="chromecast-explanation">Chromecast explanation</h3>
+<p>The cast option is enabled by default, otherwise you can disable it with the option chromecast = false in InitPlayer options.</p>
+<p>Cast button will only be available if your cast devices are connected in the same WIFI network, if not, the button won't be visible.</p>
+<p>Some videos won't work with Cast, as not every video format is supported.</p>
+<p>When you start casting, the video controllers will be available to control your cast. If you exit the app or close the video, the cast will end automatically.</p>
+<p>Cast title will be the same as title and smallTitle, if these are not added, then it will be blank</p>
+<h3 id="android-quirks">Android Quirks</h3>
+<p>Since 3.7.2, you need to add few things in your Android project to get the plugin working.</p>
+<ul>
+<li>build.gradle (app)</li>
+</ul>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">dependencies</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="p">...</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="n">implementation</span><span class="w"> </span><span class="err">&#39;</span><span class="n">com</span><span class="p">.</span><span class="na">google</span><span class="p">.</span><span class="na">android</span><span class="p">.</span><span class="na">gms</span><span class="p">:</span><span class="n">play</span><span class="o">-</span><span class="n">services</span><span class="o">-</span><span class="n">cast</span><span class="o">-</span><span class="n">framework</span><span class="p">:</span><span class="mf">21.2.0</span><span class="err">&#39;</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p">}</span>
+</span></code></pre></div>
+<ul>
+<li>AndroidManifest.xml</li>
+</ul>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="o">&lt;</span><span class="n">application</span><span class="o">&gt;</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="p">...</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="o">&lt;</span><span class="n">meta</span><span class="o">-</span><span class="n">data</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="n">android</span><span class="p">:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME&quot;</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">        </span><span class="n">android</span><span class="p">:</span><span class="n">value</span><span class="o">=</span><span class="s">&quot;com.google.android.exoplayer2.ext.cast.DefaultCastOptionsProvider&quot;</span><span class="w"> </span><span class="o">/&gt;</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="o">&lt;/</span><span class="n">application</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<ul>
+<li>MainActivity.java</li>
+</ul>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">android.os.Bundle</span><span class="p">;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.google.android.gms.cast.framework.CastContext</span><span class="p">;</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MainActivity</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">BridgeActivity</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span><span class="nd">@Override</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">  </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onCreate</span><span class="p">(</span><span class="n">Bundle</span><span class="w"> </span><span class="n">savedInstanceState</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="kd">super</span><span class="p">.</span><span class="na">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">);</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="n">CastContext</span><span class="p">.</span><span class="na">getSharedInstance</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="w"> </span><span class="c1">// &lt;--- add this</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="p">}</span>
+</span></code></pre></div>
+<h2 id="methods">Methods</h2>
+<p><docgen-api></p>
+<!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
+
+<h3 id="echo">echo(...)</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nx">echo</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">capEchoOptions</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Echo</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>options</code></strong></td>
+<td><code><a href="#capechooptions">capEchoOptions</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="initplayer">initPlayer(...)</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nx">initPlayer</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">capVideoPlayerOptions</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Initialize a video player</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>options</code></strong></td>
+<td><code><a href="#capvideoplayeroptions">capVideoPlayerOptions</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="isplaying">isPlaying(...)</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nx">isPlaying</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">capVideoPlayerIdOptions</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Return if a given playerId is playing</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>options</code></strong></td>
+<td><code><a href="#capvideoplayeridoptions">capVideoPlayerIdOptions</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="play">play(...)</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nx">play</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">capVideoPlayerIdOptions</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Play the current video from a given playerId</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>options</code></strong></td>
+<td><code><a href="#capvideoplayeridoptions">capVideoPlayerIdOptions</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="pause">pause(...)</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nx">pause</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">capVideoPlayerIdOptions</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Pause the current video from a given playerId</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>options</code></strong></td>
+<td><code><a href="#capvideoplayeridoptions">capVideoPlayerIdOptions</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="getduration">getDuration(...)</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nx">getDuration</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">capVideoPlayerIdOptions</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Get the duration of the current video from a given playerId</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>options</code></strong></td>
+<td><code><a href="#capvideoplayeridoptions">capVideoPlayerIdOptions</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="getcurrenttime">getCurrentTime(...)</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nx">getCurrentTime</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">capVideoPlayerIdOptions</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Get the current time of the current video from a given playerId</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>options</code></strong></td>
+<td><code><a href="#capvideoplayeridoptions">capVideoPlayerIdOptions</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="setcurrenttime">setCurrentTime(...)</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nx">setCurrentTime</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">capVideoTimeOptions</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Set the current time to seek the current video to from a given playerId</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>options</code></strong></td>
+<td><code><a href="#capvideotimeoptions">capVideoTimeOptions</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="getvolume">getVolume(...)</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nx">getVolume</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">capVideoPlayerIdOptions</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Get the volume of the current video from a given playerId</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>options</code></strong></td>
+<td><code><a href="#capvideoplayeridoptions">capVideoPlayerIdOptions</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="setvolume">setVolume(...)</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nx">setVolume</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">capVideoVolumeOptions</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Set the volume of the current video to from a given playerId</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>options</code></strong></td>
+<td><code><a href="#capvideovolumeoptions">capVideoVolumeOptions</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="getmuted">getMuted(...)</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nx">getMuted</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">capVideoPlayerIdOptions</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Get the muted of the current video from a given playerId</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>options</code></strong></td>
+<td><code><a href="#capvideoplayeridoptions">capVideoPlayerIdOptions</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="setmuted">setMuted(...)</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nx">setMuted</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">capVideoMutedOptions</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Set the muted of the current video to from a given playerId</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>options</code></strong></td>
+<td><code><a href="#capvideomutedoptions">capVideoMutedOptions</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="setrate">setRate(...)</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nx">setRate</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">capVideoRateOptions</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Set the rate of the current video from a given playerId</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>options</code></strong></td>
+<td><code><a href="#capvideorateoptions">capVideoRateOptions</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="getrate">getRate(...)</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nx">getRate</span><span class="p">(</span><span class="nx">options</span><span class="o">:</span><span class="w"> </span><span class="kt">capVideoPlayerIdOptions</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Get the rate of the current video from a given playerId</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>options</code></strong></td>
+<td><code><a href="#capvideoplayeridoptions">capVideoPlayerIdOptions</a></code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="stopallplayers">stopAllPlayers()</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nx">stopAllPlayers</span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Stop all players playing</p>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="showcontroller">showController()</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nx">showController</span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Show controller</p>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="iscontrollerisfullyvisible">isControllerIsFullyVisible()</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nx">isControllerIsFullyVisible</span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>isControllerIsFullyVisible</p>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="exitplayer">exitPlayer()</h3>
+<div class="language-typescript highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nx">exitPlayer</span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">capVideoPlayerResult</span><span class="o">&gt;</span>
+</span></code></pre></div>
+<p>Exit player</p>
+<p><strong>Returns:</strong> <code>Promise&lt;<a href="#capvideoplayerresult">capVideoPlayerResult</a>&gt;</code></p>
+<hr />
+<h3 id="interfaces">Interfaces</h3>
+<h4 id="capvideoplayerresult">capVideoPlayerResult</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>result</code></strong></td>
+<td><code>boolean</code></td>
+<td>result set to true when successful else false</td>
+</tr>
+<tr>
+<td><strong><code>method</code></strong></td>
+<td><code>string</code></td>
+<td>method name</td>
+</tr>
+<tr>
+<td><strong><code>value</code></strong></td>
+<td><code>any</code></td>
+<td>value returned</td>
+</tr>
+<tr>
+<td><strong><code>message</code></strong></td>
+<td><code>string</code></td>
+<td>message string</td>
+</tr>
+</tbody>
+</table>
+<h4 id="capechooptions">capEchoOptions</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>value</code></strong></td>
+<td><code>string</code></td>
+<td>String to be echoed</td>
+</tr>
+</tbody>
+</table>
+<h4 id="capvideoplayeroptions">capVideoPlayerOptions</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>mode</code></strong></td>
+<td><code>string</code></td>
+<td>Player mode - "fullscreen" - "embedded" (Web only)</td>
+</tr>
+<tr>
+<td><strong><code>url</code></strong></td>
+<td><code>string</code></td>
+<td>The url of the video to play</td>
+</tr>
+<tr>
+<td><strong><code>subtitle</code></strong></td>
+<td><code>string</code></td>
+<td>The url of subtitle associated with the video</td>
+</tr>
+<tr>
+<td><strong><code>language</code></strong></td>
+<td><code>string</code></td>
+<td>The language of subtitle see https://github.com/libyal/libfwnt/wiki/Language-Code-identifiers</td>
+</tr>
+<tr>
+<td><strong><code>subtitleOptions</code></strong></td>
+<td><code><a href="#subtitleoptions">SubTitleOptions</a></code></td>
+<td>SubTitle Options</td>
+</tr>
+<tr>
+<td><strong><code>playerId</code></strong></td>
+<td><code>string</code></td>
+<td>Id of DIV Element parent of the player</td>
+</tr>
+<tr>
+<td><strong><code>rate</code></strong></td>
+<td><code>number</code></td>
+<td>Initial playing rate</td>
+</tr>
+<tr>
+<td><strong><code>exitOnEnd</code></strong></td>
+<td><code>boolean</code></td>
+<td>Exit on VideoEnd (iOS, Android) default: true</td>
+</tr>
+<tr>
+<td><strong><code>loopOnEnd</code></strong></td>
+<td><code>boolean</code></td>
+<td>Loop on VideoEnd when exitOnEnd false (iOS, Android) default: false</td>
+</tr>
+<tr>
+<td><strong><code>pipEnabled</code></strong></td>
+<td><code>boolean</code></td>
+<td>Picture in Picture Enable (iOS, Android) default: true</td>
+</tr>
+<tr>
+<td><strong><code>bkmodeEnabled</code></strong></td>
+<td><code>boolean</code></td>
+<td>Background Mode Enable (iOS, Android) default: true</td>
+</tr>
+<tr>
+<td><strong><code>showControls</code></strong></td>
+<td><code>boolean</code></td>
+<td>Show Controls Enable (iOS, Android) default: true</td>
+</tr>
+<tr>
+<td><strong><code>displayMode</code></strong></td>
+<td><code>string</code></td>
+<td>Display Mode ["all", "portrait", "landscape"] (iOS, Android) default: "all"</td>
+</tr>
+<tr>
+<td><strong><code>componentTag</code></strong></td>
+<td><code>string</code></td>
+<td>Component Tag or DOM Element Tag (React app)</td>
+</tr>
+<tr>
+<td><strong><code>width</code></strong></td>
+<td><code>number</code></td>
+<td>Player Width (mode "embedded" only)</td>
+</tr>
+<tr>
+<td><strong><code>height</code></strong></td>
+<td><code>number</code></td>
+<td>Player height (mode "embedded" only)</td>
+</tr>
+<tr>
+<td><strong><code>headers</code></strong></td>
+<td><code>{ [key: string]: string; }</code></td>
+<td>Headers for the request (iOS, Android) by Manuel García Marín (https://github.com/PhantomPainX)</td>
+</tr>
+<tr>
+<td><strong><code>title</code></strong></td>
+<td><code>string</code></td>
+<td>Title shown in the player (Android) by Manuel García Marín (https://github.com/PhantomPainX)</td>
+</tr>
+<tr>
+<td><strong><code>smallTitle</code></strong></td>
+<td><code>string</code></td>
+<td>Subtitle shown below the title in the player (Android) by Manuel García Marín (https://github.com/PhantomPainX)</td>
+</tr>
+<tr>
+<td><strong><code>accentColor</code></strong></td>
+<td><code>string</code></td>
+<td>ExoPlayer Progress Bar and Spinner color (Android) by Manuel García Marín (https://github.com/PhantomPainX) Must be a valid hex color code default: #FFFFFF</td>
+</tr>
+<tr>
+<td><strong><code>chromecast</code></strong></td>
+<td><code>boolean</code></td>
+<td>Chromecast enable/disable (Android) by Manuel García Marín (https://github.com/PhantomPainX) default: true</td>
+</tr>
+<tr>
+<td><strong><code>artwork</code></strong></td>
+<td><code>string</code></td>
+<td>Artwork url to be shown in Chromecast player by Manuel García Marín (https://github.com/PhantomPainX) default: ""</td>
+</tr>
+</tbody>
+</table>
+<h4 id="subtitleoptions">SubTitleOptions</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>foregroundColor</code></strong></td>
+<td><code>string</code></td>
+<td>Foreground Color in RGBA (default rgba(255,255,255,1)</td>
+</tr>
+<tr>
+<td><strong><code>backgroundColor</code></strong></td>
+<td><code>string</code></td>
+<td>Background Color in RGBA (default rgba(0,0,0,1)</td>
+</tr>
+<tr>
+<td><strong><code>fontSize</code></strong></td>
+<td><code>number</code></td>
+<td>Font Size in pixels (default 16)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="capvideoplayeridoptions">capVideoPlayerIdOptions</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>playerId</code></strong></td>
+<td><code>string</code></td>
+<td>Id of DIV Element parent of the player</td>
+</tr>
+</tbody>
+</table>
+<h4 id="capvideotimeoptions">capVideoTimeOptions</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>playerId</code></strong></td>
+<td><code>string</code></td>
+<td>Id of DIV Element parent of the player</td>
+</tr>
+<tr>
+<td><strong><code>seektime</code></strong></td>
+<td><code>number</code></td>
+<td>Video time value you want to seek to</td>
+</tr>
+</tbody>
+</table>
+<h4 id="capvideovolumeoptions">capVideoVolumeOptions</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>playerId</code></strong></td>
+<td><code>string</code></td>
+<td>Id of DIV Element parent of the player</td>
+</tr>
+<tr>
+<td><strong><code>volume</code></strong></td>
+<td><code>number</code></td>
+<td>Volume value between [0 - 1]</td>
+</tr>
+</tbody>
+</table>
+<h4 id="capvideomutedoptions">capVideoMutedOptions</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>playerId</code></strong></td>
+<td><code>string</code></td>
+<td>Id of DIV Element parent of the player</td>
+</tr>
+<tr>
+<td><strong><code>muted</code></strong></td>
+<td><code>boolean</code></td>
+<td>Muted value true or false</td>
+</tr>
+</tbody>
+</table>
+<h4 id="capvideorateoptions">capVideoRateOptions</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>playerId</code></strong></td>
+<td><code>string</code></td>
+<td>Id of DIV Element parent of the player</td>
+</tr>
+<tr>
+<td><strong><code>rate</code></strong></td>
+<td><code>number</code></td>
+<td>Rate value</td>
+</tr>
+</tbody>
+</table>
+<p></docgen-api></p>
+<h3 id="listeners">Listeners</h3>
+<p>The listeners are attached to the plugin not anymore to the DOM document element.</p>
+<table>
+<thead>
+<tr>
+<th>Listener</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>jeepCapVideoPlayerReady</strong></td>
+<td><a href="#capvideolistener">capVideoListener</a></td>
+<td>Emitted when the video start to play</td>
+</tr>
+<tr>
+<td><strong>jeepCapVideoPlayerPlay</strong></td>
+<td><a href="#capvideolistener">capVideoListener</a></td>
+<td>Emitted when the video start to play</td>
+</tr>
+<tr>
+<td><strong>jeepCapVideoPlayerPause</strong></td>
+<td><a href="#capvideolistener">capVideoListener</a></td>
+<td>Emitted when the video is paused</td>
+</tr>
+<tr>
+<td><strong>jeepCapVideoPlayerEnded</strong></td>
+<td><a href="#capvideolistener">capVideoListener</a></td>
+<td>Emitted when the video has ended</td>
+</tr>
+<tr>
+<td><strong>jeepCapVideoPlayerExit</strong></td>
+<td><a href="#capexitlistener">capExitListener</a></td>
+<td>Emitted when the Exit button is clicked</td>
+</tr>
+</tbody>
+</table>
+<h4 id="capvideolistener">capVideoListener</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>playerId</strong></td>
+<td>string</td>
+<td>Id of DIV Element parent of the player</td>
+</tr>
+<tr>
+<td><strong>currentTime</strong></td>
+<td>number</td>
+<td>Video current time when listener trigerred</td>
+</tr>
+</tbody>
+</table>
+<h4 id="capexitlistener">capExitListener</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>dismiss</strong></td>
+<td>boolean</td>
+<td>Dismiss value true or false</td>
+</tr>
+<tr>
+<td><strong>currentTime</strong></td>
+<td>number</td>
+<td>Video current time when listener trigerred</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy", "content.code.select", "content.code.annotate"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      
+    
+  </body>
+</html>
