@@ -287,49 +287,23 @@ export class VideoPlayer {
 
   private _getVideoType(): boolean {
     let ret = false;
-    let vType = '';
     const sUrl: string = this._url ? this._url : '';
     if (sUrl != null && sUrl.length > 0) {
       try {
-        const val = sUrl.substring(sUrl.lastIndexOf('/')).match(/(.*)\.(.*)/);
-        if (val == null) {
-          vType = '';
+        const isHls = sUrl.match(/\.(m3u8)/i);
+        if (isHls) {
+          this._videoType = 'application/x-mpegURL';
+          ret = true;
         } else {
-          const a = sUrl.match(/(.*)\.(.*)/);
-          vType = a != null ? a[2].split('?')[0] : '';
-        }
-        switch (vType) {
-          case 'mp4':
-          case '':
-          case 'webm':
-          case 'cmaf':
-          case 'cmfv':
-          case 'cmfa': {
+          const isMp4 = sUrl.match(/\.(mp4|webm|cmaf|cmfv|cmfa)/i);
+          if (isMp4) {
             this._videoType = 'video/mp4';
-            break;
-          }
-          case 'm3u8': {
-            this._videoType = 'application/x-mpegURL';
-            break;
-          }
-          /*
-                  case "mpd" : {
-                  this._videoType = "application/dash+xml";
-                  break;
-                  }
-          */
-          /*
-                  case "youtube" : {
-                  this._videoType = "video/youtube";
-                  break;
-                  }
-          */
-          default: {
+            ret = true;
+          } else {
             this._videoType = null;
-            break;
+            ret = false;
           }
         }
-        ret = true;
       } catch {
         ret = false;
       }
