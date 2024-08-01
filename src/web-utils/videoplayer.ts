@@ -1,5 +1,6 @@
 import Hls from 'hls.js';
-import { mimeType, videoTypes } from './video-types';
+import type { mimeType } from './video-types';
+import { videoTypes, possibleQueryParameterExtensionVars } from './video-types';
 
 export class VideoPlayer {
   public videoEl: HTMLVideoElement | undefined;
@@ -304,7 +305,24 @@ export class VideoPlayer {
           return (this._videoType = mimeType);
         }
       });
-      // No extension found, then we assume it's an mp4 (Match case for '')
+      // we check for not supported extensions for URLs that have the extension in the filename
+      // e.g. https://vimeo.com/?file=not-supported-extension-video.mkv
+      const hasNotSupportedDotExtension = sUrl.match(/\.(.*)/i);
+      if (hasNotSupportedDotExtension) {
+        return (this._videoType = null);
+      }
+      // we check for not supported extensions for URLs that might have the extension as a query parameter
+      // e.g. https://youtube.com/?v=3982748927&filetype=mkv
+      const hasNotSupportedExtensionInUrl = sUrl.match(
+        new RegExp(
+          `(${possibleQueryParameterExtensionVars.join('|')})\=+(.*)&?(?=&|$))`,
+          'i',
+        ),
+      );
+      if (hasNotSupportedExtensionInUrl) {
+        return (this._videoType = null);
+      }
+      // No extension found, then we assume it's 'mp4' (Match case for '')
       return 'video/mp4';
     }
     // URL was not defined, we return null
