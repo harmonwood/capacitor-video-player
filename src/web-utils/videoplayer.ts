@@ -1,6 +1,6 @@
 import Hls from 'hls.js';
 import type { mimeType } from './video-types';
-import { videoTypes, possibleQueryParameterExtensionVars } from './video-types';
+import { videoTypes, possibleQueryParameterExtensions } from './video-types';
 
 export class VideoPlayer {
   public videoEl: HTMLVideoElement | undefined;
@@ -315,7 +315,7 @@ export class VideoPlayer {
       // e.g. https://youtube.com/?v=3982748927&filetype=mkv
       const hasNotSupportedExtensionInUrl = sUrl.match(
         new RegExp(
-          `(${possibleQueryParameterExtensionVars.join('|')})\=+(.*)&?(?=&|$))`,
+          `(${possibleQueryParameterExtensions.join('|')})\=+(.*)&?(?=&|$))`,
           'i',
         ),
       );
