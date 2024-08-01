@@ -1,6 +1,6 @@
-export type extension = 'mp4' | 'webm' | 'cmaf' | 'cmfv' | 'm3u8';
-export type mimeType = 'video/mp4' | 'application/x-mpegURL';
-export const possibleQueryParameterExtensions: Array<string> = [
+export type videoExtension = 'mp4' | 'webm' | 'cmaf' | 'cmfv' | 'm3u8';
+export type videoMimeType = 'video/mp4' | 'application/x-mpegURL';
+export const possibleQueryParameterExtensions: string[] = [
   'file',
   'extension',
   'filetype',
@@ -8,7 +8,7 @@ export const possibleQueryParameterExtensions: Array<string> = [
   'ext',
 ];
 
-export const videoTypes: Record<extension, mimeType> = {
+export const videoTypes: Record<videoExtension, videoMimeType> = {
   mp4: 'video/mp4',
   webm: 'video/mp4',
   cmaf: 'video/mp4',

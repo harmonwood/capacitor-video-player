@@ -1,5 +1,6 @@
 import Hls from 'hls.js';
-import type { mimeType } from './video-types';
+
+import type { videoMimeType } from './video-types';
 import { videoTypes, possibleQueryParameterExtensions } from './video-types';
 
 export class VideoPlayer {
@@ -16,7 +17,7 @@ export class VideoPlayer {
   private _height: number;
   private _zIndex: number;
   private _initial: any;
-  private _videoType: mimeType | null = null;
+  private _videoType: videoMimeType | null = null;
   private _videoContainer: any = null;
   private _firstReadyToPlay = true;
   private _isEnded = false;
@@ -51,7 +52,7 @@ export class VideoPlayer {
 
   public async initialize(): Promise<void> {
     // get the video type
-    const urlVideoType: mimeType | null = this._getVideoType();
+    const urlVideoType: videoMimeType | null = this._getVideoType();
     if (urlVideoType) {
       // style the container
       if (this._mode === 'fullscreen') {
@@ -288,7 +289,7 @@ export class VideoPlayer {
     });
   }
 
-  private _getVideoType(): mimeType | null {
+  private _getVideoType(): videoMimeType | null {
     const sUrl: string = this._url ? this._url : '';
     if (sUrl != null && sUrl.length > 0) {
       Object.entries(videoTypes).forEach(([extension, mimeType]) => {
