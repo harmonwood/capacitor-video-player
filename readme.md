@@ -33,7 +33,7 @@
 | Harmon Wood       | [harmonwood](https://github.com/harmonwood) |        | ✅     |
 | Quéau Jean Pierre | [jepiqueau](https://github.com/jepiqueau)   |        | ❌     |
 
-## LATEST FOR CAPACITOR 5 (Master)
+## LATEST FOR CAPACITOR 6 (main)
 
 ## Browser Support
 
@@ -114,12 +114,11 @@ No configuration required for this plugin
 
 ## Documentation
 
-[API_Documentation](https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/API.md)
+[API_Documentation](https://www.capacitorvideoplayer.com/API/)
 
 ## Tutorials Blog
 
  - [JeepQ Capacitor Plugin Tutorials](https://jepiqueau.github.io/)
-
 
 
 ## Applications demonstrating the use of the plugin
