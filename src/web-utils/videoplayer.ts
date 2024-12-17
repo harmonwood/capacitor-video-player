@@ -1,5 +1,8 @@
 import Hls from 'hls.js';
 
+import type { videoMimeType } from './video-types';
+import { videoTypes, possibleQueryParameterExtensions } from './video-types';
+
 export class VideoPlayer {
   public videoEl: HTMLVideoElement | undefined;
   public pipMode = false;
@@ -14,7 +17,7 @@ export class VideoPlayer {
   private _height: number;
   private _zIndex: number;
   private _initial: any;
-  private _videoType: string | null = null;
+  private _videoType: videoMimeType | null = null;
   private _videoContainer: any = null;
   private _firstReadyToPlay = true;
   private _isEnded = false;
@@ -49,8 +52,8 @@ export class VideoPlayer {
 
   public async initialize(): Promise<void> {
     // get the video type
-    const retB: boolean = this._getVideoType();
-    if (retB) {
+    const urlVideoType: videoMimeType | null = this._getVideoType();
+    if (urlVideoType) {
       // style the container
       if (this._mode === 'fullscreen') {
         this._container.style.position = 'absolute';
@@ -120,6 +123,7 @@ export class VideoPlayer {
     }
     return;
   }
+
   private async createVideoElement(
     width: number,
     height: number,
@@ -285,56 +289,45 @@ export class VideoPlayer {
     });
   }
 
-  private _getVideoType(): boolean {
-    let ret = false;
-    let vType = '';
+  private _getVideoType(): videoMimeType | null {
     const sUrl: string = this._url ? this._url : '';
     if (sUrl != null && sUrl.length > 0) {
-      try {
-        const val = sUrl.substring(sUrl.lastIndexOf('/')).match(/(.*)\.(.*)/);
-        if (val == null) {
-          vType = '';
-        } else {
-          const a = sUrl.match(/(.*)\.(.*)/);
-          vType = a != null ? a[2].split('?')[0] : '';
+      Object.entries(videoTypes).forEach(([extension, mimeType]) => {
+        // we search for dot + extension (e.g. `.mp4`) for URLs that have the extension in the filename
+        // e.g. https://vimeo.com/?file=my-video.mp4
+        const hasDotExtension = sUrl.match(new RegExp(`.(${extension})`, 'i'));
+        if (hasDotExtension) {
+          return (this._videoType = mimeType);
         }
-        switch (vType) {
-          case 'mp4':
-          case '':
-          case 'webm':
-          case 'cmaf':
-          case 'cmfv':
-          case 'cmfa': {
-            this._videoType = 'video/mp4';
-            break;
-          }
-          case 'm3u8': {
-            this._videoType = 'application/x-mpegURL';
-            break;
-          }
-          /*
-                  case "mpd" : {
-                  this._videoType = "application/dash+xml";
-                  break;
-                  }
-          */
-          /*
-                  case "youtube" : {
-                  this._videoType = "video/youtube";
-                  break;
-                  }
-          */
-          default: {
-            this._videoType = null;
-            break;
-          }
+        // we search for the extension (e.g. `m3u8`) for URLs that might have the extension as a query parameter
+        // e.g. https://youtube.com/?v=7894289374&type=m3u8
+        const hasExtensionInUrl = sUrl.match(new RegExp(`(${extension})`, 'i'));
+        if (hasExtensionInUrl) {
+          return (this._videoType = mimeType);
         }
-        ret = true;
-      } catch {
-        ret = false;
+      });
+      // we check for not supported extensions for URLs that have the extension in the filename
+      // e.g. https://vimeo.com/?file=not-supported-extension-video.mkv
+      const hasNotSupportedDotExtension = sUrl.match(/\.(.*)/i);
+      if (hasNotSupportedDotExtension) {
+        return (this._videoType = null);
       }
+      // we check for not supported extensions for URLs that might have the extension as a query parameter
+      // e.g. https://youtube.com/?v=3982748927&filetype=mkv
+      const hasNotSupportedExtensionInUrl = sUrl.match(
+        new RegExp(
+          `(${possibleQueryParameterExtensions.join('|')})\=+(.*)&?(?=&|$))`,
+          'i',
+        ),
+      );
+      if (hasNotSupportedExtensionInUrl) {
+        return (this._videoType = null);
+      }
+      // No extension found, then we assume it's 'mp4' (Match case for '')
+      return 'video/mp4';
     }
-    return ret;
+    // URL was not defined, we return null
+    return null;
   }
 
   private async _doHide(exitEl: HTMLButtonElement, duration: number) {
@@ -360,7 +353,6 @@ export class VideoPlayer {
     }
     document.dispatchEvent(event);
   }
-
   private _closeFullscreen() {
     const mydoc: any = document;
     const isInFullScreen: boolean =
