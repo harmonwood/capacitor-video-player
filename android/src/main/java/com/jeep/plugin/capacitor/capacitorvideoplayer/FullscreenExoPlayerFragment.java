@@ -8,6 +8,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -473,6 +474,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
       Log.d(TAG, "Video path wrong or type not supported");
       Toast.makeText(context, "Video path wrong or type not supported", Toast.LENGTH_SHORT).show();
     }
+    adjustAspectRatio();
     return view;
   }
 
@@ -1391,4 +1393,18 @@ public class FullscreenExoPlayerFragment extends Fragment {
   }
 
   private final class EmptyCallback extends MediaRouter.Callback {}
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    adjustAspectRatio();
+  }
+
+  private void adjustAspectRatio() {
+    if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      styledPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+    } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+      styledPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+    }
+  }
 }
