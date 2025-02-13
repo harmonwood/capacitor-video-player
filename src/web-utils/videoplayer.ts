@@ -316,7 +316,7 @@ export class VideoPlayer {
       // e.g. https://youtube.com/?v=3982748927&filetype=mkv
       const hasNotSupportedExtensionInUrl = sUrl.match(
         new RegExp(
-          `(${possibleQueryParameterExtensions.join('|')})\=+(.*)&?(?=&|$))`,
+          `(${possibleQueryParameterExtensions.join('|')})\=+(.*)&?(?=&|$)`,
           'i',
         ),
       );
