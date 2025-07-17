@@ -63,3 +63,5 @@ captures
 
 site
 dist
+
+android/build/outputs/logs
