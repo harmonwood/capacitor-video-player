@@ -1,8 +1,8 @@
 <p align="center"><br><img src="https://user-images.githubusercontent.com/236501/85893648-1c92e880-b7a8-11ea-926d-95355b8175c7.png" width="128" height="128" /></p>
 <h3 align="center">Video Player</h3>
-<p align="center"><strong><code>capacitor-video-player</code></strong></p>
+<p align="center"><strong><code>@trustcoder/capacitor-video-player</code></strong></p>
 <br>
-<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 6</strong></p><br>
+<p align="center" style="font-size:50px;color:red"><strong>CAPACITOR 7</strong></p><br>
 <br>
 <p align="center" style="font-size:20px;color:red"><a href="https://github.com/jepiqueau/capacitor-video-player/blob/master/docs/Jean_Pierre_Queau.md"><strong>Special note from Jean Pierre Quéau the original founder of this project.</strong></a></p>
 <br>
@@ -30,10 +30,11 @@
 
 | Maintainer        | GitHub                                      | Social | Active |
 | ----------------- | ------------------------------------------- | ------ | ------ |
-| Harmon Wood       | [harmonwood](https://github.com/harmonwood) |        | ✅     |
+| Usman Ali         | [trustcoder](https://github.com/trustcoder) |        | ✅     |
+| Quéau Jean Pierre | [jepiqueau](https://github.com/harmonwood)  |        | ❌     |
 | Quéau Jean Pierre | [jepiqueau](https://github.com/jepiqueau)   |        | ❌     |
 
-## LATEST FOR CAPACITOR 6 (main)
+## LATEST FOR CAPACITOR 7 (main)
 
 ## Browser Support
 
@@ -46,7 +47,7 @@ meaning that it will not work in IE11 without additional JavaScript transformati
 ## Installation
 
   ```bash
-  npm install --save capacitor-video-player
+  npm install --save @trust-coder/capacitor-video-player
   npx cap sync
   npx cap sync @capacitor-community/electron
   ```
