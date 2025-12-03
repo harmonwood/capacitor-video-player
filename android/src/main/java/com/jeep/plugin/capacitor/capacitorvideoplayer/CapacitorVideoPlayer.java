@@ -25,6 +25,7 @@ public class CapacitorVideoPlayer {
         Boolean bkModeEnabled,
         Boolean showControls,
         String displayMode,
+        int resizeMode,
         String subTitle,
         String language,
         JSObject subTitleOptions,
@@ -49,6 +50,7 @@ public class CapacitorVideoPlayer {
         fsFragment.bkModeEnabled = bkModeEnabled;
         fsFragment.showControls = showControls;
         fsFragment.displayMode = displayMode;
+        fsFragment.resizeMode = resizeMode;
         fsFragment.subTitle = subTitle;
         fsFragment.language = language;
         fsFragment.subTitleOptions = subTitleOptions;

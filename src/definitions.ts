@@ -161,6 +161,13 @@ export interface capVideoPlayerOptions {
    * default: "all"
    */
   displayMode?: string;
+
+  /**
+   * Resize Mode ["fill", "fit", "zoom"] (iOS, Android)
+   * default: "fill"
+   */
+  resizeMode?: string;
+
   /**
    * Component Tag or DOM Element Tag (React app)
    */
