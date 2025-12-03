@@ -117,6 +117,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
   public Boolean bkModeEnabled;
   public Boolean showControls;
   public String displayMode = "all";
+  public int resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL;
+
   public String title;
   public String smallTitle;
   public String accentColor;
@@ -1401,10 +1403,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
   }
 
   private void adjustAspectRatio() {
-    if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-      styledPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
-    } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-      styledPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
-    }
+    styledPlayerView.setResizeMode(resizeMode);
   }
 }

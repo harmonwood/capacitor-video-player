@@ -21,6 +21,7 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.Notifications.MyRunnable;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.Notifications.NotificationCenter;
 import com.jeep.plugin.capacitor.capacitorvideoplayer.PickerVideo.PickerVideoFragment;
@@ -63,6 +64,9 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
     private Boolean bkModeEnabled = true;
     private Boolean showControls = true;
     private String displayMode = "all";
+
+    private int resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL;
+
     private FullscreenExoPlayerFragment fsFragment;
     private PickerVideoFragment pkFragment;
     private FilesUtils filesUtils;
@@ -180,7 +184,26 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         if (call.getData().has("displayMode")) {
             _displayMode = call.getString("displayMode");
         }
+
         displayMode = _displayMode;
+
+        String _resizeMode = "fill";
+        if (call.getData().has("resizeMode")) {
+            _resizeMode = call.getString("resizeMode");
+        }
+
+        if("fill".equals(_resizeMode)) {
+            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL;
+        }
+
+        if("fit".equals(_resizeMode)) {
+            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT;
+        }
+
+        if("zoom".equals(_resizeMode)) {
+            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
+        }
+
         if ("fullscreen".equals(mode)) {
             fsPlayerId = playerId;
             url = call.getString("url");
@@ -930,6 +953,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
               bkModeEnabled,
               showControls,
               displayMode,
+              resizeMode,
               subTitlePath,
               language,
               subTitleOptions,
@@ -1106,6 +1130,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                                 bkModeEnabled,
                                 showControls,
                                 displayMode,
+                                resizeMode,
                                 null,
                                 null,
                                 null,
@@ -1145,6 +1170,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
         Boolean bkModeEnabled,
         Boolean showControls,
         String displayMode,
+        int resizeMode,
         String subTitle,
         String language,
         JSObject subTitleOptions,
@@ -1171,6 +1197,7 @@ public class CapacitorVideoPlayerPlugin extends Plugin {
                 bkModeEnabled,
                 showControls,
                 displayMode,
+                resizeMode,
                 subTitle,
                 language,
                 subTitleOptions,
