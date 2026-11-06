@@ -9,6 +9,13 @@
 
 * upgrade to Capacitor 8 ([#18](https://github.com/e-picsa/capacitor-video-player/issues/18)) ([7da0888](https://github.com/e-picsa/capacitor-video-player/commit/7da08885f3b2431054dd64c8d36a58f87f8ca545))
 
+## [8.0.2](https://github.com/e-picsa/capacitor-video-player/compare/capacitor-video-player-v8.0.1...capacitor-video-player-v8.0.2) (2026-11-06)
+
+
+### Bug Fixes
+
+* **android:** guard orphaned fragment resume against null PlayerView ([#26](https://github.com/e-picsa/capacitor-video-player/issues/26)) ([8156951](https://github.com/e-picsa/capacitor-video-player/commit/81569513e2dd6b702d5cf57ef243d6b4d00b1b3d))
+
 ## [8.0.1](https://github.com/e-picsa/capacitor-video-player/compare/capacitor-video-player-v8.0.0...capacitor-video-player-v8.0.1) (2026-10-14)
 
 
