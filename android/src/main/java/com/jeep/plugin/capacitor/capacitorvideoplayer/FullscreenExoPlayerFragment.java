@@ -892,6 +892,12 @@ public class FullscreenExoPlayerFragment extends Fragment {
   public void onResume() {
     super.onResume();
     //if (chromecast && castContext != null) castContext.addCastStateListener(castStateListener);
+    // Skip resume handling when the view was never inflated (orphaned fragment
+    // recreation after process death returns an empty View in onCreateView, so
+    // styledPlayerView stays null while async removal is still pending).
+    if (styledPlayerView == null) {
+      return;
+    }
     if (!isInPictureInPictureMode) {
       hideSystemUi();
       if ((Util.SDK_INT < 24 || player == null)) {
@@ -943,6 +949,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * Initialize the player
    */
   private void initializePlayer() {
+    // Guard against orphaned fragment recreations where onCreateView returned
+    // an empty View without inflating the layout (styledPlayerView is null).
+    if (styledPlayerView == null) {
+      return;
+    }
     if (player == null) {
       ExoTrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory();
       trackSelector = new DefaultTrackSelector(context, videoTrackSelectionFactory);
