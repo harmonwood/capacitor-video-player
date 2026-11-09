@@ -301,7 +301,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
       new PlayerView.ControllerVisibilityListener() {
         @Override
         public void onVisibilityChanged(int visibility) {
-          linearLayout.setVisibility(visibility);
+          if (linearLayout != null) {
+            linearLayout.setVisibility(visibility);
+          }
         }
       }
     );
@@ -310,6 +312,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
       new Player.Listener() {
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int state) {
+          if (isFragmentDestroyed || player == null || styledPlayerView == null) {
+            return;
+          }
           String stateString;
           Map<String, Object> info = new HashMap<String, Object>() {
             {
@@ -546,7 +551,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
     @Override
     protected void onPostExecute(Bitmap result) {
-      cast_image.setImageBitmap(result);
+      if (cast_image != null) {
+        cast_image.setImageBitmap(result);
+      }
     }
   }
 
@@ -554,14 +561,16 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * Show controller
    */
   public void showController() {
-    styledPlayerView.showController();
+    if (styledPlayerView != null) {
+      styledPlayerView.showController();
+    }
   }
 
   /**
    * isControllerIsFullyVisible
    */
   public boolean isControllerIsFullyVisible() {
-    return styledPlayerView.isControllerFullyVisible();
+    return styledPlayerView != null && styledPlayerView.isControllerFullyVisible();
   }
 
   /**
@@ -587,6 +596,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
     if (
       !isInPictureInPictureMode &&
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
+        packageManager != null &&
         packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) &&
         Boolean.TRUE.equals(isPIPModeeEnabled) &&
         Boolean.TRUE.equals(pipEnabled) &&
@@ -599,18 +609,21 @@ public class FullscreenExoPlayerFragment extends Fragment {
   }
 
   private void resizePressed() {
+    if (styledPlayerView == null) {
+      return;
+    }
     if (resizeStatus == AspectRatioFrameLayout.RESIZE_MODE_FIT) {
       styledPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
       resizeStatus = AspectRatioFrameLayout.RESIZE_MODE_FILL;
-      resizeBtn.setImageResource(R.drawable.ic_zoom);
+      if (resizeBtn != null) resizeBtn.setImageResource(R.drawable.ic_zoom);
     } else if (resizeStatus == AspectRatioFrameLayout.RESIZE_MODE_FILL) {
       styledPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
       resizeStatus = AspectRatioFrameLayout.RESIZE_MODE_ZOOM;
-      resizeBtn.setImageResource(R.drawable.ic_fit);
+      if (resizeBtn != null) resizeBtn.setImageResource(R.drawable.ic_fit);
     } else {
       styledPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
       resizeStatus = AspectRatioFrameLayout.RESIZE_MODE_FIT;
-      resizeBtn.setImageResource(R.drawable.ic_expand);
+      if (resizeBtn != null) resizeBtn.setImageResource(R.drawable.ic_expand);
     }
   }
 
@@ -645,7 +658,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * Perform pictureInPictureMode Action
    */
   private void pictureInPictureMode() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && packageManager != null && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
       // Store activity reference to avoid multiple getActivity() calls and check for null
       // Fragment may be detached from activity during transitions or configuration changes
       Activity activity = getActivity();
@@ -653,9 +666,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
         Log.v(TAG, "pictureInPictureMode: activity is null");
         return;
       }
-      styledPlayerView.setUseController(false);
-      styledPlayerView.setControllerAutoShow(false);
-      linearLayout.setVisibility(View.INVISIBLE);
+      if (styledPlayerView != null) {
+        styledPlayerView.setUseController(false);
+        styledPlayerView.setControllerAutoShow(false);
+      }
+      if (linearLayout != null) {
+        linearLayout.setVisibility(View.INVISIBLE);
+      }
       Log.v(TAG, "PIP break 1");
       // require android O or higher
       if (
@@ -663,9 +680,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
       ) {
         pictureInPictureParams = new PictureInPictureParams.Builder();
         // setup aspect ratio of the PIP window; fall back to 16:9 for audio-only or not-yet-decoded video
-        VideoSize videoSize = player.getVideoSize();
-        if (videoSize != VideoSize.UNKNOWN) {
-          pictureInPictureParams.setAspectRatio(new Rational(videoSize.width, videoSize.height));
+        if (player != null) {
+          VideoSize videoSize = player.getVideoSize();
+          if (videoSize != VideoSize.UNKNOWN) {
+            pictureInPictureParams.setAspectRatio(new Rational(videoSize.width, videoSize.height));
+          } else {
+            pictureInPictureParams.setAspectRatio(new Rational(16, 9));
+          }
         } else {
           pictureInPictureParams.setAspectRatio(new Rational(16, 9));
         }
@@ -726,12 +747,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
         if (castContext != null && Boolean.TRUE.equals(chromecast) && castPlayer != null && castPlayer.isCastSessionAvailable()) return;
 
         initializePlayer();
-        if (player.getCurrentPosition() != 0) {
+        if (player != null && player.getCurrentPosition() != 0) {
           firstReadyToPlay = false;
           play();
         }
-      } else {
-        getActivity().finishAndRemoveTask();
       }
     }
   }
@@ -743,11 +762,16 @@ public class FullscreenExoPlayerFragment extends Fragment {
   public void onStop() {
     super.onStop();
     boolean isAppBackground = false;
-    if (Boolean.TRUE.equals(bkModeEnabled)) isAppBackground = isApplicationSentToBackground(context);
+    if (context != null && Boolean.TRUE.equals(bkModeEnabled)) isAppBackground = isApplicationSentToBackground(context);
     if (isInPictureInPictureMode) {
-      linearLayout.setVisibility(View.VISIBLE);
+      if (linearLayout != null) {
+        linearLayout.setVisibility(View.VISIBLE);
+      }
       playerExit();
-      getActivity().finishAndRemoveTask();
+      Activity activity = getActivity();
+      if (activity != null) {
+        activity.finishAndRemoveTask();
+      }
     }
   }
 
@@ -756,12 +780,12 @@ public class FullscreenExoPlayerFragment extends Fragment {
    */
   @Override
   public void onDestroy() {
+    // Release player before setting isFragmentDestroyed and calling super to ensure proper cleanup order
+    releasePlayer();
     isFragmentDestroyed = true;
     
-    // Release player before calling super to ensure proper cleanup order
-    releasePlayer();
-    
-    // Clean up handler
+    // Clean up handlers
+    handler.removeCallbacks(mRunnable);
     if (mainHandler != null) {
         mainHandler.removeCallbacksAndMessages(null);
         mainHandler = null;
@@ -782,6 +806,18 @@ public class FullscreenExoPlayerFragment extends Fragment {
   }
 
   /**
+   * Perform onDestroyView Action
+   */
+  @Override
+  public void onDestroyView() {
+    if (styledPlayerView != null) {
+      styledPlayerView.setPlayer(null);
+      styledPlayerView = null;
+    }
+    super.onDestroyView();
+  }
+
+  /**
    * Perform onPause Action
    */
   @Override
@@ -791,7 +827,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
       castContext.removeCastStateListener(castStateListener);
     }
     boolean isAppBackground = false;
-    if (Boolean.TRUE.equals(bkModeEnabled)) isAppBackground = isApplicationSentToBackground(context);
+    if (context != null && Boolean.TRUE.equals(bkModeEnabled)) isAppBackground = isApplicationSentToBackground(context);
 
     if (!isInPictureInPictureMode) {
       if (Util.SDK_INT < 24) {
@@ -807,7 +843,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
         }
       }
     } else {
-      if (linearLayout.getVisibility() == View.VISIBLE) {
+      if (linearLayout != null && linearLayout.getVisibility() == View.VISIBLE) {
         linearLayout.setVisibility(View.INVISIBLE);
       }
       if ((isInPictureInPictureMode || isAppBackground) && player != null) play();
@@ -843,6 +879,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
   }
 
   private void releasePlayerInternal() {
+    if (styledPlayerView != null) {
+      styledPlayerView.setPlayer(null);
+    }
     if (player != null && !isFragmentDestroyed) {
         try {
             playWhenReady = player.getPlayWhenReady();
@@ -940,9 +979,15 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * Leave the fullsreen mode and reset the status bar to visible
    */
   private void showSystemUI() {
-    getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    getActivity().getWindow().getDecorView().setSystemUiVisibility(View.VISIBLE);
+    Activity activity = getActivity();
+    if (activity != null && activity.getWindow() != null) {
+      activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+      activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+      View decorView = activity.getWindow().getDecorView();
+      if (decorView != null) {
+        decorView.setSystemUiVisibility(View.VISIBLE);
+      }
+    }
   }
 
   /**
@@ -1015,15 +1060,18 @@ public class FullscreenExoPlayerFragment extends Fragment {
   }
 
   private void setSubtitle(boolean transparent) {
+    if (styledPlayerView == null || styledPlayerView.getSubtitleView() == null) {
+      return;
+    }
     int foreground;
     int background;
     if (!transparent) {
       foreground = Color.WHITE;
       background = Color.BLACK;
-      if (stForeColor.length() > 4 && stForeColor.substring(0, 4).equals("rgba")) {
+      if (stForeColor != null && stForeColor.length() > 4 && stForeColor.substring(0, 4).equals("rgba")) {
         foreground = getColorFromRGBA(stForeColor);
       }
-      if (stBackColor.length() > 4 && stBackColor.substring(0, 4).equals("rgba")) {
+      if (stBackColor != null && stBackColor.length() > 4 && stBackColor.substring(0, 4).equals("rgba")) {
         background = getColorFromRGBA(stBackColor);
       }
     } else {
@@ -1035,7 +1083,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
       .setStyle(
         new CaptionStyleCompat(foreground, background, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null)
       );
-    styledPlayerView.getSubtitleView().setFixedTextSize(TypedValue.COMPLEX_UNIT_DIP, stFontSize);
+    styledPlayerView.getSubtitleView().setFixedTextSize(TypedValue.COMPLEX_UNIT_DIP, stFontSize != null ? stFontSize : 16);
     styledPlayerView.setShowSubtitleButton(true);
   }
 
@@ -1198,7 +1246,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * Fast Forward TV
    */
   private void fastForward(long position, int times) {
-    if (position < mDuration - videoStep) {
+    if (player != null && position < mDuration - videoStep) {
       if (player.isPlaying()) {
         player.setPlayWhenReady(false);
       }
@@ -1211,7 +1259,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * Rewind TV
    */
   private void rewind(long position, int times) {
-    if (position > videoStep) {
+    if (player != null && position > videoStep) {
       if (player.isPlaying()) {
         player.setPlayWhenReady(false);
       }
@@ -1224,7 +1272,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * Play Pause TV
    */
   private void play_pause() {
-    player.setPlayWhenReady(!player.isPlaying());
+    if (player != null) {
+      player.setPlayWhenReady(!player.isPlaying());
+    }
   }
 
   /**
@@ -1232,7 +1282,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * @return boolean
    */
   public boolean isPlaying() {
-    return player.isPlaying();
+    return player != null && player.isPlaying();
   }
 
   /**
@@ -1312,6 +1362,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * @return int in seconds
    */
   public int getDuration() {
+    if (player == null) {
+      return 0;
+    }
     return player.getDuration() == UNKNOWN_TIME ? 0 : (int) (player.getDuration() / 1000);
   }
 
@@ -1338,8 +1391,12 @@ public class FullscreenExoPlayerFragment extends Fragment {
     
     try {
         if (isInPictureInPictureMode) {
-            styledPlayerView.setUseController(false);
-            linearLayout.setVisibility(View.INVISIBLE);
+            if (styledPlayerView != null) {
+                styledPlayerView.setUseController(false);
+            }
+            if (linearLayout != null) {
+                linearLayout.setVisibility(View.INVISIBLE);
+            }
         }
         long seekPosition = player.getCurrentPosition() == UNKNOWN_TIME
             ? 0
@@ -1355,7 +1412,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * @return float
    */
   public float getVolume() {
-    return player.getVolume();
+    return player != null ? player.getVolume() : curVolume;
   }
 
   /**
@@ -1364,7 +1421,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
    */
   public void setVolume(float _volume) {
     float volume = Math.min(Math.max(0, _volume), 1L);
-    player.setVolume(volume);
+    curVolume = volume;
+    if (player != null) {
+      player.setVolume(volume);
+    }
   }
 
   /**
@@ -1381,8 +1441,10 @@ public class FullscreenExoPlayerFragment extends Fragment {
    */
   public void setRate(float _rate) {
     videoRate = _rate;
-    PlaybackParameters param = new PlaybackParameters(videoRate);
-    player.setPlaybackParameters(param);
+    if (player != null) {
+      PlaybackParameters param = new PlaybackParameters(videoRate != null ? videoRate : 1.0f);
+      player.setPlaybackParameters(param);
+    }
   }
 
   /**
@@ -1391,11 +1453,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
    */
   public void setMuted(boolean _isMuted) {
     isMuted = _isMuted;
-    if (isMuted) {
-      curVolume = player.getVolume();
-      player.setVolume(0L);
-    } else {
-      player.setVolume(curVolume);
+    if (player != null) {
+      if (isMuted) {
+        curVolume = player.getVolume();
+        player.setVolume(0L);
+      } else {
+        player.setVolume(curVolume);
+      }
     }
   }
 
@@ -1412,7 +1476,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * @param button
    */
   private void mediaRouteButtonColorWhite(MediaRouteButton button) {
-    if (button == null) return;
+    if (button == null || getContext() == null) return;
     Context castContext = new ContextThemeWrapper(getContext(), androidx.mediarouter.R.style.Theme_MediaRouter);
 
     TypedArray a = castContext.obtainStyledAttributes(
@@ -1467,7 +1531,6 @@ public class FullscreenExoPlayerFragment extends Fragment {
    */
   private void resetVariables() {
     vType = null;
-    styledPlayerView = null;
     playWhenReady = true;
     firstReadyToPlay = true;
     isEnded = false;
@@ -1509,6 +1572,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
     task.addOnCompleteListener(new OnCompleteListener<CastContext>() {
       @Override
       public void onComplete(Task<CastContext> task) {
+        if (isFragmentDestroyed || !isAdded() || context == null || mediaRouteButton == null) {
+          return;
+        }
         if (task.isSuccessful()) {
           castContext = task.getResult();
           castPlayer = new CastPlayer(castContext);
@@ -1525,6 +1591,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
           castStateListener =
                   state -> {
+                    if (mediaRouteButton == null) {
+                      return;
+                    }
                     if (state == CastState.NO_DEVICES_AVAILABLE) {
                       mediaRouteButton.setVisibility(View.GONE);
                     } else {
@@ -1562,35 +1631,53 @@ public class FullscreenExoPlayerFragment extends Fragment {
                     @Override
                     public void onCastSessionAvailable() {
                       isCastSession = true;
-                      final Long videoPosition = player.getCurrentPosition();
-                      if (Boolean.TRUE.equals(pipEnabled)) {
+                      final Long videoPosition = player != null ? player.getCurrentPosition() : 0L;
+                      if (pipBtn != null && Boolean.TRUE.equals(pipEnabled)) {
                         pipBtn.setVisibility(View.GONE);
                       }
-                      resizeBtn.setVisibility(View.GONE);
-                      player.setPlayWhenReady(false);
-                      cast_image.setVisibility(View.VISIBLE);
+                      if (resizeBtn != null) {
+                        resizeBtn.setVisibility(View.GONE);
+                      }
+                      if (player != null) {
+                        player.setPlayWhenReady(false);
+                      }
+                      if (cast_image != null) {
+                        cast_image.setVisibility(View.VISIBLE);
+                      }
                       castPlayer.setMediaItem(mediaItem, videoPosition);
-                      styledPlayerView.setPlayer(castPlayer);
-                      styledPlayerView.setControllerShowTimeoutMs(0);
-                      styledPlayerView.setControllerHideOnTouch(false);
-                      //We perform a click because for some weird reason, the layout is black until the user clicks on it
-                      styledPlayerView.performClick();
+                      if (styledPlayerView != null) {
+                        styledPlayerView.setPlayer(castPlayer);
+                        styledPlayerView.setControllerShowTimeoutMs(0);
+                        styledPlayerView.setControllerHideOnTouch(false);
+                        //We perform a click because for some weird reason, the layout is black until the user clicks on it
+                        styledPlayerView.performClick();
+                      }
                     }
 
                     @Override
                     public void onCastSessionUnavailable() {
                       isCastSession = false;
-                      final Long videoPosition = castPlayer.getCurrentPosition();
-                      if (Boolean.TRUE.equals(pipEnabled)) {
+                      final Long videoPosition = castPlayer != null ? castPlayer.getCurrentPosition() : 0L;
+                      if (pipBtn != null && Boolean.TRUE.equals(pipEnabled)) {
                         pipBtn.setVisibility(View.VISIBLE);
                       }
-                      resizeBtn.setVisibility(View.VISIBLE);
-                      cast_image.setVisibility(View.GONE);
-                      styledPlayerView.setPlayer(player);
-                      player.setPlayWhenReady(true);
-                      player.seekTo(videoPosition);
-                      styledPlayerView.setControllerShowTimeoutMs(3000);
-                      styledPlayerView.setControllerHideOnTouch(true);
+                      if (resizeBtn != null) {
+                        resizeBtn.setVisibility(View.VISIBLE);
+                      }
+                      if (cast_image != null) {
+                        cast_image.setVisibility(View.GONE);
+                      }
+                      if (styledPlayerView != null) {
+                        styledPlayerView.setPlayer(player);
+                      }
+                      if (player != null) {
+                        player.setPlayWhenReady(true);
+                        player.seekTo(videoPosition);
+                      }
+                      if (styledPlayerView != null) {
+                        styledPlayerView.setControllerShowTimeoutMs(3000);
+                        styledPlayerView.setControllerHideOnTouch(true);
+                      }
                     }
                   }
           );
@@ -1602,7 +1689,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
                       Map<String, Object> info = new HashMap<String, Object>() {
                         {
                           put("fromPlayerId", playerId);
-                          put("currentTime", String.valueOf(player.getCurrentPosition() / 1000));
+                          put("currentTime", String.valueOf(player != null ? player.getCurrentPosition() / 1000 : 0));
                         }
                       };
                       switch (state) {
@@ -1640,6 +1727,8 @@ public class FullscreenExoPlayerFragment extends Fragment {
   }
 
   private void adjustAspectRatio() {
-    styledPlayerView.setResizeMode(resizeStatus);
+    if (styledPlayerView != null) {
+      styledPlayerView.setResizeMode(resizeStatus);
+    }
   }
 }

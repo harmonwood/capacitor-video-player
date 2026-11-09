@@ -78,6 +78,9 @@ public class PickerVideoFragment extends Fragment {
     }
 
     private void loadVideos() {
+        if (context == null) {
+            return;
+        }
         String[] projection = {
             MediaStore.Video.Media._ID,
             MediaStore.Video.Media.DISPLAY_NAME,
@@ -92,37 +95,46 @@ public class PickerVideoFragment extends Fragment {
             collection = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
         }
 
-        Cursor cursor = getActivity().getApplication().getContentResolver().query(collection, projection, null, null, sortOrder);
-        if (cursor != null) {
-            int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID);
-            int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME);
-            int durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION);
+        try (Cursor cursor = context.getContentResolver().query(collection, projection, null, null, sortOrder)) {
+            if (cursor != null) {
+                int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID);
+                int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME);
+                int durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION);
 
-            while (cursor.moveToNext()) {
-                long id = cursor.getLong(idColumn);
-                String title = cursor.getString(titleColumn);
-                int duration = cursor.getInt(durationColumn);
+                while (cursor.moveToNext()) {
+                    long id = cursor.getLong(idColumn);
+                    String title = cursor.getString(titleColumn);
+                    int duration = cursor.getInt(durationColumn);
 
-                Uri data = ContentUris.withAppendedId(collection, id);
+                    Uri data = ContentUris.withAppendedId(collection, id);
 
-                String duration_formatted;
-                int sec = (duration / 1000) % 60;
-                int min = (duration / (1000 * 60)) % 60;
-                int hrs = duration / (1000 * 60 * 60);
+                    String duration_formatted;
+                    int sec = (duration / 1000) % 60;
+                    int min = (duration / (1000 * 60)) % 60;
+                    int hrs = duration / (1000 * 60 * 60);
 
-                if (hrs == 0) {
-                    duration_formatted = String.valueOf(min).concat(":".concat(String.format(Locale.UK, "%02d", sec)));
-                } else {
-                    duration_formatted =
-                        String
-                            .valueOf(hrs)
-                            .concat(
-                                ":".concat(String.format(Locale.UK, "%02d", min).concat(":".concat(String.format(Locale.UK, "%02d", sec))))
-                            );
+                    if (hrs == 0) {
+                        duration_formatted = String.valueOf(min).concat(":".concat(String.format(Locale.UK, "%02d", sec)));
+                    } else {
+                        duration_formatted = String.valueOf(hrs).concat(
+                            ":".concat(String.format(Locale.UK, "%02d", min).concat(":".concat(String.format(Locale.UK, "%02d", sec))))
+                        );
+                    }
+                    Log.v(TAG, "**** video " + id + " " + title + " " + duration_formatted + " ****");
+                    videosList.add(new ModelVideo(id, data, title, duration_formatted));
                 }
-                Log.v(TAG, "**** video " + id + " " + title + " " + duration_formatted + " ****");
-                videosList.add(new ModelVideo(id, data, title, duration_formatted));
             }
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading videos from media store", e);
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        recyclerView = null;
+        recyclerViewLayoutManager = null;
+        adapterVideoList = null;
+        view = null;
+        super.onDestroyView();
     }
 }
