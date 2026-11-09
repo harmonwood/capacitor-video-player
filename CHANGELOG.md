@@ -9,6 +9,13 @@
 
 * upgrade to Capacitor 8 ([#18](https://github.com/e-picsa/capacitor-video-player/issues/18)) ([7da0888](https://github.com/e-picsa/capacitor-video-player/commit/7da08885f3b2431054dd64c8d36a58f87f8ca545))
 
+## [8.0.3](https://github.com/e-picsa/capacitor-video-player/compare/capacitor-video-player-v8.0.2...capacitor-video-player-v8.0.3) (2026-11-09)
+
+
+### Bug Fixes
+
+* **android:** resolve NPE in adjustAspectRatio and harden fragment lifecycle ([#28](https://github.com/e-picsa/capacitor-video-player/issues/28)) ([9fa52c1](https://github.com/e-picsa/capacitor-video-player/commit/9fa52c1a32ee4b8531c22f7ceea42075dd67f425))
+
 ## [8.0.2](https://github.com/e-picsa/capacitor-video-player/compare/capacitor-video-player-v8.0.1...capacitor-video-player-v8.0.2) (2026-11-06)
 
 
