@@ -435,14 +435,17 @@ public class FullscreenExoPlayerFragment extends Fragment {
     }
     if (uri != null || Boolean.TRUE.equals(isInternal)) {
       // go fullscreen
-      getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-      getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+      Activity hostActivity = getActivity();
+      if (hostActivity != null && hostActivity.getWindow() != null) {
+        hostActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        hostActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+      }
       if (savedInstanceState != null) {
         mCurrentPosition = savedInstanceState.getInt(PLAYBACK_TIME);
       }
 
-      getActivity()
-        .runOnUiThread(
+      if (hostActivity != null) {
+        hostActivity.runOnUiThread(
           new Runnable() {
             @Override
             public void run() {
@@ -516,10 +519,11 @@ public class FullscreenExoPlayerFragment extends Fragment {
             }
           }
         );
-    } else {
-      Log.d(TAG, "Video path wrong or type not supported");
-      Toast.makeText(context, "Video path wrong or type not supported", Toast.LENGTH_SHORT).show();
-    }
+        }
+      } else {
+        Log.d(TAG, "Video path wrong or type not supported");
+        Toast.makeText(context, "Video path wrong or type not supported", Toast.LENGTH_SHORT).show();
+      }
     adjustAspectRatio();
     return view;
   }
@@ -531,7 +535,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
     protected Bitmap doInBackground(Void... params) {
       final String image = artwork;
-      if (image != "") {
+      if (image != null && !image.trim().isEmpty()) {
         try {
           URL url = new URL(image);
           HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -540,7 +544,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
           InputStream input = connection.getInputStream();
           Bitmap myBitmap = BitmapFactory.decodeStream(input);
           return myBitmap;
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
           e.printStackTrace();
           return null;
         }
@@ -945,7 +949,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
     } else {
       isInPictureInPictureMode = false;
       if (
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+        packageManager != null &&
+        packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
       ) {
         boolean isShowControls = showControls != null ? showControls : true;
         if (!isShowControls) {
@@ -999,14 +1005,19 @@ public class FullscreenExoPlayerFragment extends Fragment {
     if (styledPlayerView == null) {
       return;
     }
+    Context playerContext = context != null ? context : getContext();
+    if (playerContext == null) {
+      Log.w(TAG, "initializePlayer: context is null, skipping");
+      return;
+    }
     if (player == null) {
       ExoTrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory();
-      trackSelector = new DefaultTrackSelector(context, videoTrackSelectionFactory);
+      trackSelector = new DefaultTrackSelector(playerContext, videoTrackSelectionFactory);
       LoadControl loadControl = new DefaultLoadControl();
 
       // Media3 Migration Note: DefaultBandwidthMeter now configured automatically by default
       player =
-        new ExoPlayer.Builder(context)
+        new ExoPlayer.Builder(playerContext)
           .setSeekBackIncrementMs(10000)
           .setSeekForwardIncrementMs(10000)
           .setTrackSelector(trackSelector)
@@ -1018,6 +1029,24 @@ public class FullscreenExoPlayerFragment extends Fragment {
 
     MediaSource mediaSource = null;
     if (!Boolean.TRUE.equals(isInternal)) {
+      // Re-derive uri/vType from videoPath on every init. They are cleared by
+      // resetVariables() after release, and onStart/onResume can re-enter
+      // initializePlayer() without going through onCreateView, which was the
+      // sole place they were previously computed (NPE on vType.equals()).
+      if (uri == null && videoPath != null && !videoPath.trim().isEmpty()) {
+        try {
+          uri = Uri.parse(videoPath);
+        } catch (Exception e) {
+          Log.e(TAG, "Invalid video path: " + videoPath, e);
+          uri = null;
+        }
+      }
+      if (vType == null && uri != null) {
+        vType = getVideoType(uri);
+      }
+      if (vType == null) {
+        vType = "";
+      }
       if (videoPath != null && (videoPath.startsWith("file:///android_asset") || videoPath.startsWith("content://media"))) {
         mediaSource = buildAssetMediaSource(uri);
       } else if (videoPath != null && !videoPath.trim().isEmpty()) {
@@ -1051,9 +1080,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
     }
     // Media3 Migration Note: MediaSessionConnector replaced with MediaSession.Builder; null check prevents duplicate session ID
     if (mediaSession == null) {
-      mediaSession = new MediaSession.Builder(context, player)
-        .setId("capacitorvideoplayer")
-        .build();
+      try {
+        mediaSession = new MediaSession.Builder(playerContext, player)
+          .setId("capacitorvideoplayer")
+          .build();
+      } catch (Exception e) {
+        Log.e(TAG, "Failed to build MediaSession", e);
+      }
     }
 
     NotificationCenter.defaultCenter().postNotification("initializePlayer", info);
@@ -1091,9 +1124,16 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * Build the Asset MediaSource
    */
   private MediaSource buildAssetMediaSource(Uri uri) {
+    if (uri == null) {
+      return null;
+    }
+    Context dataContext = context != null ? context : getContext();
+    if (dataContext == null) {
+      return null;
+    }
     MediaSource mediaSource = null;
     // Media3 Migration Note: DefaultDataSourceFactory replaced with DefaultDataSource.Factory
-    DataSource.Factory dataSourceFactory = new DefaultDataSource.Factory(context);
+    DataSource.Factory dataSourceFactory = new DefaultDataSource.Factory(dataContext);
     mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
     // Get the subtitles if any
     if (sturi != null) {
@@ -1106,7 +1146,14 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * Build the Internal MediaSource
    */
   private MediaSource buildInternalMediaSource(Uri uri) {
-    DataSource.Factory dataSourceFactory = new DefaultDataSource.Factory(context);
+    if (uri == null) {
+      return null;
+    }
+    Context dataContext = context != null ? context : getContext();
+    if (dataContext == null) {
+      return null;
+    }
+    DataSource.Factory dataSourceFactory = new DefaultDataSource.Factory(dataContext);
     return new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
   }
 
@@ -1115,6 +1162,13 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * @return MediaSource
    */
   private MediaSource buildHttpMediaSource() {
+    if (uri == null) {
+      Log.e(TAG, "buildHttpMediaSource: uri is null, cannot build media source");
+      return null;
+    }
+    // vType may still be null if getVideoType was never called (e.g. re-init
+    // after release). Default to progressive rather than NPE on equals().
+    String type = vType != null ? vType : "";
     MediaSource mediaSource = null;
 
     DefaultHttpDataSource.Factory httpDataSourceFactory = new DefaultHttpDataSource.Factory();
@@ -1124,38 +1178,57 @@ public class FullscreenExoPlayerFragment extends Fragment {
     httpDataSourceFactory.setAllowCrossProtocolRedirects(true);
 
     // If headers is not null and has data we pass them to the HttpDataSourceFactory
-    if (headers != null && headers.length() > 0) {
-      // We map the headers(JSObject) to a Map<String, String>
-      Map<String, String> headersMap = new HashMap<String, String>();
-      for (int i = 0; i < headers.names().length(); i++) {
-        try {
-          headersMap.put(headers.names().getString(i), headers.get(headers.names().getString(i)).toString());
-        } catch (JSONException e) {
-          e.printStackTrace();
+    if (headers != null) {
+      try {
+        if (headers.length() > 0 && headers.names() != null) {
+          // We map the headers(JSObject) to a Map<String, String>
+          Map<String, String> headersMap = new HashMap<String, String>();
+          for (int i = 0; i < headers.names().length(); i++) {
+            try {
+              String key = headers.names().getString(i);
+              Object value = headers.get(key);
+              if (key != null && value != null) {
+                headersMap.put(key, value.toString());
+              }
+            } catch (JSONException e) {
+              e.printStackTrace();
+            }
+          }
+          httpDataSourceFactory.setDefaultRequestProperties(headersMap);
         }
+      } catch (Exception e) {
+        Log.e(TAG, "Error applying headers", e);
       }
-      httpDataSourceFactory.setDefaultRequestProperties(headersMap);
     }
 
-    DataSource.Factory dataSourceFactory = new DefaultDataSource.Factory(context, httpDataSourceFactory);
+    DataSource.Factory dataSourceFactory;
+    Context dataContext = context != null ? context : getContext();
+    if (dataContext == null) {
+      Log.e(TAG, "buildHttpMediaSource: context is null, cannot build media source");
+      return null;
+    }
+    dataSourceFactory = new DefaultDataSource.Factory(dataContext, httpDataSourceFactory);
 
     if (
-      vType.equals("mp4") ||
-        vType.equals("webm") ||
-        vType.equals("ogv") ||
-        vType.equals("3gp") ||
-        vType.equals("flv") ||
-        vType.equals("")
+      "mp4".equals(type) ||
+        "webm".equals(type) ||
+        "ogv".equals(type) ||
+        "3gp".equals(type) ||
+        "flv".equals(type) ||
+        "".equals(type)
     ) {
       mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
-    } else if (vType.equals("dash") || vType.equals("mpd")) {
+    } else if ("dash".equals(type) || "mpd".equals(type)) {
       /* adaptive streaming Dash stream */
       DashMediaSource.Factory mediaSourceFactory = new DashMediaSource.Factory(dataSourceFactory);
       mediaSource = mediaSourceFactory.createMediaSource(MediaItem.fromUri(uri));
-    } else if (vType.equals("m3u8")) {
+    } else if ("m3u8".equals(type)) {
       mediaSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
-    } else if (vType.equals("ism")) {
+    } else if ("ism".equals(type)) {
       mediaSource = new SsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
+    } else {
+      Log.w(TAG, "buildHttpMediaSource: unsupported video type '" + type + "', falling back to progressive");
+      mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
     }
     // Get the subtitles if any
     if (sturi != null) {
@@ -1200,13 +1273,27 @@ public class FullscreenExoPlayerFragment extends Fragment {
   }
 
   private MediaSource getSubTitle(MediaSource mediaSource, Uri sturi, DataSource.Factory dataSourceFactory) {
+    if (mediaSource == null || sturi == null) {
+      return mediaSource;
+    }
     // Create mediaSource with subtitle
     MediaSource[] mediaSources = new MediaSource[2];
     mediaSources[0] = mediaSource;
     String mimeType = getMimeType(sturi);
+    if (mimeType == null || mimeType.isEmpty()) {
+      Log.w(TAG, "getSubTitle: unknown subtitle mime type, skipping subtitles");
+      return mediaSource;
+    }
 
     // We get the language label from the language code
-    String languageLabel = Locale.forLanguageTag(language).getDisplayLanguage();
+    String safeLanguage = language != null ? language : "";
+    String languageLabel;
+    try {
+      languageLabel = Locale.forLanguageTag(safeLanguage).getDisplayLanguage();
+    } catch (Exception e) {
+      Log.e(TAG, "Invalid language tag: " + safeLanguage, e);
+      languageLabel = safeLanguage;
+    }
     MediaItem.SubtitleConfiguration subConfig = new MediaItem.SubtitleConfiguration.Builder(sturi)
       .setMimeType(mimeType)
       .setUri(sturi)
@@ -1214,7 +1301,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
       .setLabel(languageLabel)
       .setRoleFlags(C.ROLE_FLAG_CAPTION)
       .setSelectionFlags(C.SELECTION_FLAG_DEFAULT)
-      .setLanguage(language)
+      .setLanguage(safeLanguage)
       .build();
 
     SingleSampleMediaSource subtitleSource = new SingleSampleMediaSource.Factory(dataSourceFactory)
@@ -1227,16 +1314,29 @@ public class FullscreenExoPlayerFragment extends Fragment {
   }
 
   private String getMimeType(Uri sturi) {
-    String lastSegment = sturi.getLastPathSegment();
-    String extension = lastSegment.substring(lastSegment.lastIndexOf(".") + 1);
+    if (sturi == null) {
+      return "";
+    }
+    String lastSegment;
+    try {
+      lastSegment = sturi.getLastPathSegment();
+    } catch (Exception e) {
+      Log.e(TAG, "getMimeType: failed to get last path segment", e);
+      return "";
+    }
+    if (lastSegment == null || lastSegment.isEmpty()) {
+      return "";
+    }
+    int dotIndex = lastSegment.lastIndexOf(".");
+    String extension = (dotIndex != -1 ? lastSegment.substring(dotIndex + 1) : lastSegment).toLowerCase(Locale.ROOT);
     String mimeType = "";
-    if (extension.equals("vtt")) {
+    if ("vtt".equals(extension)) {
       mimeType = MimeTypes.TEXT_VTT;
-    } else if (extension.equals("srt")) {
+    } else if ("srt".equals(extension)) {
       mimeType = MimeTypes.APPLICATION_SUBRIP;
-    } else if (extension.equals("ssa") || extension.equals("ass")) {
+    } else if ("ssa".equals(extension) || "ass".equals(extension)) {
       mimeType = MimeTypes.TEXT_SSA;
-    } else if (extension.equals("ttml") || extension.equals("dfxp") || extension.equals("xml")) {
+    } else if ("ttml".equals(extension) || "dfxp".equals(extension) || "xml".equals(extension)) {
       mimeType = MimeTypes.APPLICATION_TTML;
     }
     return mimeType;
@@ -1487,6 +1587,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
     );
     Drawable drawable = a.getDrawable(androidx.mediarouter.R.styleable.MediaRouteButton_externalRouteEnabledDrawable);
     a.recycle();
+    if (drawable == null) {
+      return;
+    }
     DrawableCompat.setTint(drawable, getContext().getResources().getColor(R.color.white));
     drawable.setState(button.getDrawableState());
     button.setRemoteIndicatorDrawable(drawable);
@@ -1498,6 +1601,9 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * @return video type
    */
   private String getVideoType(Uri uri) {
+    if (uri == null) {
+      return "";
+    }
     String ret = null;
     Object obj = uri.getLastPathSegment();
     String lastSegment = (obj == null) ? "" : uri.getLastPathSegment();
@@ -1506,17 +1612,19 @@ public class FullscreenExoPlayerFragment extends Fragment {
       if (lastSegment.length() > 0 && lastSegment.contains(type)) ret = type;
       if (ret == null) {
         List<String> segments = uri.getPathSegments();
-        if (segments.size() > 0) {
+        if (segments != null && segments.size() > 0) {
           String segment;
-          if (segments.get(segments.size() - 1).equals("manifest")) {
+          if (segments.get(segments.size() - 1).equals("manifest") && segments.size() >= 2) {
             segment = segments.get(segments.size() - 2);
           } else {
             segment = segments.get(segments.size() - 1);
           }
-          for (String sType : supportedFormat) {
-            if (segment.contains(sType)) {
-              ret = sType;
-              break;
+          if (segment != null) {
+            for (String sType : supportedFormat) {
+              if (segment.contains(sType)) {
+                ret = sType;
+                break;
+              }
             }
           }
         }
@@ -1548,8 +1656,14 @@ public class FullscreenExoPlayerFragment extends Fragment {
    * @return boolean
    */
   public boolean isApplicationSentToBackground(final Context context) {
+    if (context == null) {
+      return false;
+    }
     int pid = android.os.Process.myPid();
     ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+    if (am == null) {
+      return false;
+    }
     List<ActivityManager.RunningAppProcessInfo> procInfos = am.getRunningAppProcesses();
     if (procInfos != null) {
       for (ActivityManager.RunningAppProcessInfo appProcess : procInfos) {
@@ -1605,13 +1719,17 @@ public class FullscreenExoPlayerFragment extends Fragment {
           CastButtonFactory.setUpMediaRouteButton(context, mediaRouteButton);
 
           MediaMetadata movieMetadata;
-          if (artwork != "") {
-            movieMetadata = new MediaMetadata.Builder()
-                    .setTitle(title)
-                    .setSubtitle(smallTitle)
-                    .setMediaType(MediaMetadata.MEDIA_TYPE_MOVIE)
-                    .setArtworkUri(Uri.parse(artwork))
-                    .build();
+          if (artwork != null && !artwork.trim().isEmpty()) {
+            MediaMetadata.Builder metadataBuilder = new MediaMetadata.Builder()
+              .setTitle(title)
+              .setSubtitle(smallTitle)
+              .setMediaType(MediaMetadata.MEDIA_TYPE_MOVIE);
+            try {
+              metadataBuilder.setArtworkUri(Uri.parse(artwork));
+            } catch (Exception e) {
+              Log.e(TAG, "Invalid artwork uri: " + artwork, e);
+            }
+            movieMetadata = metadataBuilder.build();
             new setCastImage().execute();
           } else {
             movieMetadata = new MediaMetadata.Builder()
@@ -1694,7 +1812,7 @@ public class FullscreenExoPlayerFragment extends Fragment {
                       };
                       switch (state) {
                         case CastPlayer.STATE_READY:
-                          if (castPlayer.isPlaying()) {
+                          if (castPlayer != null && castPlayer.isPlaying()) {
                             NotificationCenter.defaultCenter().postNotification("playerItemPlay", info);
                           } else {
                             NotificationCenter.defaultCenter().postNotification("playerItemPause", info);
@@ -1708,11 +1826,17 @@ public class FullscreenExoPlayerFragment extends Fragment {
           );
 
           castContext.addCastStateListener(castStateListener);
-          mRouter.addCallback(mSelector, mCallback, MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
+          if (mRouter != null && mSelector != null && mCallback != null) {
+            mRouter.addCallback(mSelector, mCallback, MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
+          }
 
         } else {
           Exception e = task.getException();
-          e.printStackTrace();
+          if (e != null) {
+            e.printStackTrace();
+          } else {
+            Log.e(TAG, "initializeCastService: CastContext task failed with no exception");
+          }
         }
       }
     });
